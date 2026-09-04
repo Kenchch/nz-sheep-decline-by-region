@@ -700,29 +700,30 @@ Table&nbsp;3
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(supp, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> is_census_year), <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#95a5a6"</span>, <span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#e07a5f"</span>),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Sample survey"</span>, <span class="st">"Census"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2002</span>, <span class="dv">2025</span>, <span class="dv">3</span>)) <span class="sc">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(supp_by_code, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> label), <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"C - confidentiality (pre-2017 method)"</span> <span class="ot">=</span> <span class="st">"#e07a5f"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"S - quality suppression"</span> <span class="ot">=</span> <span class="st">"#6c8ea4"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2002</span>, <span class="dv">2025</span>, <span class="dv">3</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2001</span>, <span class="dv">2026</span>)) <span class="sc">+</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>(<span class="at">scale =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Suppression appears in 2012 and rises through the recent years"</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Percentage of region-by-livestock-class cells suppressed: sheep, dairy and beef cattle"</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Cells suppressed"</span>,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/03-suppression-rate.png"</span>, p3,</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Two different flags, two different stories"</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Percentage of region-by-livestock-class cells withheld: sheep, dairy and beef cattle"</span>,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Cells suppressed"</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/03-suppression-rate.png"</span>, p3,</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-suppression" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -737,8 +738,13 @@ Figure&nbsp;3: Share of regional cells suppressed, by year.
 </div>
 </div>
 </div>
-<p>No cell is suppressed between 2002 and 2011. Suppression appears from 2012 and rises through the later years, peaking at 17.6 percent in 2021. The census years 2017 and 2022 sit visibly below the survey years around them, which is what a rule based on sampling error or imputation share would predict. 2012 is the exception, and this analysis does not explain it.</p>
-<p>One qualification, which matters. I cannot tell from this extract whether the zeroes before 2012 mean that no suppression was applied, or that the flag was not carried in this export. The chart shows what the file contains.</p>
+<p>Reading that chart as a single rising trend would be wrong, and the <code>OBS_STATUS</code> column is what makes the difference visible. Two flags are in use, and they are not the same mechanism.</p>
+<p>The <code>C</code> flag is confidentiality suppression. Among the three livestock classes used here it appears in 2012 and in no other year. Checked across every one of the 44 livestock codes in the raw extract, it appears in 2012–2016 and <strong>never after 2016</strong>.</p>
+<p>That is exactly what the published methodology predicts. Stats NZ states that prior to 2017, figures affected by the confidentiality provisions were denoted by <code>C</code>, and that since 2017 confidentiality has instead been implemented by an input perturbation method that adds noise at individual farm level, so output figures no longer have to be replaced with <code>C</code>. The flag stops in the file in the same year the method changed.</p>
+<p>The <code>S</code> flag is quality suppression, applied where sampling errors or imputation levels are high. It runs from 2014 to 2025, peaking at 17.6 percent of cells in 2021. The census years 2017 and 2022 sit below the survey years around them, which is what a rule keyed to sampling error would predict, since a census has no sampling error to exceed a threshold.</p>
+<p>So the 2012 spike is not a quality problem at all. All four withheld cells that year carry <code>C</code>, not <code>S</code>. Separating the two flags turns an apparent anomaly into the expected behaviour of a confidentiality rule that was replaced in 2017.</p>
+<p>One qualification remains. I cannot tell from this extract whether the absence of any flag before 2012 means no cell was withheld, or that the flag was not carried in this export. The chart shows what the file contains.</p>
+<p>Two of the affected regions are also explained in the published methodology. Sampling error could not be calculated for Nelson because only one responding unit was observed in each sampled stratum, and at least two are needed to estimate a within-stratum variance. Nelson is one of the two regions this analysis has to drop.</p>
 </section>
 <section id="independent-recomputation" class="level3">
 <h3 class="anchored" data-anchor-id="independent-recomputation">Independent recomputation</h3>
@@ -806,16 +812,17 @@ Table&nbsp;4
 </section>
 <section id="survey-design" class="level3">
 <h3 class="anchored" data-anchor-id="survey-design">Survey design</h3>
-<p>The reference period is the year ended 30 June. 2002, 2007, 2012, 2017 and 2022 are census years; every other year in the series is a sample survey stratified by regional council, industry and size. The series starts at 2002 because of a break in the target population before that year, which is also why the 1994 observation carried in the same table is excluded.</p>
+<p>The reference period is the year ended 30 June. Censuses were held in 2002, 2007, 2012, 2017 and 2022, with annual sample surveys in the intervening years. The sample is stratified by regional council area, ANZSIC06 group and size group. The 2025 survey drew 24,600 geographic locations from an estimated eligible population of 45,800; note that a geographic location is the statistical unit and is not the same thing as a farm.</p>
+<p>The series starts at 2002 because Stats NZ states that the population for the 2002 census and subsequent surveys differs from that of earlier agricultural censuses and surveys, and that figures from 2002 onward may not be directly comparable with previous years. That is also why the 1994 observation carried in the same table is excluded here. There was no agricultural production survey at all in 1997, 1998 or 2001.</p>
+<p>Values for non-respondents are imputed by random hot deck imputation, with the imputation class formed from regional council area, ANZSIC06 group and production data from previous years. This matters more than it may appear: for the 2025 survey Stats NZ reports that <strong>30 percent</strong> of the total sheep estimate was imputed, against a relative sampling error of 3 percent at 95 percent confidence. The response rate for the 2025 final release was 72.1 percent. The collection is run by Stats NZ in partnership with the Ministry for Primary Industries.</p>
 </section>
 <section id="what-was-excluded-and-why" class="level3">
 <h3 class="anchored" data-anchor-id="what-was-excluded-and-why">What was excluded, and why</h3>
 <ul>
-<li><strong>Territorial authority geography</strong> — published only in census years, so no annual series exists at that level.</li>
-<li><strong>Horticulture</strong> — not collected in many of the years in this window.</li>
-<li><strong>Forestry</strong> — a definitional break in 2022, and now an MPI rather than a Stats NZ collection.</li>
-<li><strong>Farm type</strong> — an ANZSIC96 to ANZSIC06 recode in 2007 falls inside the window.</li>
-<li><strong>Pre-2002 data</strong> — the population break described above.</li>
+<li><strong>Territorial authority geography</strong> — the surveys are designed to produce results to regional council level and the censuses to territorial authority level, so no annual series exists below the region.</li>
+<li><strong>Horticulture</strong> — not collected in 2004, 2006, 2008, 2010, 2013, 2015, 2016, 2018, 2021, 2023 or 2025, which is most of this window.</li>
+<li><strong>Forestry production</strong> — Stats NZ no longer collects or compiles forestry production statistics; they are published by MPI. Stats NZ does still collect forestry <em>land use</em>. The 2025 release also notes that additional National Exotic Forest Description data has been received and that revisions to earlier land use and forestry statistics, especially for 2016 to 2021, are planned.</li>
+<li><strong>Pre-2002 data</strong> — the population change described above, plus the absence of any survey in 1997, 1998 and 2001.</li>
 <li><strong>A choropleth map</strong> — a sorted bar chart answers “which regions contributed most” and a map does not, because a map encodes land area rather than magnitude. Canterbury, Otago and Southland are also three of the largest regions by area, which is precisely the confound a map would introduce.</li>
 <li><strong>A second data set</strong> — the question is answerable inside one table, and every extra source adds provenance to defend without adding evidence.</li>
 </ul>
@@ -826,6 +833,37 @@ Table&nbsp;4
 <p>Regional council is the only geography available annually; territorial authority exists only in census years, so any sub-regional time series is structurally unavailable rather than merely unpublished. Suppression now runs above ten percent of cells and is concentrated in the same small regions — Auckland, Nelson, Chatham Islands — so those regional trends are already unusable, and a suppression-aware grouping that pooled them would preserve more signal than suppressing them one at a time does. And the alternating census-and-survey design makes every regional series in this table structurally uneven, which belongs on the output rather than being left for a user to discover from a reconciliation residual.</p>
 <p>There is also a class of question this data cannot answer at all: anything at farm level, or any breakdown finer than what is published. The access route for those questions is approved microdata under the Five Safes framework, which I have not used here.</p>
 </section>
+<section id="sources-for-the-methodological-statements" class="level3">
+<h3 class="anchored" data-anchor-id="sources-for-the-methodological-statements">Sources for the methodological statements</h3>
+<p>Every statement about the collection above was read on the page cited here, not carried over from secondary summaries.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Statement</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Census years 2002, 2007, 2012, 2017, 2022; sample surveys in between; eligible population 45,800 and sample 24,600 geographic locations; stratification by regional council, ANZSIC06 group and size group; 2025 response rate 72.1 percent; sampling error and imputation levels by line code; GST registration level of $60,000 giving “partial and unquantifiable” coverage below it; random hot deck imputation and imputation class; <code>C</code> before 2017 and input perturbation since; <code>S</code> for data with high sample errors or imputation levels; Nelson variance not estimable; horticulture years; forestry production now MPI; Tier 1 statistics</td>
+<td><a href="https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029">Agricultural Production Statistics: June 2025 (Final), DataInfo+</a></td>
+</tr>
+<tr class="even">
+<td>Programme run in partnership with MPI; provisional mid-December plus final mid-May up to 2024, single final mid-April from 2025; 2002 population differs from earlier collections; no survey in 1997, 1998, 2001; regional council annually and territorial authority in censuses</td>
+<td><a href="https://datainfoplus.stats.govt.nz/item/nz.govt.stats/6362a469-f374-412e-ac25-d76fd0962003">Agriculture Production Statistics series, DataInfo+</a></td>
+</tr>
+<tr class="odd">
+<td>Release date of 16 April 2026 for the year to June 2025; NEFD data and planned revisions for 2016–2021</td>
+<td><a href="https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2025/">Agricultural production statistics: Year to June 2025</a></td>
+</tr>
+<tr class="even">
+<td>Mana Ōrite Relationship Agreement signed with the Data Iwi Leaders Group of the National Iwi Chairs Forum on 30 October 2019</td>
+<td><a href="https://www.stats.govt.nz/about-us/what-we-do/mana-orite-relationship-agreement/">Mana Ōrite Relationship Agreement</a></td>
+</tr>
+</tbody>
+</table>
+<p>Statements I could not source on those pages are not made anywhere in this report. Pages read 4 September 2026.</p>
+</section>
 </section>
 <section id="limitations" class="level2">
 <h2 class="anchored" data-anchor-id="limitations">Limitations</h2>
@@ -833,15 +871,16 @@ Table&nbsp;4
 <li>Non-census years are <strong>sample estimates</strong>. I have not recomputed their sampling errors and I have applied no weighting of my own. A year-on-year movement in a single small region should not be read as real change.</li>
 <li>Suppressed cells are retained as <code>NA</code> and counted. Two regions are excluded from the 2002–2025 change entirely for that reason.</li>
 <li>The sheep-to-cattle comparisons are <strong>ratios of head counts</strong>. They are not claims about stocking rate, feed demand, land use or emissions.</li>
-<li>The target population is GST-registered agricultural businesses. Coverage of the smallest farms is partial and not quantifiable from published data.</li>
+<li>The frame is Stats NZ’s Business Register, which is built on GST registration. The compulsory registration level is $60,000, and Stats NZ describes coverage of units below that level as “partial and unquantifiable”.</li>
+<li><strong>Imputation is large.</strong> Stats NZ reports 30 percent of the 2025 total sheep estimate as imputed. Every regional figure in a survey year carries that, and this analysis does nothing to correct for it.</li>
+<li>Since 2017, confidentiality has been implemented by input perturbation, which adds noise at individual farm level. It is small relative to the effects discussed here, but it is present in every year from 2017 on.</li>
 <li>Choosing 2002 and 2025 as endpoints is a choice. A 2015–2025 window gives the same qualitative answer, with the same three regions accounting for 59 percent of the fall rather than 54 percent.</li>
-<li>Input perturbation has been applied to agricultural statistics since 2017. It is small relative to every effect discussed here, but it is present.</li>
 </ul>
 </section>
 <section id="ethics" class="level2">
 <h2 class="anchored" data-anchor-id="ethics">Ethics</h2>
 <p>This analysis uses published regional aggregates only. No microdata and no IDI access is involved, so the Five Safes framework does not apply to it.</p>
-<p>Stats NZ identifies Māori-owned farms in this collection by matching the Agricultural Production Survey against the Tatauranga umanga Māori population. Under Māori data sovereignty principles, and under the Mana Ōrite Relationship Agreement, the authority to interpret and narrate that data sits with iwi Māori and Stats NZ. It does not sit with an unaffiliated analyst. That is why this report does not comment on it.</p>
+<p>Stats NZ lists Tatauranga Umanga Māori among the internal users of this collection, and signed the Mana Ōrite Relationship Agreement with the Data Iwi Leaders Group of the National Iwi Chairs Forum in October 2019. Any Māori-specific cut of this data therefore sits inside an established relationship between Stats NZ and iwi Māori. It does not sit with an unaffiliated analyst working from published aggregates, which is why this report does not attempt one and does not characterise the terms of that agreement.</p>
 </section>
 <section id="reproduce" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce">Reproduce</h2>
