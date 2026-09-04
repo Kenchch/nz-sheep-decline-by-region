@@ -92,7 +92,13 @@ top3_for <- function(y0, y1 = 2025) {
 
 sensitivity <- do.call(rbind, lapply(2002:2020, top3_for))
 
-in_top3 <- function(name) sum(grepl(name, sensitivity$top3, fixed = TRUE))
+# Split on the separator rather than substring-matching: no region name is a
+# substring of another today, but a match that silently over-counts if that
+# ever changed is not the kind of code this repository argues for.
+in_top3 <- function(name) {
+  sum(vapply(strsplit(sensitivity$top3, ", ", fixed = TRUE),
+             function(x) name %in% x, logical(1)))
+}
 
 # Design-matched comparison: census start, census end.
 matched <- top3_for(2002, 2022)
@@ -389,7 +395,11 @@ region row happens to reconcile exactly anyway.
 In `r sum(residual_tiers$tier == "Fully published, off by a few head")` further
 fully-published class-years the residual never exceeds
 `r max(abs(residual_tiers$residual[residual_tiers$tier == "Fully published, off by a few head"]))`
-head, on bases between 3 and 40 million. I cannot attribute that from published data. It
+head, on bases between
+`r fmt(min(residual_tiers$published[residual_tiers$tier == "Fully published, off by a few head"])/1e6, 1)`
+and
+`r fmt(max(residual_tiers$published[residual_tiers$tier == "Fully published, off by a few head"])/1e6, 1)`
+million. I cannot attribute that from published data. It
 is consistent with the national aggregate being rounded independently of the
 regional cells, but I have not been able to source that and do not assert it.
 Nor can I rule out input perturbation: only two fully-published class-years fall
@@ -558,13 +568,22 @@ would have produced a total that looked tidier and was wrong by
 5. **Reconciliation is reported, not asserted.** No fixed tolerance is set
    between the regional sum and the published total. The residual is computed for
    every year and published above.
-6. **Quantitative claims are computed, not transcribed.** Every number in the
-   running text of this page is an inline expression evaluated at render time
-   against the analysis table, not typed in. Qualitative claims are stated with
-   the scope over which they were checked. Three earlier versions of this page
-   each carried a universal claim that was typed rather than computed, and each
-   was contradicted by a table printed directly beneath it; this is the rule
-   that came out of that.
+6. **Quantitative claims are computed, cited, or explicitly rounded — and the
+   three are different things.** Numbers that come from the data are inline
+   expressions evaluated at render time against the analysis table, never
+   transcribed. Numbers that come from Stats NZ's published methodology —
+   sample size, eligible population, response rate, imputation level, relative
+   sampling error, the GST threshold, the codelist totals — *cannot* be
+   computed from an aggregate extract; they are typed, and each is attributed
+   under [Sources for the methodological
+   statements](#sources-for-the-methodological-statements). Numbers in the
+   plain-language layer at the top are deliberately rounded, with the exact
+   value always available further down. Qualitative claims are stated with the
+   scope over which they were checked. Earlier versions of this page each
+   carried a universal claim that was typed rather than computed, and each was
+   contradicted by a table printed directly beneath it; this is the rule that
+   came out of that, including the version of this rule that claimed every
+   number on the page was computed, which was itself false.
 
 ### Release schedule
 
@@ -665,11 +684,24 @@ exists only in census years, so any sub-regional time series is structurally
 unavailable rather than merely unpublished. Suppression now runs above ten
 percent of cells, and it is not spread evenly. Nelson and the Chatham Islands
 account for `r sprintf("%.0f", 100 * sum(regions$suppressed & regions$region %in% c("Nelson", "Chatham Islands")) / sum(regions$suppressed))`
-percent of every withheld cell in this table between them, with
-`r length(setdiff(unique(regions$region[regions$suppressed]), c("Nelson", "Chatham Islands")))`
-other regions accounting for the rest. Those two trends are already unusable,
-and a suppression-aware grouping that pooled the smallest regions would preserve
-more signal than withholding them one at a time does. And the alternating census-and-survey design
+percent of every withheld cell in this table between them, Auckland for a
+further `r sprintf("%.0f", 100 * sum(regions$suppressed & regions$region == "Auckland") / sum(regions$suppressed))`
+percent, and
+`r length(setdiff(unique(regions$region[regions$suppressed]), c("Nelson", "Chatham Islands", "Auckland")))`
+other regions for the rest.
+
+Two different grounds are at work, and it is worth separating them. Nelson and
+the Chathams are withheld persistently — they hold the two smallest sheep
+populations in the table — which makes their *trends* unusable. Auckland is
+withheld only at scattered points including the 2025 endpoint, which is what
+removes it from this analysis' *change* calculation while leaving most of its
+series intact. Auckland is not a small region, and by sheep it is not even among
+the smallest: its last published count is larger than Northland's or West
+Coast's. Being withheld and being small are related here but not the same thing,
+and an output that conflated them would mislead.
+
+A suppression-aware grouping that pooled the persistently withheld regions would
+preserve more signal than withholding them one at a time does. And the alternating census-and-survey design
 makes every regional series in this table structurally uneven, which belongs on
 the output rather than being left for a user to discover from a reconciliation
 residual.
@@ -738,6 +770,14 @@ sensitivity |>
   kable(align = "lrrrl")
 ```
 
+`Fall` here is measured across the regions listed as measurable in each window,
+not against the published national total. The two differ by the withheld
+regions: for 2002–2025 the regional figure is
+`r fmt(sensitivity$fall[sensitivity$start == 2002])` head against a published
+national fall of `r fmt(nat_drop)`, a gap of
+`r sprintf("%.2f", 100 * (nat_drop - sensitivity$fall[sensitivity$start == 2002]) / sensitivity$fall[sensitivity$start == 2002])`
+percent, as set out at the top of this page.
+
 The concentration is robust. Across all
 `r nrow(sensitivity)` start years the three largest-declining regions account
 for between `r sprintf("%.0f", min(sensitivity$share))` and
@@ -748,7 +788,7 @@ Which three regions they are is not robust. Manawatū-Whanganui is in the top
 three in `r in_top3("Manawatū-Whanganui")` of the `r nrow(sensitivity)`
 windows, Otago in `r in_top3("Otago")`, Southland in `r in_top3("Southland")`,
 and Canterbury in only `r in_top3("Canterbury")` —
-`r paste(sensitivity$start[grepl("Canterbury", sensitivity$top3, fixed = TRUE)], collapse = ", ")`.
+`r paste(sensitivity$start[vapply(strsplit(sensitivity$top3, ", ", fixed = TRUE), function(x) "Canterbury" %in% x, logical(1))], collapse = ", ")`.
 Canterbury dominates the window this report uses because its decline is
 concentrated in the early years; from a start year of 2009 or later it usually
 drops out of the top three altogether.

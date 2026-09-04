@@ -70,6 +70,7 @@ Every methodological statement in the report was read on its source page before 
 3. **Aggregates separated, not summed** — `AREA` 10, 19 and 20 are island and national totals. They are flagged and excluded from every regional sum.
 4. **Suppressed cells stay suppressed** — `NA` plus a flag, never zero, never dropped. Two regions are excluded from the change calculation for missing an endpoint, and are counted in the text.
 5. **Reconciliation reported, not asserted** — no fixed tolerance. The residual is computed for every year and published.
+6. **Numbers are computed, cited, or explicitly rounded, and the report says which** — figures derived from the data are inline expressions evaluated at render time; figures from Stats NZ's methodology (sample size, response rate, imputation level, the GST threshold) cannot be computed from an aggregate extract and are typed with an attribution; figures in the plain-language layer are rounded, with the exact value further down the page.
 
 ## Limitations
 
@@ -93,6 +94,12 @@ quarto render         # regenerates the report and outputs/figures/*.png
 ```
 
 Both sets of outputs are committed, so a clean checkout that runs those two commands finishes with no diff. `R/load.R` verifies the extract against the SHA-256 in `SOURCE.md` before reading it and stops if they disagree.
+
+GitHub Actions runs the same regeneration on every push and pull request, then
+fails if any committed output differs. Ingestion also stops on schema changes,
+unknown suppression flags, duplicate cells, missing years, or missing national
+totals, so a changed source shape cannot silently produce plausible-looking
+results.
 
 ```
 index.qmd                 the published report
