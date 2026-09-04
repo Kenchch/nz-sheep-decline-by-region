@@ -421,30 +421,30 @@ year,area_code,region,island,is_aggregate,livestock_class,head,suppressed,suppre
 2023,7,Taranaki,North Island,FALSE,Beef cattle,114468,FALSE,NA,FALSE
 2024,7,Taranaki,North Island,FALSE,Beef cattle,134390,FALSE,NA,FALSE
 2025,7,Taranaki,North Island,FALSE,Beef cattle,118407,FALSE,NA,FALSE
-2002,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,726306,FALSE,NA,TRUE
-2003,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,699264,FALSE,NA,FALSE
-2004,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,641607,FALSE,NA,FALSE
-2005,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,696501,FALSE,NA,FALSE
-2006,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,701871,FALSE,NA,FALSE
-2007,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,680960,FALSE,NA,TRUE
-2008,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,583129,FALSE,NA,FALSE
-2009,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,609701,FALSE,NA,FALSE
-2010,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,626533,FALSE,NA,FALSE
-2011,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,593632,FALSE,NA,FALSE
-2012,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,579565,FALSE,NA,TRUE
-2013,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,570144,FALSE,NA,FALSE
-2014,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,580988,FALSE,NA,FALSE
-2015,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,567333,FALSE,NA,FALSE
-2016,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,543526,FALSE,NA,FALSE
-2017,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,567856,FALSE,NA,TRUE
-2018,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,554018,FALSE,NA,FALSE
-2019,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,574889,FALSE,NA,FALSE
-2020,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,571743,FALSE,NA,FALSE
-2021,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,594771,FALSE,NA,FALSE
-2022,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,561337,FALSE,NA,TRUE
-2023,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,517451,FALSE,NA,FALSE
-2024,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,520736,FALSE,NA,FALSE
-2025,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,577155,FALSE,NA,FALSE
+2002,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,726306,FALSE,NA,TRUE
+2003,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,699264,FALSE,NA,FALSE
+2004,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,641607,FALSE,NA,FALSE
+2005,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,696501,FALSE,NA,FALSE
+2006,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,701871,FALSE,NA,FALSE
+2007,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,680960,FALSE,NA,TRUE
+2008,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,583129,FALSE,NA,FALSE
+2009,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,609701,FALSE,NA,FALSE
+2010,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,626533,FALSE,NA,FALSE
+2011,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,593632,FALSE,NA,FALSE
+2012,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,579565,FALSE,NA,TRUE
+2013,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,570144,FALSE,NA,FALSE
+2014,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,580988,FALSE,NA,FALSE
+2015,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,567333,FALSE,NA,FALSE
+2016,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,543526,FALSE,NA,FALSE
+2017,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,567856,FALSE,NA,TRUE
+2018,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,554018,FALSE,NA,FALSE
+2019,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,574889,FALSE,NA,FALSE
+2020,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,571743,FALSE,NA,FALSE
+2021,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,594771,FALSE,NA,FALSE
+2022,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,561337,FALSE,NA,TRUE
+2023,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,517451,FALSE,NA,FALSE
+2024,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,520736,FALSE,NA,FALSE
+2025,8,Manawatū-Whanganui,North Island,FALSE,Beef cattle,577155,FALSE,NA,FALSE
 2002,9,Wellington,North Island,FALSE,Beef cattle,181320,FALSE,NA,TRUE
 2003,9,Wellington,North Island,FALSE,Beef cattle,176290,FALSE,NA,FALSE
 2004,9,Wellington,North Island,FALSE,Beef cattle,174206,FALSE,NA,FALSE
@@ -877,30 +877,30 @@ year,area_code,region,island,is_aggregate,livestock_class,head,suppressed,suppre
 2023,7,Taranaki,North Island,FALSE,Dairy cattle,493358,FALSE,NA,FALSE
 2024,7,Taranaki,North Island,FALSE,Dairy cattle,504392,FALSE,NA,FALSE
 2025,7,Taranaki,North Island,FALSE,Dairy cattle,481242,FALSE,NA,FALSE
-2002,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,416802,FALSE,NA,TRUE
-2003,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,408986,FALSE,NA,FALSE
-2004,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,381464,FALSE,NA,FALSE
-2005,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,410765,FALSE,NA,FALSE
-2006,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,390125,FALSE,NA,FALSE
-2007,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,393453,FALSE,NA,TRUE
-2008,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,425484,FALSE,NA,FALSE
-2009,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,424880,FALSE,NA,FALSE
-2010,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,478514,FALSE,NA,FALSE
-2011,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,472992,FALSE,NA,FALSE
-2012,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,475466,FALSE,NA,TRUE
-2013,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,448030,FALSE,NA,FALSE
-2014,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,481249,FALSE,NA,FALSE
-2015,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,451421,FALSE,NA,FALSE
-2016,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,524295,FALSE,NA,FALSE
-2017,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,463057,FALSE,NA,TRUE
-2018,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,486470,FALSE,NA,FALSE
-2019,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,467626,FALSE,NA,FALSE
-2020,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,436747,FALSE,NA,FALSE
-2021,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,443824,FALSE,NA,FALSE
-2022,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,409971,FALSE,NA,TRUE
-2023,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,398390,FALSE,NA,FALSE
-2024,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,410257,FALSE,NA,FALSE
-2025,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,436024,FALSE,NA,FALSE
+2002,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,416802,FALSE,NA,TRUE
+2003,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,408986,FALSE,NA,FALSE
+2004,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,381464,FALSE,NA,FALSE
+2005,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,410765,FALSE,NA,FALSE
+2006,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,390125,FALSE,NA,FALSE
+2007,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,393453,FALSE,NA,TRUE
+2008,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,425484,FALSE,NA,FALSE
+2009,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,424880,FALSE,NA,FALSE
+2010,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,478514,FALSE,NA,FALSE
+2011,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,472992,FALSE,NA,FALSE
+2012,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,475466,FALSE,NA,TRUE
+2013,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,448030,FALSE,NA,FALSE
+2014,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,481249,FALSE,NA,FALSE
+2015,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,451421,FALSE,NA,FALSE
+2016,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,524295,FALSE,NA,FALSE
+2017,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,463057,FALSE,NA,TRUE
+2018,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,486470,FALSE,NA,FALSE
+2019,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,467626,FALSE,NA,FALSE
+2020,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,436747,FALSE,NA,FALSE
+2021,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,443824,FALSE,NA,FALSE
+2022,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,409971,FALSE,NA,TRUE
+2023,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,398390,FALSE,NA,FALSE
+2024,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,410257,FALSE,NA,FALSE
+2025,8,Manawatū-Whanganui,North Island,FALSE,Dairy cattle,436024,FALSE,NA,FALSE
 2002,9,Wellington,North Island,FALSE,Dairy cattle,111180,FALSE,NA,TRUE
 2003,9,Wellington,North Island,FALSE,Dairy cattle,111973,FALSE,NA,FALSE
 2004,9,Wellington,North Island,FALSE,Dairy cattle,95021,FALSE,NA,FALSE
@@ -1348,30 +1348,30 @@ year,area_code,region,island,is_aggregate,livestock_class,head,suppressed,suppre
 2023,7,Taranaki,North Island,FALSE,Sheep,402895,FALSE,NA,FALSE
 2024,7,Taranaki,North Island,FALSE,Sheep,435204,FALSE,NA,FALSE
 2025,7,Taranaki,North Island,FALSE,Sheep,427646,FALSE,NA,FALSE
-2002,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6563838,FALSE,NA,TRUE
-2003,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6516684,FALSE,NA,FALSE
-2004,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6263729,FALSE,NA,FALSE
-2005,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6738633,FALSE,NA,FALSE
-2006,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6870265,FALSE,NA,FALSE
-2007,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6746989,FALSE,NA,TRUE
-2008,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5916784,FALSE,NA,FALSE
-2009,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5767131,FALSE,NA,FALSE
-2010,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5796023,FALSE,NA,FALSE
-2011,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5730947,FALSE,NA,FALSE
-2012,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5612743,FALSE,NA,TRUE
-2013,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5469819,FALSE,NA,FALSE
-2014,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5328843,FALSE,NA,FALSE
-2015,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5518950,FALSE,NA,FALSE
-2016,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5040174,FALSE,NA,FALSE
-2017,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5061676,FALSE,NA,TRUE
-2018,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5060276,FALSE,NA,FALSE
-2019,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4791398,FALSE,NA,FALSE
-2020,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4680562,FALSE,NA,FALSE
-2021,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4709345,FALSE,NA,FALSE
-2022,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4485482,FALSE,NA,TRUE
-2023,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4411333,FALSE,NA,FALSE
-2024,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4363196,FALSE,NA,FALSE
-2025,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4309252,FALSE,NA,FALSE
+2002,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6563838,FALSE,NA,TRUE
+2003,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6516684,FALSE,NA,FALSE
+2004,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6263729,FALSE,NA,FALSE
+2005,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6738633,FALSE,NA,FALSE
+2006,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6870265,FALSE,NA,FALSE
+2007,8,Manawatū-Whanganui,North Island,FALSE,Sheep,6746989,FALSE,NA,TRUE
+2008,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5916784,FALSE,NA,FALSE
+2009,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5767131,FALSE,NA,FALSE
+2010,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5796023,FALSE,NA,FALSE
+2011,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5730947,FALSE,NA,FALSE
+2012,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5612743,FALSE,NA,TRUE
+2013,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5469819,FALSE,NA,FALSE
+2014,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5328843,FALSE,NA,FALSE
+2015,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5518950,FALSE,NA,FALSE
+2016,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5040174,FALSE,NA,FALSE
+2017,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5061676,FALSE,NA,TRUE
+2018,8,Manawatū-Whanganui,North Island,FALSE,Sheep,5060276,FALSE,NA,FALSE
+2019,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4791398,FALSE,NA,FALSE
+2020,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4680562,FALSE,NA,FALSE
+2021,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4709345,FALSE,NA,FALSE
+2022,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4485482,FALSE,NA,TRUE
+2023,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4411333,FALSE,NA,FALSE
+2024,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4363196,FALSE,NA,FALSE
+2025,8,Manawatū-Whanganui,North Island,FALSE,Sheep,4309252,FALSE,NA,FALSE
 2002,9,Wellington,North Island,FALSE,Sheep,1812531,FALSE,NA,TRUE
 2003,9,Wellington,North Island,FALSE,Sheep,1779872,FALSE,NA,FALSE
 2004,9,Wellington,North Island,FALSE,Sheep,1943427,FALSE,NA,FALSE

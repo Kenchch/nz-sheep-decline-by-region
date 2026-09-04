@@ -1,0 +1,6 @@
+rule,items,passes,fails,nNA
+head_non_negative,1398,1397,1,0
+value_iff_suppressed,1398,1395,3,0
+region_label_present,1398,1397,1,0
+no_duplicate_cells,1398,1396,2,0
+census_year_reported,1398,1389,9,0
