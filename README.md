@@ -8,32 +8,44 @@ New Zealand's sheep flock fell by 16.32 million head between June 2002 and June 
 
 ## Key findings
 
-- Canterbury, Southland and Otago together account for **54 percent** of the national fall, measured across the 15 regions where both endpoints are published.
+- Canterbury, Southland and Otago together account for **54 percent** of the fall measured across the 15 regions with both endpoints published. Against the published national fall the same three regions are 53.6 percent; the published fall is 0.77 percent larger than the measurable regional one, because Auckland and Nelson are withheld in 2025.
 - Over the same 23 years the national dairy herd grew by only **588 thousand** cattle against a fall of 16.3 million sheep — two different orders of magnitude, which is the arithmetic the "sheep became dairy" story has to survive.
 - In **7 of the 13** regions where both series are published, dairy cattle fell *alongside* sheep rather than in place of them. Canterbury is the one region where substitution carries real weight, at 22 dairy cattle gained per 100 sheep lost.
 
 ## Data quality checks
 
-Five validation rules run over the analysis table on every render; all pass.
+Five rules run over the analysis table, and the same five run against a deliberately corrupted copy of it — because an all-green table cannot tell a reader whether the rules are sound or merely too loose to fire.
 
-| Rule | Items | Passes | Fails |
-|---|---:|---:|---:|
-| `head_non_negative` | 1,397 | 1,397 | 0 |
-| `value_iff_suppressed` | 1,397 | 1,397 | 0 |
-| `region_label_present` | 1,397 | 1,397 | 0 |
-| `no_duplicate_cells` | 1,397 | 1,397 | 0 |
-| `year_in_series_window` | 1,397 | 1,397 | 0 |
+| Rule | Fails on real data | Fails on corrupted copy |
+|---|---:|---:|
+| `head_non_negative` | 0 | 1 |
+| `value_iff_suppressed` | 0 | 3 |
+| `region_label_present` | 0 | 1 |
+| `no_duplicate_cells` | 0 | 2 |
+| `census_year_reported` | **9** | 9 |
 
-The more interesting result is the reconciliation. Summing the regions and comparing against the published national total gives a residual of **exactly zero head** in every year where all seventeen regions are published and no cell is suppressed. The residual becomes non-zero for two reasons only: a suppressed region, or a region code absent from that year's table. It peaks at 2.17 percent in 2021.
+`census_year_reported` fires 9 times on the real data, and that is a finding rather than a defect: a census is full coverage with no sampling error, yet census-year cells are still withheld, because withholding is about confidentiality and imputation quality rather than coverage. The rule earns its place by being falsified.
+
+The reconciliation separates into three tiers across the 72 class-years:
+
+| Tier | Class-years | Largest absolute residual |
+|---|---:|---:|
+| Exact — all 17 regions published, nothing withheld | 10 | 0 head |
+| Fully published, off by a few head | 12 | 2 head |
+| Incomplete region row | 50 | 558,310 head |
+
+In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual is one or two head on bases of 3–40 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
+
+Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
 
 Suppression is also not one thing. The `OBS_STATUS` column carries two different flags, and separating them turns an apparent anomaly into confirmation of the published method:
 
-- **`C`, confidentiality.** Appears in 2012–2016 across the whole extract and **never after 2016**. Stats NZ states that `C` was used prior to 2017 and that confidentiality has since been implemented by input perturbation instead, so cells no longer need replacing with `C`. The file stops using the flag in the same year the method changed.
+- **`C`, confidentiality.** Among the three livestock classes used here it appears only in 2012; across all 44 livestock codes in the extract it appears in 2012–2016 and **never after 2016**. Stats NZ states that `C` was used prior to 2017 and that confidentiality has since been implemented by input perturbation instead, so cells no longer need replacing with `C`. The file stops using the flag in the same year the method changed.
 - **`S`, quality suppression** — applied where sampling errors or imputation levels are high. Runs from 2014 to 2025 and peaks at 17.6 percent of cells in 2021, with census years sitting below the survey years around them, as a rule keyed to sampling error would predict.
 
 The 2012 spike is therefore not a quality problem at all: all four withheld cells that year are `C`, not `S`. Whether the absence of any flag before 2012 means "nothing withheld" or "flag not carried in this export" cannot be determined from the extract, and the report says so.
 
-Two suppressed regions are explained in the methodology rather than guessed at: sampling error could not be calculated for Nelson because only one responding unit was observed per sampled stratum.
+One of the two dropped regions is explained in the methodology rather than guessed at: sampling error could not be calculated for Nelson because only one responding unit was observed per sampled stratum. Auckland is simply withheld, with no reason published.
 
 ![Share of regional cells suppressed, by year](outputs/figures/03-suppression-rate.png)
 
@@ -69,13 +81,20 @@ Every methodological statement in the report was read on its source page before 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
 cd nz-sheep-decline-by-region
-quarto render
+Rscript R/checks.R    # regenerates outputs/*.csv
+quarto render         # regenerates the report and outputs/figures/*.png
 ```
+
+Both sets of outputs are committed, so a clean checkout that runs those two commands finishes with no diff. `R/load.R` verifies the extract against the SHA-256 in `SOURCE.md` before reading it and stops if they disagree.
 
 ```
 index.qmd                 the published report
-R/load.R                  read, label, isolate suppressed cells
-R/checks.R                five validation rules and the reconciliation
+R/load.R                  hash gate, read, label, isolate withheld cells
+R/checks.R                five rules, the corrupted-copy demo, both reconciliations
 data-raw/                 the pinned extract and its provenance
-outputs/                  analysis table, validation summary, figures
+outputs/                  analysis table, validation summaries, reconciliations, figures
 ```
+
+Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
+
+Figures in this README are transcribed from the report. The report is the source of truth — every number in it is computed at render time.

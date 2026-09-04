@@ -7,8 +7,7 @@ date: today
 
 ```{r setup}
 #| include: false
-source("R/load.R")
-source("R/checks.R")
+source("R/checks.R")   # which sources R/load.R, runs the rules and reconciles
 suppressPackageStartupMessages({
   library(ggplot2); library(scales); library(tidyr); library(knitr)
 })
@@ -63,6 +62,12 @@ dairy_both    <- substitution |> filter(!is.na(Sheep), !is.na(`Dairy cattle`))
 n_dairy_falls <- sum(dairy_both$`Dairy cattle` < 0)
 n_dairy_both  <- nrow(dairy_both)
 
+# Regions among the top five that lost cattle as well as sheep, named from the
+# data rather than typed into the prose.
+lost_both <- substitution |>
+  filter(region %in% top5_regions, `Dairy cattle` < 0 | `Beef cattle` < 0) |>
+  pull(region) |> sort() |> paste(collapse = " and ")
+
 # Suppression rate --------------------------------------------------------
 supp <- regions |>
   group_by(year, is_census_year) |>
@@ -87,10 +92,7 @@ s_years <- sort(unique(supp_by_code$year[supp_by_code$suppression_code == "s"]))
 
 # The same check across every livestock code in the raw extract, not just the
 # three used here, so the claim about the C flag is tested on the whole file.
-all_c_years <- readr::read_csv(RAW_CSV, col_types = readr::cols(.default = "c")) |>
-  janitor::clean_names() |>
-  filter(obs_status == "c") |>
-  pull(year_agr_agr_003) |> as.integer() |> unique() |> sort()
+all_c_years <- all_suppression_years("c")
 ```
 
 ::: {.callout-note appearance="simple"}
@@ -137,6 +139,12 @@ sheep are not exchangeable units, and this page does not treat them as such.
 ```{r}
 #| label: fig-contribution
 #| fig-cap: "Contribution of each region to the national fall in sheep numbers, June 2002 to June 2025."
+#| fig-alt: "Horizontal bar chart of 15 regions ordered by how many sheep they
+#|   lost between 2002 and 2025. Canterbury is largest at 3.57 million head
+#|   fewer, then Southland at 2.91 million and Otago at 2.27 million; together
+#|   these three make up just over half the national fall. The remaining
+#|   regions range from Manawatū-Whanganui at 2.25 million down to the Chatham
+#|   Islands at 0.01 million."
 plot_dat <- sheep_change |>
   filter(!is.na(change)) |>
   mutate(region = factor(region, levels = rev(region)),
@@ -148,8 +156,8 @@ p1 <- ggplot(plot_dat, aes(x = millions, y = region)) +
             hjust = -0.15, size = 3.1, colour = "grey25") +
   annotate("label", x = max(plot_dat$millions) * 0.45,
            y = 4.2,
-           label = sprintf("Canterbury, Southland and Otago\naccount for %.0f%% of the fall",
-                           top3_share),
+           label = sprintf("%s\naccount for %.0f%% of the fall",
+                           paste(top3$region, collapse = ", "), top3_share),
            hjust = 0, size = 3.4, label.size = 0, fill = "grey96", colour = "grey20") +
   scale_x_continuous(labels = label_comma(accuracy = 0.1),
                      expand = expansion(mult = c(0, 0.14))) +
@@ -180,6 +188,12 @@ never imputed and never set to zero.
 ```{r}
 #| label: fig-substitution
 #| fig-cap: "Change in sheep, dairy cattle and beef cattle in the five regions that lost the most sheep."
+#| fig-alt: "Dot chart for the five regions with the largest sheep declines.
+#|   In each region the sheep marker sits far to the left of zero, between 1.3
+#|   and 3.6 million head fewer, while the dairy and beef cattle markers sit
+#|   close to zero. Canterbury has the largest dairy gain at about 795 thousand
+#|   and Southland about 281 thousand; in Hawke's Bay and Manawatū-Whanganui
+#|   both cattle markers fall below zero, meaning cattle declined as well."
 dumb <- substitution |>
   filter(region %in% top5_regions) |>
   pivot_longer(-region, names_to = "livestock_class", values_to = "change") |>
@@ -193,10 +207,15 @@ dumb <- substitution |>
 p2 <- ggplot(dumb, aes(x = thousands, y = region)) +
   geom_vline(xintercept = 0, colour = "grey60") +
   geom_line(aes(group = region), colour = "grey75", linewidth = 0.8) +
-  geom_point(aes(colour = livestock_class), size = 3.4) +
+  # Shape as well as colour, so colour is not the only channel carrying the
+  # distinction. The green and the red-brown are close under red-green colour
+  # vision deficiency; WCAG 1.4.1 asks that colour not be used alone.
+  geom_point(aes(colour = livestock_class, shape = livestock_class), size = 3.4) +
   scale_colour_manual(values = c("Sheep" = "#2d6a4f",
                                  "Dairy cattle" = "#c1666b",
                                  "Beef cattle" = "#4a6fa5"), name = NULL) +
+  scale_shape_manual(values = c("Sheep" = 16, "Dairy cattle" = 17,
+                                "Beef cattle" = 15), name = NULL) +
   scale_x_continuous(labels = label_comma(), expand = expansion(mult = 0.07)) +
   labs(
     title    = "Where sheep left, cattle mostly did not arrive in comparable numbers",
@@ -233,7 +252,7 @@ substitution |>
 ```
 
 Canterbury is the one region where the substitution story carries real weight.
-Hawkes Bay and Manawatu-Wanganui lost sheep *and* cattle. A negative figure in
+`r lost_both` lost sheep *and* cattle. A negative figure in
 this table means that class of animal declined as well.
 
 ## Data quality checks
@@ -245,8 +264,36 @@ Five rules run over the analysis table on every render.
 kable(results, align = "lrrrr")
 ```
 
-The interesting result is not in that table. It is in the reconciliation: the
-published national total against the sum of the regions.
+Four pass. The fifth fires `r results$fails[results$rule == "census_year_reported"]`
+times, and that is a finding rather than a defect. `census_year_reported` asserts
+that a census year — a full-coverage collection, with no sampling error to
+exceed a threshold — should not have withheld cells. It is wrong. Census years do
+withhold cells, because withholding is about confidentiality and imputation
+quality, not about coverage. The rule earns its place by being falsified.
+
+### Showing that the rules can fail
+
+An all-green table is not evidence. A reader cannot tell from it whether the
+rules are sound or merely too loose to fire. So the same five rules are also run
+against a deliberately corrupted copy of the analysis table: one negative count,
+one withheld cell filled with a zero, one census-year value removed, one region
+label deleted, and one duplicated row.
+
+```{r}
+#| label: tbl-validation-corrupted
+results |>
+  select(rule, `real data` = fails) |>
+  left_join(select(results_corrupted, rule, `corrupted copy` = fails),
+            by = "rule") |>
+  kable(align = "lrr", col.names = c("Rule", "Fails on real data",
+                                     "Fails on corrupted copy"))
+```
+
+Each corruption is caught by the rule aimed at it, and by no other. That is what
+makes the left-hand column mean something.
+
+The more interesting result is in the reconciliation: the published national
+total against the sum of the regions.
 
 ```{r}
 #| label: tbl-recon
@@ -259,21 +306,91 @@ reconciliation |>
     `Regions suppressed` = regions_suppressed,
     `Sum of regions` = fmt(region_sum),
     `Published national` = fmt(published),
+    `Residual (head)` = fmt(residual),
     `Residual %` = sprintf("%.3f", residual_pct)
   ) |>
-  kable(align = "rrrrrr")
+  kable(align = "rrrrrrr")
 ```
 
-The residual is zero, to the head, in every year where all seventeen regions are
-published and no cell is suppressed. It becomes non-zero for exactly two reasons,
-and only those two: a region is suppressed, or a region code is absent from the
-table for that year. It is not a join error and it is not perturbation.
+The residual column is reported in head as well as in percent on purpose. At a
+base of 30 million, a percentage rounded to three decimal places renders a
+discrepancy of one animal as `0.000`, which would let the table appear to
+support a stronger claim than the numbers do.
+
+Across all three livestock classes the residual separates into three tiers.
+
+```{r}
+#| label: tbl-tiers
+residual_tiers |>
+  count(tier, name = "Class-years") |>
+  left_join(
+    residual_tiers |>
+      group_by(tier) |>
+      summarise(`Largest absolute residual (head)` = fmt(max(abs(residual))),
+                .groups = "drop"),
+    by = "tier"
+  ) |>
+  rename(Tier = tier) |>
+  kable(align = "lrr")
+```
+
+In the `r sum(residual_tiers$tier == "Exact")` class-years where all seventeen
+regions are published and nothing is withheld, the regions sum to the published
+national total **exactly, to the head**.
+
+In `r sum(residual_tiers$tier == "Fully published, off by a few head")` further
+fully-published class-years the residual is one or two head — never more, on
+bases between 3 and 40 million. I cannot attribute that from published data. It
+is consistent with the national aggregate being rounded independently of the
+regional cells, but I have not been able to source that and do not assert it.
+Nor can I rule out input perturbation: only two fully-published class-years fall
+after 2017, when perturbation was introduced, which is far too few to say
+anything either way.
+
+Every residual larger than that — and the next smallest is
+`r fmt(min(abs(residual_tiers$residual[residual_tiers$tier == "Incomplete region row" & residual_tiers$residual != 0])))`
+head — belongs to a year whose region row is incomplete, because a region is
+withheld or because a region code is absent from that year's table.
+
+What the one-head residuals are *not* is an artefact of this analysis. The same
+discrepancy appears between cells that this analysis never sums. Adding the two
+published island totals and comparing them against the published national total —
+three aggregate cells, always published, never withheld — gives a difference of
+one head in
+`r sum(island_reconciliation$residual != 0)` of the
+`r nrow(island_reconciliation)` class-years, and never more than
+`r max(abs(island_reconciliation$residual))`.
+
+```{r}
+#| label: tbl-island
+island_reconciliation |>
+  filter(residual != 0) |>
+  transmute(
+    Year = year,
+    Class = livestock_class,
+    `North Island` = fmt(a10),
+    `South Island` = fmt(a19),
+    `Sum` = fmt(a10 + a19),
+    `Published NZ` = fmt(a20),
+    `Difference` = fmt(residual)
+  ) |>
+  kable(align = "rlrrrrr")
+```
+
+So the one-head discrepancies are a property of the published table, not of the
+join. That does not explain them, but it does locate them.
 
 ### Suppression is not constant over time
 
 ```{r}
 #| label: fig-suppression
-#| fig-cap: "Share of regional cells suppressed, by year."
+#| fig-cap: "Share of regional cells withheld, by year and by flag."
+#| fig-alt: "Bar chart of the percentage of regional cells withheld each year
+#|   from 2002 to 2025, coloured by flag. Nothing is withheld from 2002 to
+#|   2011. A single orange bar in 2012 marks the C confidentiality flag at
+#|   about 8 percent. Blue bars for the S quality-suppression flag begin in
+#|   2014 and run to 2025, peaking near 18 percent in 2021, with the census
+#|   years 2017 and 2022 lower than the survey years around them."
 p3 <- ggplot(supp_by_code, aes(x = year, y = rate)) +
   geom_col(aes(fill = label), width = 0.7) +
   scale_fill_manual(values = c("C - confidentiality (pre-2017 method)" = "#e07a5f",
@@ -373,7 +490,11 @@ would have produced a total that looked tidier and was wrong by
    the three verified codes are used.
 3. **Aggregates are separated, not summed.** `AREA` codes 10, 19 and 20 are the
    North Island, South Island and New Zealand totals. They are flagged in the
-   analysis table and excluded from every regional sum.
+   analysis table and excluded from every regional sum. The extract publishes
+   no area labels at all, only numeric codes; region names here follow the
+   Statistical standard for geographic areas 2023 (SSGA23), including macrons,
+   which differ from the older spellings the codelist still displays in
+   Aotearoa Data Explorer.
 4. **Suppressed cells stay suppressed.** A suppressed cell becomes `NA` and
    carries a flag. It is never filled with zero and never dropped. Regions
    missing either endpoint are excluded from the change calculation and counted
@@ -507,13 +628,20 @@ characterise the terms of that agreement.
 
 ## Reproduce
 
+Two steps, because they write different things.
+
 ```bash
-quarto render
+Rscript R/checks.R    # regenerates outputs/*.csv: validation, coverage, reconciliation
+quarto render         # regenerates this page and outputs/figures/*.png
 ```
 
-`R/load.R` reads and tidies the pinned extract, `R/checks.R` runs the validation
-rules, and `index.qmd` produces this page and writes the three figures into
-`outputs/figures/`.
+`R/load.R` verifies the extract against the SHA-256 recorded in
+`data-raw/SOURCE.md` before reading it, then tidies it; `R/checks.R` runs the
+rules and both reconciliations; `index.qmd` produces this page and the figures.
+
+Both sets of outputs are committed, so a clean checkout that runs the two
+commands above finishes with no diff. If the extract were ever replaced without
+`SOURCE.md` being updated, `R/load.R` stops rather than analysing it.
 
 ```{r}
 #| label: session
