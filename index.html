@@ -494,7 +494,7 @@ Table&nbsp;3
 <tr class="even">
 <td style="text-align: left;">value_iff_suppressed</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3</td>
+<td style="text-align: right;">1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">region_label_present</td>
@@ -509,7 +509,7 @@ Table&nbsp;3
 <tr class="odd">
 <td style="text-align: left;">census_year_reported</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: right;">9</td>
+<td style="text-align: right;">10</td>
 </tr>
 </tbody>
 </table>
@@ -518,7 +518,8 @@ Table&nbsp;3
 </figure>
 </div>
 </div>
-<p>Each corruption is caught by the rule aimed at it, and by no other. That is what makes the left-hand column mean something.</p>
+<p>Each corruption moves exactly one rule. <code>no_duplicate_cells</code> moves by two because a duplicate makes both members of the pair non-unique, and <code>census_year_reported</code> moves from 9 to 10 because it already fails nine times on the real data. The corrupted rows are chosen at distinct indices and the function asserts as much, so no single corruption can be counted twice.</p>
+<p>That is what makes the left-hand column mean something: the zeroes are the result of rules that demonstrably fire when there is something to fire at.</p>
 <p>The more interesting result is in the reconciliation: the published national total against the sum of the regions.</p>
 <div class="cell">
 <details class="code-fold">
@@ -850,6 +851,7 @@ Table&nbsp;5
 </div>
 </div>
 <p>In the 10 class-years where all seventeen regions are published and nothing is withheld, the regions sum to the published national total <strong>exactly, to the head</strong>.</p>
+<p>Completeness is the criterion for these tiers, not the residual. That matters here: 11 class-years reconcile to zero, one more than the Exact tier contains, because one class-year with an incomplete region row happens to reconcile exactly anyway.</p>
 <p>In 12 further fully-published class-years the residual is one or two head — never more, on bases between 3 and 40 million. I cannot attribute that from published data. It is consistent with the national aggregate being rounded independently of the regional cells, but I have not been able to source that and do not assert it. Nor can I rule out input perturbation: only two fully-published class-years fall after 2017, when perturbation was introduced, which is far too few to say anything either way.</p>
 <p>Every residual larger than that — and the next smallest is 507 head — belongs to a year whose region row is incomplete, because a region is withheld or because a region code is absent from that year’s table.</p>
 <p>What the one-head residuals are <em>not</em> is an artefact of this analysis. The same discrepancy appears between cells that this analysis never sums. Adding the two published island totals and comparing them against the published national total — three aggregate cells, always published, never withheld — gives a difference of one head in 14 of the 72 class-years, and never more than 1.</p>
@@ -1079,10 +1081,11 @@ Figure&nbsp;3: Share of regional cells withheld, by year and by flag.
 <p>Reading that chart as a single rising trend would be wrong, and the <code>OBS_STATUS</code> column is what makes the difference visible. Two flags are in use, and they are not the same mechanism.</p>
 <p>The <code>C</code> flag is confidentiality suppression. Among the three livestock classes used here it appears in 2012 and in no other year. Checked across every one of the 44 livestock codes in the raw extract, it appears in 2012–2016 and <strong>never after 2016</strong>.</p>
 <p>That is exactly what the published methodology predicts. Stats NZ states that prior to 2017, figures affected by the confidentiality provisions were denoted by <code>C</code>, and that since 2017 confidentiality has instead been implemented by an input perturbation method that adds noise at individual farm level, so output figures no longer have to be replaced with <code>C</code>. The flag stops in the file in the same year the method changed.</p>
-<p>The <code>S</code> flag is quality suppression, applied where sampling errors or imputation levels are high. It runs from 2014 to 2025, peaking at 17.6 percent of cells in 2021. The census years 2017 and 2022 sit below the survey years around them, which is what a rule keyed to sampling error would predict, since a census has no sampling error to exceed a threshold.</p>
+<p>The <code>S</code> flag is quality suppression, applied where sampling errors or imputation levels are high. It runs from 2014 to 2025, peaking at 17.6 percent of cells in 2021. The census years 2017 and 2022 sit below the survey years around them — but not at zero, and the difference between those two statements is the mechanism.</p>
+<p>The published rule withholds data with high sample errors <strong>or</strong> high imputation levels. A census removes the first branch, which is why census years sit lower. The second branch remains, which is why they are not empty. All 5 census-year <code>S</code> cells in this table are Nelson.</p>
 <p>So the 2012 spike is not a quality problem at all. All four withheld cells that year carry <code>C</code>, not <code>S</code>. Separating the two flags turns an apparent anomaly into the expected behaviour of a confidentiality rule that was replaced in 2017.</p>
 <p>One qualification remains. I cannot tell from this extract whether the absence of any flag before 2012 means no cell was withheld, or that the flag was not carried in this export. The chart shows what the file contains.</p>
-<p>Two of the affected regions are also explained in the published methodology. Sampling error could not be calculated for Nelson because only one responding unit was observed in each sampled stratum, and at least two are needed to estimate a within-stratum variance. Nelson is one of the two regions this analysis has to drop.</p>
+<p>One of the two regions this analysis has to drop is explained in the published methodology rather than guessed at. Sampling error could not be calculated for Nelson because only one responding unit was observed in each sampled stratum, and at least two are needed to estimate a within-stratum variance. Auckland, the other dropped region, is simply withheld, with no reason published.</p>
 </section>
 <section id="independent-recomputation" class="level3">
 <h3 class="anchored" data-anchor-id="independent-recomputation">Independent recomputation</h3>
