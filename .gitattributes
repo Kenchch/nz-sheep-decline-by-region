@@ -1,0 +1,14 @@
+# Normalise text to LF in the repository so that outputs regenerated on Linux
+# are byte-identical to outputs regenerated on Windows. Without this, the
+# reproducibility check in CI fails on line endings alone.
+*.R        text eol=lf
+*.qmd      text eol=lf
+*.md       text eol=lf
+*.yml      text eol=lf
+*.csv      text eol=lf
+.gitignore text eol=lf
+LICENSE    text eol=lf
+
+# Figures are rendered by ggplot2 and are not byte-reproducible across
+# platforms; they are tracked as binary and excluded from the CI diff check.
+*.png      binary

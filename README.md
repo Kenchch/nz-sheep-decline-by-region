@@ -38,7 +38,7 @@ The reconciliation separates into three tiers across the 72 class-years:
 
 Completeness is the criterion for these tiers, not the residual: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
 
-In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual is one or two head on bases of 3–40 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
+In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual never exceeds two head, on bases of 3.5–31.1 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
 
 Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
 
@@ -84,7 +84,7 @@ Every methodological statement in the report was read on its source page before 
 
 ## Reproduce
 
-Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales` and `knitr`.
+Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales`, `knitr` and `rmarkdown`.
 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
