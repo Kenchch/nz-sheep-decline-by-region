@@ -19,10 +19,13 @@ rules <- validator(
   value_iff_suppressed = is.na(head) == suppressed,
   region_label_present = !is.na(region),
   no_duplicate_cells   = is_unique(year, area_code, livestock_class),
-  # Census years are full-coverage collections, so a census-year cell should
-  # not be suppressed. Written as an implication: FALSE <= TRUE, so this holds
-  # unless a census-year cell is suppressed. It can genuinely fail — it is the
-  # rule that would fire if a future vintage suppressed a census-year cell.
+  # This rule encodes an assumption that turns out to be false. It fails 9
+  # times on the current vintage: four confidentiality cells in 2012 (Nelson
+  # and Chatham Islands) and five quality-suppressed cells in 2017 and 2022,
+  # all Nelson. It is kept because the falsification is the finding —
+  # withholding is keyed to confidentiality and imputation level, not to
+  # coverage. Written as an implication: FALSE <= TRUE, so it holds unless a
+  # census-year cell is withheld.
   census_year_reported = is_census_year <= !suppressed
 )
 
@@ -34,14 +37,32 @@ results <- summary(confront(livestock, rules)) |>
 # corruption each rule catches rather than taking an all-green table on trust.
 corrupt <- function(x) {
   broken <- x
-  broken$head[which(!is.na(broken$head))[3]] <- -1          # negative count
-  i <- which(broken$suppressed)[1]
-  broken$head[i] <- 0                                       # suppressed -> zero
-  j <- which(broken$is_census_year & !is.na(broken$head))[1]
-  broken$head[j] <- NA                                      # census gap
-  broken$suppressed[j] <- FALSE
-  broken$region[5] <- NA_character_                          # lost label
-  rbind(broken, broken[1, ])                                # duplicate cell
+
+  # Each corruption targets one rule, and each lands on a different row, so a
+  # rule that moves can only have moved for its own reason. The row indices are
+  # asserted to be distinct rather than assumed: an earlier version of this
+  # function put the census-year corruption on row 1 and then duplicated row 1,
+  # which made one corruption count twice.
+  i_neg    <- which(!is.na(broken$head) & !broken$suppressed)[3]
+  i_zero   <- which(broken$suppressed)[1]
+  # A census-year cell that IS withheld. This is the direction the rule tests:
+  # clearing the flag instead would only satisfy it further.
+  i_census <- which(broken$is_census_year & !is.na(broken$head) &
+                      !broken$suppressed)[200]
+  i_label  <- which(!is.na(broken$head) & !broken$suppressed)[500]
+  i_dup    <- which(!broken$suppressed & !is.na(broken$head) &
+                      !is.na(broken$region))[900]
+
+  stopifnot(!anyDuplicated(c(i_neg, i_zero, i_census, i_label, i_dup)),
+            !anyNA(c(i_neg, i_zero, i_census, i_label, i_dup)))
+
+  broken$head[i_neg]         <- -1              # negative count
+  broken$head[i_zero]        <- 0               # withheld cell filled with zero
+  broken$head[i_census]      <- NA              # census-year cell withheld
+  broken$suppressed[i_census] <- TRUE
+  broken$region[i_label]     <- NA_character_   # lost label
+
+  rbind(broken, broken[i_dup, ])                # duplicated cell
 }
 
 results_corrupted <- summary(confront(corrupt(livestock), rules)) |>
