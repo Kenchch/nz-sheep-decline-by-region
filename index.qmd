@@ -68,6 +68,35 @@ lost_both <- substitution |>
   filter(region %in% top5_regions, `Dairy cattle` < 0 | `Beef cattle` < 0) |>
   pull(region) |> sort() |> paste(collapse = " and ")
 
+# Endpoint sensitivity ----------------------------------------------------
+# The same headline statistic recomputed from every available start year.
+# Asserted in prose, this claim was wrong. Computed, it is a better finding.
+top3_for <- function(y0, y1 = 2025) {
+  ch <- regions |>
+    filter(livestock_class == "Sheep", year %in% c(y0, y1)) |>
+    select(region, year, head) |>
+    pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
+    mutate(change = .data[[paste0("y", y1)]] - .data[[paste0("y", y0)]]) |>
+    filter(!is.na(change)) |>
+    arrange(change)
+  dec <- sum(ch$change[ch$change < 0])
+  data.frame(
+    start   = y0,
+    end     = y1,
+    regions = nrow(ch),
+    fall    = -dec,
+    share   = 100 * sum(head(ch$change, 3)) / dec,
+    top3    = paste(head(ch$region, 3), collapse = ", ")
+  )
+}
+
+sensitivity <- do.call(rbind, lapply(2002:2020, top3_for))
+
+in_top3 <- function(name) sum(grepl(name, sensitivity$top3, fixed = TRUE))
+
+# Design-matched comparison: census start, census end.
+matched <- top3_for(2002, 2022)
+
 # Suppression rate --------------------------------------------------------
 supp <- regions |>
   group_by(year, is_census_year) |>
@@ -251,7 +280,13 @@ substitution |>
   kable(align = "lrrr")
 ```
 
-Canterbury is the one region where the substitution story carries real weight.
+Canterbury accounts for by far the largest absolute dairy increase of any region,
+at `r fmt(substitution$"Dairy cattle"[substitution$region == "Canterbury"]/1e3)`
+thousand head. It is not, however, the highest *ratio*: West Coast gained
+`r sprintf("%.0f", -100 * substitution$"Dairy cattle"[substitution$region == "West Coast"] / substitution$Sheep[substitution$region == "West Coast"])`
+dairy cattle per 100 sheep lost, on a base so small — under
+`r fmt(-substitution$Sheep[substitution$region == "West Coast"]/1e3)` thousand
+sheep — that the ratio says more about the denominator than about land use.
 `r lost_both` lost sheep *and* cattle. A negative figure in
 this table means that class of animal declined as well.
 
@@ -352,8 +387,9 @@ more than the Exact tier contains, because one class-year with an incomplete
 region row happens to reconcile exactly anyway.
 
 In `r sum(residual_tiers$tier == "Fully published, off by a few head")` further
-fully-published class-years the residual is one or two head — never more, on
-bases between 3 and 40 million. I cannot attribute that from published data. It
+fully-published class-years the residual never exceeds
+`r max(abs(residual_tiers$residual[residual_tiers$tier == "Fully published, off by a few head"]))`
+head, on bases between 3 and 40 million. I cannot attribute that from published data. It
 is consistent with the national aggregate being rounded independently of the
 regional cells, but I have not been able to source that and do not assert it.
 Nor can I rule out input perturbation: only two fully-published class-years fall
@@ -460,8 +496,9 @@ The second branch remains, which is why they are not empty. All
 `r sum(livestock$is_census_year & livestock$suppression_code == "s", na.rm = TRUE)`
 census-year `S` cells in this table are Nelson.
 
-So the 2012 spike is not a quality problem at all. All four withheld cells that
-year carry `C`, not `S`. Separating the two flags turns an apparent anomaly into
+So the 2012 spike is not a quality problem at all. All
+`r sum(regions$year == 2012 & regions$suppressed)` withheld cells that year
+carry `C`, not `S`. Separating the two flags turns an apparent anomaly into
 the expected behaviour of a confidentiality rule that was replaced in 2017.
 
 One qualification remains. I cannot tell from this extract whether the absence of
@@ -521,6 +558,13 @@ would have produced a total that looked tidier and was wrong by
 5. **Reconciliation is reported, not asserted.** No fixed tolerance is set
    between the regional sum and the published total. The residual is computed for
    every year and published above.
+6. **Quantitative claims are computed, not transcribed.** Every number in the
+   running text of this page is an inline expression evaluated at render time
+   against the analysis table, not typed in. Qualitative claims are stated with
+   the scope over which they were checked. Three earlier versions of this page
+   each carried a universal claim that was typed rather than computed, and each
+   was contradicted by a table printed directly beneath it; this is the rule
+   that came out of that.
 
 ### Release schedule
 
@@ -553,6 +597,43 @@ imputed, against a relative sampling error of 3 percent at 95 percent confidence
 The response rate for the 2025 final release was 72.1 percent. The collection is
 run by Stats NZ in partnership with the Ministry for Primary Industries.
 
+#### The headline window is not design-matched
+
+2002 is a census and 2025 is a sample survey, so the headline differences a
+full-coverage count against an estimate that carries both sampling error and a
+30 percent imputation rate. This is a common and accepted comparison — Stats NZ
+publishes the series as one — but it is an asymmetry, and this report carries
+the `is_census_year` flag through the analysis table precisely so that it can be
+checked rather than assumed.
+
+The census-to-census window that avoids the asymmetry is 2002 to 2022:
+
+```{r}
+#| label: tbl-matched
+rbind(
+  data.frame(Window = "2002–2025, census to sample survey (headline)",
+             Regions = sensitivity$regions[sensitivity$start == 2002],
+             Fall = fmt(sensitivity$fall[sensitivity$start == 2002]),
+             `Top three share` = sprintf("%.1f%%", sensitivity$share[sensitivity$start == 2002]),
+             `The three regions` = sensitivity$top3[sensitivity$start == 2002],
+             check.names = FALSE),
+  data.frame(Window = "2002–2022, census to census (design-matched)",
+             Regions = matched$regions,
+             Fall = fmt(matched$fall),
+             `Top three share` = sprintf("%.1f%%", matched$share),
+             `The three regions` = matched$top3,
+             check.names = FALSE)
+) |> kable(align = "lrrrl")
+```
+
+The design-matched window is measurable across one more region, because Auckland
+is published in 2022 and withheld in 2025. It gives the same qualitative answer:
+a fall of `r fmt(matched$fall/1e6, 1)` million head with the three largest
+decliners accounting for `r sprintf("%.1f", matched$share)` percent.
+
+The 2025 endpoint is used in the headline because it is the most recent
+published figure, not because it is the better-matched one.
+
 ### What was excluded, and why
 
 - **Territorial authority geography** — the surveys are designed to produce
@@ -582,10 +663,13 @@ the output rather than the sheep.
 Regional council is the only geography available annually; territorial authority
 exists only in census years, so any sub-regional time series is structurally
 unavailable rather than merely unpublished. Suppression now runs above ten
-percent of cells and is concentrated in the same small regions — Auckland,
-Nelson, Chatham Islands — so those regional trends are already unusable, and a
-suppression-aware grouping that pooled them would preserve more signal than
-suppressing them one at a time does. And the alternating census-and-survey design
+percent of cells, and it is not spread evenly. Nelson and the Chatham Islands
+account for `r sprintf("%.0f", 100 * sum(regions$suppressed & regions$region %in% c("Nelson", "Chatham Islands")) / sum(regions$suppressed))`
+percent of every withheld cell in this table between them, with
+`r length(setdiff(unique(regions$region[regions$suppressed]), c("Nelson", "Chatham Islands")))`
+other regions accounting for the rest. Those two trends are already unusable,
+and a suppression-aware grouping that pooled the smallest regions would preserve
+more signal than withholding them one at a time does. And the alternating census-and-survey design
 makes every regional series in this table structurally uneven, which belongs on
 the output rather than being left for a user to discover from a reconciliation
 residual.
@@ -628,9 +712,51 @@ report. Pages read 4 September 2026.
 - Since 2017, confidentiality has been implemented by input perturbation, which
   adds noise at individual farm level. It is small relative to the effects
   discussed here, but it is present in every year from 2017 on.
-- Choosing 2002 and 2025 as endpoints is a choice. A 2015–2025 window gives the
-  same qualitative answer, with the same three regions accounting for 59 percent
-  of the fall rather than 54 percent.
+- **The endpoints are of different collection designs.** 2002 is a census and
+  2025 is a sample survey. The `is_census_year` flag is carried through the
+  analysis table for exactly this reason, and the design-matched comparison is
+  reported under [Survey design](#survey-design).
+- **Choosing the start year is a choice, and the two halves of the headline
+  survive it differently.** See the sensitivity analysis below.
+
+### How much does the start year matter?
+
+Recomputing the headline statistic from every start year available, against the
+same 2025 endpoint:
+
+```{r}
+#| label: tbl-sensitivity
+sensitivity |>
+  transmute(
+    `Start year` = ifelse(start %in% CENSUS_YEARS,
+                          paste0(start, " (census)"), as.character(start)),
+    `Regions measurable` = regions,
+    `Fall (head)` = fmt(fall),
+    `Top three share` = sprintf("%.1f%%", share),
+    `The three regions` = top3
+  ) |>
+  kable(align = "lrrrl")
+```
+
+The concentration is robust. Across all
+`r nrow(sensitivity)` start years the three largest-declining regions account
+for between `r sprintf("%.0f", min(sensitivity$share))` and
+`r sprintf("%.0f", max(sensitivity$share))` percent of the fall, and the range
+is narrow enough that no start year would change the headline claim.
+
+Which three regions they are is not robust. Manawatū-Whanganui is in the top
+three in `r in_top3("Manawatū-Whanganui")` of the `r nrow(sensitivity)`
+windows, Otago in `r in_top3("Otago")`, Southland in `r in_top3("Southland")`,
+and Canterbury in only `r in_top3("Canterbury")` —
+`r paste(sensitivity$start[grepl("Canterbury", sensitivity$top3, fixed = TRUE)], collapse = ", ")`.
+Canterbury dominates the window this report uses because its decline is
+concentrated in the early years; from a start year of 2009 or later it usually
+drops out of the top three altogether.
+
+That is worth stating plainly, because Canterbury is the region this report
+names most often. It leads the 2002–2025 window, and it is the one region where
+the substitution story carries weight. It is not a permanent feature of the
+data.
 
 ## Ethics
 

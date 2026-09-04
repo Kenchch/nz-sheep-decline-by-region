@@ -10,7 +10,7 @@ New Zealand's sheep flock fell by 16.32 million head between June 2002 and June 
 
 - Canterbury, Southland and Otago together account for **54 percent** of the fall measured across the 15 regions with both endpoints published. Against the published national fall the same three regions are 53.6 percent; the published fall is 0.77 percent larger than the measurable regional one, because Auckland and Nelson are withheld in 2025.
 - Over the same 23 years the national dairy herd grew by only **588 thousand** cattle against a fall of 16.3 million sheep — two different orders of magnitude, which is the arithmetic the "sheep became dairy" story has to survive.
-- In **7 of the 13** regions where both series are published, dairy cattle fell *alongside* sheep rather than in place of them. Canterbury is the one region where substitution carries real weight, at 22 dairy cattle gained per 100 sheep lost.
+- In **7 of the 13** regions where both series are published, dairy cattle fell *alongside* sheep rather than in place of them. Canterbury has the largest absolute dairy increase by far (795 thousand head, 22 per 100 sheep lost); West Coast has the higher ratio at 39 per 100, but on a base under 40 thousand sheep.
 
 ## Data quality checks
 
@@ -77,7 +77,8 @@ Every methodological statement in the report was read on its source page before 
 - Imputation is large: Stats NZ reports 30 percent of the 2025 total sheep estimate as imputed, against a 3 percent relative sampling error. Every survey-year regional figure carries that.
 - All comparisons are ratios of head counts. They say nothing about stocking rate, feed demand, land use or emissions.
 - The target population is GST-registered agricultural businesses, so coverage of the smallest farms is partial and not quantifiable from published data.
-- The 2002–2025 endpoints are a choice. A 2015–2025 window gives the same qualitative answer, with the same three regions accounting for 59 percent rather than 54 percent.
+- **The two endpoints are different collection designs**: 2002 is a census, 2025 a sample survey, so a full-coverage count is differenced against an estimate carrying sampling error and 30 percent imputation. The design-matched window — 2002 to 2022, census to census — gives a fall of 14.4 million head across 16 measurable regions with the top three at 55.6 percent: the same qualitative answer. The report says why the 2025 endpoint is used anyway.
+- **The start year changes *which* regions lead, not *how concentrated* they are.** Recomputed from all 19 available start years, the three largest decliners always account for 48–59 percent of the fall. Which three they are rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the window this report uses because its decline is concentrated in the early years — it is not a permanent feature of the data.
 - No map is drawn, deliberately: a choropleth encodes land area rather than magnitude, and the three largest contributors are also among the largest regions by area.
 
 ## Reproduce
