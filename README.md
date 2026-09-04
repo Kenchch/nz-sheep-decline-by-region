@@ -19,10 +19,12 @@ Five rules run over the analysis table, and the same five run against a delibera
 | Rule | Fails on real data | Fails on corrupted copy |
 |---|---:|---:|
 | `head_non_negative` | 0 | 1 |
-| `value_iff_suppressed` | 0 | 3 |
+| `value_iff_suppressed` | 0 | 1 |
 | `region_label_present` | 0 | 1 |
 | `no_duplicate_cells` | 0 | 2 |
-| `census_year_reported` | **9** | 9 |
+| `census_year_reported` | **9** | 10 |
+
+Each corruption moves exactly one rule. `no_duplicate_cells` moves by two because a duplicate makes both members of the pair non-unique; `census_year_reported` moves from 9 to 10 because it already fails nine times on the real data.
 
 `census_year_reported` fires 9 times on the real data, and that is a finding rather than a defect: a census is full coverage with no sampling error, yet census-year cells are still withheld, because withholding is about confidentiality and imputation quality rather than coverage. The rule earns its place by being falsified.
 
@@ -34,6 +36,8 @@ The reconciliation separates into three tiers across the 72 class-years:
 | Fully published, off by a few head | 12 | 2 head |
 | Incomplete region row | 50 | 558,310 head |
 
+Completeness is the criterion for these tiers, not the residual: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
+
 In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual is one or two head on bases of 3–40 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
 
 Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
@@ -41,7 +45,7 @@ Those one-head discrepancies are not an artefact of the analysis: adding the two
 Suppression is also not one thing. The `OBS_STATUS` column carries two different flags, and separating them turns an apparent anomaly into confirmation of the published method:
 
 - **`C`, confidentiality.** Among the three livestock classes used here it appears only in 2012; across all 44 livestock codes in the extract it appears in 2012–2016 and **never after 2016**. Stats NZ states that `C` was used prior to 2017 and that confidentiality has since been implemented by input perturbation instead, so cells no longer need replacing with `C`. The file stops using the flag in the same year the method changed.
-- **`S`, quality suppression** — applied where sampling errors or imputation levels are high. Runs from 2014 to 2025 and peaks at 17.6 percent of cells in 2021, with census years sitting below the survey years around them, as a rule keyed to sampling error would predict.
+- **`S`, quality suppression** — applied where sampling errors **or** imputation levels are high. Runs from 2014 to 2025 and peaks at 17.6 percent of cells in 2021. Census years sit below the survey years around them but not at zero: a census removes the sampling-error branch, which is why they are lower, while the imputation branch remains, which is why they are not empty. All five census-year `S` cells are Nelson.
 
 The 2012 spike is therefore not a quality problem at all: all four withheld cells that year are `C`, not `S`. Whether the absence of any flag before 2012 means "nothing withheld" or "flag not carried in this export" cannot be determined from the extract, and the report says so.
 
@@ -77,6 +81,8 @@ Every methodological statement in the report was read on its source page before 
 - No map is drawn, deliberately: a choropleth encodes land area rather than magnitude, and the three largest contributors are also among the largest regions by area.
 
 ## Reproduce
+
+Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales` and `knitr`.
 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git

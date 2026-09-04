@@ -289,8 +289,16 @@ results |>
                                      "Fails on corrupted copy"))
 ```
 
-Each corruption is caught by the rule aimed at it, and by no other. That is what
-makes the left-hand column mean something.
+Each corruption moves exactly one rule. `no_duplicate_cells` moves by two
+because a duplicate makes both members of the pair non-unique, and
+`census_year_reported` moves from `r results$fails[results$rule == "census_year_reported"]`
+to `r results_corrupted$fails[results_corrupted$rule == "census_year_reported"]`
+because it already fails nine times on the real data. The corrupted rows are
+chosen at distinct indices and the function asserts as much, so no single
+corruption can be counted twice.
+
+That is what makes the left-hand column mean something: the zeroes are the
+result of rules that demonstrably fire when there is something to fire at.
 
 The more interesting result is in the reconciliation: the published national
 total against the sum of the regions.
@@ -337,6 +345,11 @@ residual_tiers |>
 In the `r sum(residual_tiers$tier == "Exact")` class-years where all seventeen
 regions are published and nothing is withheld, the regions sum to the published
 national total **exactly, to the head**.
+
+Completeness is the criterion for these tiers, not the residual. That matters
+here: `r sum(residual_tiers$residual == 0)` class-years reconcile to zero, one
+more than the Exact tier contains, because one class-year with an incomplete
+region row happens to reconcile exactly anyway.
 
 In `r sum(residual_tiers$tier == "Fully published, off by a few head")` further
 fully-published class-years the residual is one or two head — never more, on
@@ -438,8 +451,14 @@ The `S` flag is quality suppression, applied where sampling errors or imputation
 levels are high. It runs from `r min(s_years)` to `r max(s_years)`, peaking at
 `r sprintf("%.1f", max(supp$rate))` percent of cells in
 `r supp$year[which.max(supp$rate)]`. The census years 2017 and 2022 sit below the
-survey years around them, which is what a rule keyed to sampling error would
-predict, since a census has no sampling error to exceed a threshold.
+survey years around them — but not at zero, and the difference between those two
+statements is the mechanism.
+
+The published rule withholds data with high sample errors **or** high imputation
+levels. A census removes the first branch, which is why census years sit lower.
+The second branch remains, which is why they are not empty. All
+`r sum(livestock$is_census_year & livestock$suppression_code == "s", na.rm = TRUE)`
+census-year `S` cells in this table are Nelson.
 
 So the 2012 spike is not a quality problem at all. All four withheld cells that
 year carry `C`, not `S`. Separating the two flags turns an apparent anomaly into
@@ -449,11 +468,11 @@ One qualification remains. I cannot tell from this extract whether the absence o
 any flag before 2012 means no cell was withheld, or that the flag was not carried
 in this export. The chart shows what the file contains.
 
-Two of the affected regions are also explained in the published methodology.
-Sampling error could not be calculated for Nelson because only one responding
-unit was observed in each sampled stratum, and at least two are needed to
-estimate a within-stratum variance. Nelson is one of the two regions this
-analysis has to drop.
+One of the two regions this analysis has to drop is explained in the published
+methodology rather than guessed at. Sampling error could not be calculated for
+Nelson because only one responding unit was observed in each sampled stratum,
+and at least two are needed to estimate a within-stratum variance. Auckland, the
+other dropped region, is simply withheld, with no reason published.
 
 ### Independent recomputation
 
