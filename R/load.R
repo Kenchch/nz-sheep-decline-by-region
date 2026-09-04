@@ -28,7 +28,7 @@ check_extract_hash <- function(path = RAW_CSV) {
   invisible(TRUE)
 }
 
-# The extract carries codes, not labels. These four livestock codes were each
+# The extract carries codes, not labels. These three livestock codes were each
 # verified against the published totals for June 2024 before use; the full
 # codelist has 44 entries which nest inside one another (adding all 44 for 2024
 # gives 115.7 million against a published 33.8 million), so only these are ever
@@ -52,7 +52,7 @@ AREA <- c(
   "1"  = "Northland",          "2"  = "Auckland",
   "3"  = "Waikato",            "4"  = "Bay of Plenty",
   "5"  = "Gisborne",           "6"  = "Hawke's Bay",
-  "7"  = "Taranaki",           "8"  = "Manawatū-Whanganui",
+  "7"  = "Taranaki",           "8"  = "Manawat\u016b-Whanganui",
   "9"  = "Wellington",         "10" = "Total North Island",
   "11" = "Tasman",             "12" = "Nelson",
   "13" = "Marlborough",        "14" = "West Coast",
@@ -75,11 +75,33 @@ names(ISLAND_OF) <- names(AREA)
 # designs are not interchangeable, so the flag travels with the data rather
 # than living in a comment.
 CENSUS_YEARS <- c(2002, 2007, 2012, 2017, 2022)
+EXPECTED_YEARS <- 2002:2025
+
+assert_extract_shape <- function(raw) {
+  required <- c("livestock_agr_agr_003", "area_agr_agr_003",
+                "year_agr_agr_003", "obs_value", "obs_status")
+  missing <- setdiff(required, names(raw))
+  if (length(missing)) {
+    stop("Pinned extract is missing required column(s): ",
+         paste(missing, collapse = ", "), call. = FALSE)
+  }
+
+  statuses <- unique(stats::na.omit(raw$obs_status))
+  unexpected <- setdiff(statuses, c("s", "c"))
+  if (length(unexpected)) {
+    stop("Pinned extract contains unknown OBS_STATUS value(s): ",
+         paste(unexpected, collapse = ", "), call. = FALSE)
+  }
+
+  invisible(TRUE)
+}
 
 read_raw <- function(path = RAW_CSV) {
   check_extract_hash(path)
-  read_csv(path, col_types = cols(.default = col_character())) |>
+  raw <- read_csv(path, col_types = cols(.default = col_character())) |>
     clean_names()
+  assert_extract_shape(raw)
+  raw
 }
 
 load_livestock <- function(path = RAW_CSV) {
@@ -115,9 +137,35 @@ load_livestock <- function(path = RAW_CSV) {
     ) |>
     arrange(livestock_class, area_code, year)
 
-  # Any cell without a value must carry a suppression flag, and vice versa.
-  stopifnot(all(is.na(out$head) == out$suppressed))
-  stopifnot(!any(is.na(out$region)))
+  # Fail loudly when the pinned table changes shape. These are prerequisites
+  # for every downstream total, so they belong at the ingestion boundary rather
+  # than only in the descriptive validation table.
+  if (!identical(sort(unique(out$year)), EXPECTED_YEARS)) {
+    stop("Selected series does not contain every year from 2002 to 2025.",
+         call. = FALSE)
+  }
+  if (any(is.na(out$head) != out$suppressed)) {
+    stop("Every missing value must be suppressed, and every suppressed cell must be missing.",
+         call. = FALSE)
+  }
+  if (anyNA(out$region)) {
+    stop("Selected series contains an unmapped AREA code.", call. = FALSE)
+  }
+  keys <- out |> count(year, area_code, livestock_class) |> filter(n != 1)
+  if (nrow(keys)) {
+    stop("Selected series contains duplicate cells.", call. = FALSE)
+  }
+  national_cells <- out |>
+    filter(area_code == "20") |>
+    count(year, livestock_class) |>
+    filter(n != 1)
+  if (nrow(national_cells) ||
+      nrow(out |> filter(area_code == "20", is.na(head))) ||
+      nrow(out |> filter(area_code == "20")) !=
+        length(EXPECTED_YEARS) * length(LIVESTOCK)) {
+    stop("A published national total is required exactly once per class-year.",
+         call. = FALSE)
+  }
 
   out
 }
@@ -141,4 +189,3 @@ regions_only <- function(x) filter(x, !is_aggregate)
 # The national aggregate as published, which is not the same as the sum of the
 # regions whenever any region is suppressed.
 national <- function(x) filter(x, area_code == "20")
-
