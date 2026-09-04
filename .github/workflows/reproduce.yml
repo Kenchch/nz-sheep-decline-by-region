@@ -1,0 +1,58 @@
+name: Reproduce analysis
+
+# Checks the claim the README makes: that a clean checkout running the two
+# documented commands regenerates the committed outputs unchanged.
+#
+# Only the CSVs are compared byte-for-byte. The PNGs are rendered by ggplot2
+# against whatever fonts and graphics devices the runner has, so they are not
+# byte-reproducible across platforms; asserting that they were would produce a
+# permanently red check that says nothing about the analysis. The figures are
+# still rendered, so a break in the plotting code fails the job.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::digest
+            any::dplyr
+            any::ggplot2
+            any::janitor
+            any::knitr
+            any::readr
+            any::rmarkdown
+            any::scales
+            any::tidyr
+            any::validate
+
+      - name: Verify the pinned extract against its recorded hash
+        run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
+
+      - name: Regenerate the validation outputs
+        run: Rscript R/checks.R
+
+      - name: Render the report and the figures
+        run: quarto render
+
+      - name: Committed CSV outputs must match a fresh run
+        run: git diff --exit-code -- 'outputs/*.csv'

@@ -2,7 +2,7 @@
 title: "Where New Zealand's sheep went"
 subtitle: "A regional breakdown of the flock decline, 2002–2025"
 author: "Feng Jiang"
-date: today
+date: 2026-09-04
 ---
 
 ```{r setup}
