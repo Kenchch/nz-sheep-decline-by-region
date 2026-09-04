@@ -31,11 +31,19 @@ jobs:
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
-      # Dependencies are declared once, in DESCRIPTION, so this list cannot
-      # drift away from the one the report and README name.
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rmarkdown
+          packages: |
+            any::digest
+            any::dplyr
+            any::ggplot2
+            any::janitor
+            any::knitr
+            any::readr
+            any::rmarkdown
+            any::scales
+            any::tidyr
+            any::validate
 
       - name: Verify the pinned extract against its recorded hash
         run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
@@ -47,4 +55,4 @@ jobs:
         run: quarto render
 
       - name: Committed CSV outputs must match a fresh run
-        run: git diff --exit-code --stat -- 'outputs/*.csv'
+        run: git diff --exit-code -- 'outputs/*.csv'

@@ -1,6 +1,6 @@
-# Normalise text to LF in the repository so that outputs regenerated on Linux
-# are byte-identical to outputs regenerated on Windows. Without this, the
-# reproducibility check in CI fails on line endings alone.
+# Generated text is normalised to LF so that outputs regenerated on Linux are
+# byte-identical to outputs regenerated on Windows. Without this the
+# reproducibility check would fail on line endings alone.
 *.R        text eol=lf
 *.qmd      text eol=lf
 *.md       text eol=lf
@@ -9,6 +9,18 @@
 .gitignore text eol=lf
 LICENSE    text eol=lf
 
-# Figures are rendered by ggplot2 and are not byte-reproducible across
-# platforms; they are tracked as binary and excluded from the CI diff check.
+# Figures are rendered by ggplot2 against whatever fonts and graphics devices
+# are present, so they are not byte-reproducible across platforms. Tracked as
+# binary and excluded from the CI comparison.
 *.png      binary
+
+# Last rule wins, so this override must stay at the bottom of the file.
+#
+# The pinned extract is content-addressed: R/load.R refuses to read it unless
+# its SHA-256 matches the value recorded in data-raw/SOURCE.md. Git must
+# therefore never rewrite a byte of it. The file arrives from the Stats NZ SDMX
+# endpoint with CRLF line endings and the recorded hash is the hash of those
+# bytes, so normalising them to LF on commit silently invalidates the hash on
+# every platform that does not convert them back on checkout — which is exactly
+# what happened, and what the CI check caught.
+data-raw/** -text

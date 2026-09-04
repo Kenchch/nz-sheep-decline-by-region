@@ -93,13 +93,18 @@ Rscript R/checks.R    # regenerates outputs/*.csv
 quarto render         # regenerates the report and outputs/figures/*.png
 ```
 
-Both sets of outputs are committed, so a clean checkout that runs those two commands finishes with no diff. `R/load.R` verifies the extract against the SHA-256 in `SOURCE.md` before reading it and stops if they disagree.
+Both sets of outputs are committed. A clean checkout that runs those commands
+must reproduce the CSVs exactly; figures are regenerated too, but their binary
+bytes can differ with the platform's fonts and graphics device. `R/load.R`
+verifies the extract against the SHA-256 in `SOURCE.md` before reading it and
+stops if they disagree.
 
 GitHub Actions runs the same regeneration on every push and pull request, then
-fails if any committed output differs. Ingestion also stops on schema changes,
-unknown suppression flags, duplicate cells, missing years, or missing national
-totals, so a changed source shape cannot silently produce plausible-looking
-results.
+fails if any committed CSV differs. It also renders the full report, while PNGs
+are not compared byte-for-byte because graphics can differ across platforms.
+Ingestion stops on schema changes, unknown suppression flags, duplicate cells,
+missing years, or missing national totals, so a changed source shape cannot
+silently produce plausible-looking results.
 
 ```
 index.qmd                 the published report
