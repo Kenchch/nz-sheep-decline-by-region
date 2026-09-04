@@ -1,0 +1,1398 @@
+year,area_code,region,island,is_aggregate,livestock_class,head,suppressed,suppression_code,is_census_year
+2002,1,Northland,North Island,FALSE,Beef cattle,468432,FALSE,NA,TRUE
+2003,1,Northland,North Island,FALSE,Beef cattle,478201,FALSE,NA,FALSE
+2004,1,Northland,North Island,FALSE,Beef cattle,451849,FALSE,NA,FALSE
+2005,1,Northland,North Island,FALSE,Beef cattle,469262,FALSE,NA,FALSE
+2006,1,Northland,North Island,FALSE,Beef cattle,490788,FALSE,NA,FALSE
+2007,1,Northland,North Island,FALSE,Beef cattle,495833,FALSE,NA,TRUE
+2008,1,Northland,North Island,FALSE,Beef cattle,507540,FALSE,NA,FALSE
+2009,1,Northland,North Island,FALSE,Beef cattle,485231,FALSE,NA,FALSE
+2010,1,Northland,North Island,FALSE,Beef cattle,465169,FALSE,NA,FALSE
+2011,1,Northland,North Island,FALSE,Beef cattle,402434,FALSE,NA,FALSE
+2012,1,Northland,North Island,FALSE,Beef cattle,380719,FALSE,NA,TRUE
+2013,1,Northland,North Island,FALSE,Beef cattle,396376,FALSE,NA,FALSE
+2014,1,Northland,North Island,FALSE,Beef cattle,349850,FALSE,NA,FALSE
+2015,1,Northland,North Island,FALSE,Beef cattle,354569,FALSE,NA,FALSE
+2016,1,Northland,North Island,FALSE,Beef cattle,356823,FALSE,NA,FALSE
+2017,1,Northland,North Island,FALSE,Beef cattle,382957,FALSE,NA,TRUE
+2018,1,Northland,North Island,FALSE,Beef cattle,400489,FALSE,NA,FALSE
+2019,1,Northland,North Island,FALSE,Beef cattle,382124,FALSE,NA,FALSE
+2020,1,Northland,North Island,FALSE,Beef cattle,377720,FALSE,NA,FALSE
+2021,1,Northland,North Island,FALSE,Beef cattle,360991,FALSE,NA,FALSE
+2022,1,Northland,North Island,FALSE,Beef cattle,370725,FALSE,NA,TRUE
+2023,1,Northland,North Island,FALSE,Beef cattle,353872,FALSE,NA,FALSE
+2024,1,Northland,North Island,FALSE,Beef cattle,321859,FALSE,NA,FALSE
+2025,1,Northland,North Island,FALSE,Beef cattle,319563,FALSE,NA,FALSE
+2002,10,Total North Island,NA,TRUE,Beef cattle,3343135,FALSE,NA,TRUE
+2003,10,Total North Island,NA,TRUE,Beef cattle,3400859,FALSE,NA,FALSE
+2004,10,Total North Island,NA,TRUE,Beef cattle,3281041,FALSE,NA,FALSE
+2005,10,Total North Island,NA,TRUE,Beef cattle,3249727,FALSE,NA,FALSE
+2006,10,Total North Island,NA,TRUE,Beef cattle,3258533,FALSE,NA,FALSE
+2007,10,Total North Island,NA,TRUE,Beef cattle,3148194,FALSE,NA,TRUE
+2008,10,Total North Island,NA,TRUE,Beef cattle,2966122,FALSE,NA,FALSE
+2009,10,Total North Island,NA,TRUE,Beef cattle,2896476,FALSE,NA,FALSE
+2010,10,Total North Island,NA,TRUE,Beef cattle,2837251,FALSE,NA,FALSE
+2011,10,Total North Island,NA,TRUE,Beef cattle,2744850,FALSE,NA,FALSE
+2012,10,Total North Island,NA,TRUE,Beef cattle,2659543,FALSE,NA,TRUE
+2013,10,Total North Island,NA,TRUE,Beef cattle,2621164,FALSE,NA,FALSE
+2014,10,Total North Island,NA,TRUE,Beef cattle,2604422,FALSE,NA,FALSE
+2015,10,Total North Island,NA,TRUE,Beef cattle,2523931,FALSE,NA,FALSE
+2016,10,Total North Island,NA,TRUE,Beef cattle,2508814,FALSE,NA,FALSE
+2017,10,Total North Island,NA,TRUE,Beef cattle,2576824,FALSE,NA,TRUE
+2018,10,Total North Island,NA,TRUE,Beef cattle,2620089,FALSE,NA,FALSE
+2019,10,Total North Island,NA,TRUE,Beef cattle,2707287,FALSE,NA,FALSE
+2020,10,Total North Island,NA,TRUE,Beef cattle,2636865,FALSE,NA,FALSE
+2021,10,Total North Island,NA,TRUE,Beef cattle,2779223,FALSE,NA,FALSE
+2022,10,Total North Island,NA,TRUE,Beef cattle,2666541,FALSE,NA,TRUE
+2023,10,Total North Island,NA,TRUE,Beef cattle,2501041,FALSE,NA,FALSE
+2024,10,Total North Island,NA,TRUE,Beef cattle,2475309,FALSE,NA,FALSE
+2025,10,Total North Island,NA,TRUE,Beef cattle,2623043,FALSE,NA,FALSE
+2002,11,Tasman,South Island,FALSE,Beef cattle,49032,FALSE,NA,TRUE
+2003,11,Tasman,South Island,FALSE,Beef cattle,56155,FALSE,NA,FALSE
+2004,11,Tasman,South Island,FALSE,Beef cattle,46223,FALSE,NA,FALSE
+2005,11,Tasman,South Island,FALSE,Beef cattle,45222,FALSE,NA,FALSE
+2006,11,Tasman,South Island,FALSE,Beef cattle,45759,FALSE,NA,FALSE
+2007,11,Tasman,South Island,FALSE,Beef cattle,51428,FALSE,NA,TRUE
+2008,11,Tasman,South Island,FALSE,Beef cattle,49869,FALSE,NA,FALSE
+2009,11,Tasman,South Island,FALSE,Beef cattle,59543,FALSE,NA,FALSE
+2010,11,Tasman,South Island,FALSE,Beef cattle,49783,FALSE,NA,FALSE
+2011,11,Tasman,South Island,FALSE,Beef cattle,46355,FALSE,NA,FALSE
+2012,11,Tasman,South Island,FALSE,Beef cattle,40149,FALSE,NA,TRUE
+2013,11,Tasman,South Island,FALSE,Beef cattle,42268,FALSE,NA,FALSE
+2014,11,Tasman,South Island,FALSE,Beef cattle,38788,FALSE,NA,FALSE
+2015,11,Tasman,South Island,FALSE,Beef cattle,41531,FALSE,NA,FALSE
+2016,11,Tasman,South Island,FALSE,Beef cattle,36642,FALSE,NA,FALSE
+2017,11,Tasman,South Island,FALSE,Beef cattle,39805,FALSE,NA,TRUE
+2018,11,Tasman,South Island,FALSE,Beef cattle,31913,FALSE,NA,FALSE
+2019,11,Tasman,South Island,FALSE,Beef cattle,36912,FALSE,NA,FALSE
+2020,11,Tasman,South Island,FALSE,Beef cattle,34959,FALSE,NA,FALSE
+2021,11,Tasman,South Island,FALSE,Beef cattle,44265,FALSE,NA,FALSE
+2022,11,Tasman,South Island,FALSE,Beef cattle,39234,FALSE,NA,TRUE
+2023,11,Tasman,South Island,FALSE,Beef cattle,32564,FALSE,NA,FALSE
+2024,11,Tasman,South Island,FALSE,Beef cattle,32076,FALSE,NA,FALSE
+2025,11,Tasman,South Island,FALSE,Beef cattle,36872,FALSE,NA,FALSE
+2002,12,Nelson,South Island,FALSE,Beef cattle,2642,FALSE,NA,TRUE
+2004,12,Nelson,South Island,FALSE,Beef cattle,3605,FALSE,NA,FALSE
+2005,12,Nelson,South Island,FALSE,Beef cattle,3665,FALSE,NA,FALSE
+2007,12,Nelson,South Island,FALSE,Beef cattle,1298,FALSE,NA,TRUE
+2008,12,Nelson,South Island,FALSE,Beef cattle,1522,FALSE,NA,FALSE
+2010,12,Nelson,South Island,FALSE,Beef cattle,1471,FALSE,NA,FALSE
+2012,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,c,TRUE
+2013,12,Nelson,South Island,FALSE,Beef cattle,1206,FALSE,NA,FALSE
+2014,12,Nelson,South Island,FALSE,Beef cattle,1529,FALSE,NA,FALSE
+2015,12,Nelson,South Island,FALSE,Beef cattle,2490,FALSE,NA,FALSE
+2016,12,Nelson,South Island,FALSE,Beef cattle,1692,FALSE,NA,FALSE
+2017,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,TRUE
+2018,12,Nelson,South Island,FALSE,Beef cattle,1107,FALSE,NA,FALSE
+2019,12,Nelson,South Island,FALSE,Beef cattle,1566,FALSE,NA,FALSE
+2020,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2021,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2022,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,TRUE
+2023,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2024,12,Nelson,South Island,FALSE,Beef cattle,937,FALSE,NA,FALSE
+2025,12,Nelson,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2002,13,Marlborough,South Island,FALSE,Beef cattle,72479,FALSE,NA,TRUE
+2003,13,Marlborough,South Island,FALSE,Beef cattle,69955,FALSE,NA,FALSE
+2004,13,Marlborough,South Island,FALSE,Beef cattle,67063,FALSE,NA,FALSE
+2005,13,Marlborough,South Island,FALSE,Beef cattle,63620,FALSE,NA,FALSE
+2006,13,Marlborough,South Island,FALSE,Beef cattle,67830,FALSE,NA,FALSE
+2007,13,Marlborough,South Island,FALSE,Beef cattle,65768,FALSE,NA,TRUE
+2008,13,Marlborough,South Island,FALSE,Beef cattle,56859,FALSE,NA,FALSE
+2010,13,Marlborough,South Island,FALSE,Beef cattle,60852,FALSE,NA,FALSE
+2011,13,Marlborough,South Island,FALSE,Beef cattle,51103,FALSE,NA,FALSE
+2012,13,Marlborough,South Island,FALSE,Beef cattle,60127,FALSE,NA,TRUE
+2013,13,Marlborough,South Island,FALSE,Beef cattle,60172,FALSE,NA,FALSE
+2014,13,Marlborough,South Island,FALSE,Beef cattle,59967,FALSE,NA,FALSE
+2015,13,Marlborough,South Island,FALSE,Beef cattle,54266,FALSE,NA,FALSE
+2016,13,Marlborough,South Island,FALSE,Beef cattle,54063,FALSE,NA,FALSE
+2017,13,Marlborough,South Island,FALSE,Beef cattle,52448,FALSE,NA,TRUE
+2018,13,Marlborough,South Island,FALSE,Beef cattle,57389,FALSE,NA,FALSE
+2019,13,Marlborough,South Island,FALSE,Beef cattle,64217,FALSE,NA,FALSE
+2020,13,Marlborough,South Island,FALSE,Beef cattle,71030,FALSE,NA,FALSE
+2021,13,Marlborough,South Island,FALSE,Beef cattle,62509,FALSE,NA,FALSE
+2022,13,Marlborough,South Island,FALSE,Beef cattle,54881,FALSE,NA,TRUE
+2023,13,Marlborough,South Island,FALSE,Beef cattle,54467,FALSE,NA,FALSE
+2024,13,Marlborough,South Island,FALSE,Beef cattle,44979,FALSE,NA,FALSE
+2025,13,Marlborough,South Island,FALSE,Beef cattle,47081,FALSE,NA,FALSE
+2002,14,West Coast,South Island,FALSE,Beef cattle,38908,FALSE,NA,TRUE
+2003,14,West Coast,South Island,FALSE,Beef cattle,36968,FALSE,NA,FALSE
+2004,14,West Coast,South Island,FALSE,Beef cattle,31274,FALSE,NA,FALSE
+2005,14,West Coast,South Island,FALSE,Beef cattle,32275,FALSE,NA,FALSE
+2006,14,West Coast,South Island,FALSE,Beef cattle,37097,FALSE,NA,FALSE
+2007,14,West Coast,South Island,FALSE,Beef cattle,30275,FALSE,NA,TRUE
+2008,14,West Coast,South Island,FALSE,Beef cattle,34713,FALSE,NA,FALSE
+2009,14,West Coast,South Island,FALSE,Beef cattle,35892,FALSE,NA,FALSE
+2010,14,West Coast,South Island,FALSE,Beef cattle,31816,FALSE,NA,FALSE
+2011,14,West Coast,South Island,FALSE,Beef cattle,29531,FALSE,NA,FALSE
+2012,14,West Coast,South Island,FALSE,Beef cattle,29002,FALSE,NA,TRUE
+2013,14,West Coast,South Island,FALSE,Beef cattle,26242,FALSE,NA,FALSE
+2014,14,West Coast,South Island,FALSE,Beef cattle,40777,FALSE,NA,FALSE
+2015,14,West Coast,South Island,FALSE,Beef cattle,36547,FALSE,NA,FALSE
+2016,14,West Coast,South Island,FALSE,Beef cattle,31902,FALSE,NA,FALSE
+2017,14,West Coast,South Island,FALSE,Beef cattle,27422,FALSE,NA,TRUE
+2018,14,West Coast,South Island,FALSE,Beef cattle,25376,FALSE,NA,FALSE
+2019,14,West Coast,South Island,FALSE,Beef cattle,31361,FALSE,NA,FALSE
+2020,14,West Coast,South Island,FALSE,Beef cattle,30426,FALSE,NA,FALSE
+2021,14,West Coast,South Island,FALSE,Beef cattle,26459,FALSE,NA,FALSE
+2022,14,West Coast,South Island,FALSE,Beef cattle,26388,FALSE,NA,TRUE
+2023,14,West Coast,South Island,FALSE,Beef cattle,20487,FALSE,NA,FALSE
+2024,14,West Coast,South Island,FALSE,Beef cattle,27802,FALSE,NA,FALSE
+2025,14,West Coast,South Island,FALSE,Beef cattle,29261,FALSE,NA,FALSE
+2002,15,Canterbury,South Island,FALSE,Beef cattle,505461,FALSE,NA,TRUE
+2003,15,Canterbury,South Island,FALSE,Beef cattle,553846,FALSE,NA,FALSE
+2004,15,Canterbury,South Island,FALSE,Beef cattle,532238,FALSE,NA,FALSE
+2005,15,Canterbury,South Island,FALSE,Beef cattle,534176,FALSE,NA,FALSE
+2006,15,Canterbury,South Island,FALSE,Beef cattle,529952,FALSE,NA,FALSE
+2007,15,Canterbury,South Island,FALSE,Beef cattle,584806,FALSE,NA,TRUE
+2008,15,Canterbury,South Island,FALSE,Beef cattle,533665,FALSE,NA,FALSE
+2009,15,Canterbury,South Island,FALSE,Beef cattle,529467,FALSE,NA,FALSE
+2010,15,Canterbury,South Island,FALSE,Beef cattle,486385,FALSE,NA,FALSE
+2011,15,Canterbury,South Island,FALSE,Beef cattle,517760,FALSE,NA,FALSE
+2012,15,Canterbury,South Island,FALSE,Beef cattle,470746,FALSE,NA,TRUE
+2013,15,Canterbury,South Island,FALSE,Beef cattle,492844,FALSE,NA,FALSE
+2014,15,Canterbury,South Island,FALSE,Beef cattle,447244,FALSE,NA,FALSE
+2015,15,Canterbury,South Island,FALSE,Beef cattle,440598,FALSE,NA,FALSE
+2016,15,Canterbury,South Island,FALSE,Beef cattle,465462,FALSE,NA,FALSE
+2017,15,Canterbury,South Island,FALSE,Beef cattle,467550,FALSE,NA,TRUE
+2018,15,Canterbury,South Island,FALSE,Beef cattle,512260,FALSE,NA,FALSE
+2019,15,Canterbury,South Island,FALSE,Beef cattle,524587,FALSE,NA,FALSE
+2020,15,Canterbury,South Island,FALSE,Beef cattle,559234,FALSE,NA,FALSE
+2021,15,Canterbury,South Island,FALSE,Beef cattle,516312,FALSE,NA,FALSE
+2022,15,Canterbury,South Island,FALSE,Beef cattle,536071,FALSE,NA,TRUE
+2023,15,Canterbury,South Island,FALSE,Beef cattle,542145,FALSE,NA,FALSE
+2024,15,Canterbury,South Island,FALSE,Beef cattle,569260,FALSE,NA,FALSE
+2025,15,Canterbury,South Island,FALSE,Beef cattle,565908,FALSE,NA,FALSE
+2002,16,Otago,South Island,FALSE,Beef cattle,267091,FALSE,NA,TRUE
+2003,16,Otago,South Island,FALSE,Beef cattle,272551,FALSE,NA,FALSE
+2004,16,Otago,South Island,FALSE,Beef cattle,259911,FALSE,NA,FALSE
+2005,16,Otago,South Island,FALSE,Beef cattle,281842,FALSE,NA,FALSE
+2006,16,Otago,South Island,FALSE,Beef cattle,278269,FALSE,NA,FALSE
+2007,16,Otago,South Island,FALSE,Beef cattle,292355,FALSE,NA,TRUE
+2008,16,Otago,South Island,FALSE,Beef cattle,291234,FALSE,NA,FALSE
+2009,16,Otago,South Island,FALSE,Beef cattle,291585,FALSE,NA,FALSE
+2010,16,Otago,South Island,FALSE,Beef cattle,280997,FALSE,NA,FALSE
+2011,16,Otago,South Island,FALSE,Beef cattle,268322,FALSE,NA,FALSE
+2012,16,Otago,South Island,FALSE,Beef cattle,290398,FALSE,NA,TRUE
+2013,16,Otago,South Island,FALSE,Beef cattle,276545,FALSE,NA,FALSE
+2014,16,Otago,South Island,FALSE,Beef cattle,293251,FALSE,NA,FALSE
+2015,16,Otago,South Island,FALSE,Beef cattle,272686,FALSE,NA,FALSE
+2016,16,Otago,South Island,FALSE,Beef cattle,256178,FALSE,NA,FALSE
+2017,16,Otago,South Island,FALSE,Beef cattle,262823,FALSE,NA,TRUE
+2018,16,Otago,South Island,FALSE,Beef cattle,296414,FALSE,NA,FALSE
+2019,16,Otago,South Island,FALSE,Beef cattle,325432,FALSE,NA,FALSE
+2020,16,Otago,South Island,FALSE,Beef cattle,332610,FALSE,NA,FALSE
+2021,16,Otago,South Island,FALSE,Beef cattle,328632,FALSE,NA,FALSE
+2022,16,Otago,South Island,FALSE,Beef cattle,311010,FALSE,NA,TRUE
+2023,16,Otago,South Island,FALSE,Beef cattle,299489,FALSE,NA,FALSE
+2024,16,Otago,South Island,FALSE,Beef cattle,333442,FALSE,NA,FALSE
+2025,16,Otago,South Island,FALSE,Beef cattle,315933,FALSE,NA,FALSE
+2002,17,Southland,South Island,FALSE,Beef cattle,203670,FALSE,NA,TRUE
+2003,17,Southland,South Island,FALSE,Beef cattle,220042,FALSE,NA,FALSE
+2004,17,Southland,South Island,FALSE,Beef cattle,216523,FALSE,NA,FALSE
+2005,17,Southland,South Island,FALSE,Beef cattle,202326,FALSE,NA,FALSE
+2006,17,Southland,South Island,FALSE,Beef cattle,204632,FALSE,NA,FALSE
+2007,17,Southland,South Island,FALSE,Beef cattle,207588,FALSE,NA,TRUE
+2008,17,Southland,South Island,FALSE,Beef cattle,190562,FALSE,NA,FALSE
+2009,17,Southland,South Island,FALSE,Beef cattle,214927,FALSE,NA,FALSE
+2010,17,Southland,South Island,FALSE,Beef cattle,186157,FALSE,NA,FALSE
+2011,17,Southland,South Island,FALSE,Beef cattle,173798,FALSE,NA,FALSE
+2012,17,Southland,South Island,FALSE,Beef cattle,172150,FALSE,NA,TRUE
+2013,17,Southland,South Island,FALSE,Beef cattle,168031,FALSE,NA,FALSE
+2014,17,Southland,South Island,FALSE,Beef cattle,173957,FALSE,NA,FALSE
+2015,17,Southland,South Island,FALSE,Beef cattle,164718,FALSE,NA,FALSE
+2016,17,Southland,South Island,FALSE,Beef cattle,169251,FALSE,NA,FALSE
+2017,17,Southland,South Island,FALSE,Beef cattle,175201,FALSE,NA,TRUE
+2018,17,Southland,South Island,FALSE,Beef cattle,172338,FALSE,NA,FALSE
+2019,17,Southland,South Island,FALSE,Beef cattle,191503,FALSE,NA,FALSE
+2020,17,Southland,South Island,FALSE,Beef cattle,209611,FALSE,NA,FALSE
+2021,17,Southland,South Island,FALSE,Beef cattle,198244,FALSE,NA,FALSE
+2022,17,Southland,South Island,FALSE,Beef cattle,170122,FALSE,NA,TRUE
+2023,17,Southland,South Island,FALSE,Beef cattle,199281,FALSE,NA,FALSE
+2024,17,Southland,South Island,FALSE,Beef cattle,186884,FALSE,NA,FALSE
+2025,17,Southland,South Island,FALSE,Beef cattle,206638,FALSE,NA,FALSE
+2002,18,Chatham Islands,South Island,FALSE,Beef cattle,8863,FALSE,NA,TRUE
+2007,18,Chatham Islands,South Island,FALSE,Beef cattle,11905,FALSE,NA,TRUE
+2008,18,Chatham Islands,South Island,FALSE,Beef cattle,12327,FALSE,NA,FALSE
+2009,18,Chatham Islands,South Island,FALSE,Beef cattle,13374,FALSE,NA,FALSE
+2010,18,Chatham Islands,South Island,FALSE,Beef cattle,13809,FALSE,NA,FALSE
+2012,18,Chatham Islands,South Island,FALSE,Beef cattle,NA,TRUE,c,TRUE
+2013,18,Chatham Islands,South Island,FALSE,Beef cattle,10050,FALSE,NA,FALSE
+2014,18,Chatham Islands,South Island,FALSE,Beef cattle,9926,FALSE,NA,FALSE
+2015,18,Chatham Islands,South Island,FALSE,Beef cattle,10462,FALSE,NA,FALSE
+2016,18,Chatham Islands,South Island,FALSE,Beef cattle,9051,FALSE,NA,FALSE
+2017,18,Chatham Islands,South Island,FALSE,Beef cattle,11299,FALSE,NA,TRUE
+2018,18,Chatham Islands,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2019,18,Chatham Islands,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2020,18,Chatham Islands,South Island,FALSE,Beef cattle,5040,FALSE,NA,FALSE
+2021,18,Chatham Islands,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2022,18,Chatham Islands,South Island,FALSE,Beef cattle,11140,FALSE,NA,TRUE
+2023,18,Chatham Islands,South Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2024,18,Chatham Islands,South Island,FALSE,Beef cattle,8754,FALSE,NA,FALSE
+2025,18,Chatham Islands,South Island,FALSE,Beef cattle,6650,FALSE,NA,FALSE
+2002,19,Total South Island,NA,TRUE,Beef cattle,1148146,FALSE,NA,TRUE
+2003,19,Total South Island,NA,TRUE,Beef cattle,1225759,FALSE,NA,FALSE
+2004,19,Total South Island,NA,TRUE,Beef cattle,1166359,FALSE,NA,FALSE
+2005,19,Total South Island,NA,TRUE,Beef cattle,1173898,FALSE,NA,FALSE
+2006,19,Total South Island,NA,TRUE,Beef cattle,1180602,FALSE,NA,FALSE
+2007,19,Total South Island,NA,TRUE,Beef cattle,1245423,FALSE,NA,TRUE
+2008,19,Total South Island,NA,TRUE,Beef cattle,1170750,FALSE,NA,FALSE
+2009,19,Total South Island,NA,TRUE,Beef cattle,1204242,FALSE,NA,FALSE
+2010,19,Total South Island,NA,TRUE,Beef cattle,1111269,FALSE,NA,FALSE
+2011,19,Total South Island,NA,TRUE,Beef cattle,1101564,FALSE,NA,FALSE
+2012,19,Total South Island,NA,TRUE,Beef cattle,1074869,FALSE,NA,TRUE
+2013,19,Total South Island,NA,TRUE,Beef cattle,1077358,FALSE,NA,FALSE
+2014,19,Total South Island,NA,TRUE,Beef cattle,1065439,FALSE,NA,FALSE
+2015,19,Total South Island,NA,TRUE,Beef cattle,1023297,FALSE,NA,FALSE
+2016,19,Total South Island,NA,TRUE,Beef cattle,1024240,FALSE,NA,FALSE
+2017,19,Total South Island,NA,TRUE,Beef cattle,1039267,FALSE,NA,TRUE
+2018,19,Total South Island,NA,TRUE,Beef cattle,1101174,FALSE,NA,FALSE
+2019,19,Total South Island,NA,TRUE,Beef cattle,1182710,FALSE,NA,FALSE
+2020,19,Total South Island,NA,TRUE,Beef cattle,1245702,FALSE,NA,FALSE
+2021,19,Total South Island,NA,TRUE,Beef cattle,1185588,FALSE,NA,FALSE
+2022,19,Total South Island,NA,TRUE,Beef cattle,1154615,FALSE,NA,TRUE
+2023,19,Total South Island,NA,TRUE,Beef cattle,1152992,FALSE,NA,FALSE
+2024,19,Total South Island,NA,TRUE,Beef cattle,1204134,FALSE,NA,FALSE
+2025,19,Total South Island,NA,TRUE,Beef cattle,1209625,FALSE,NA,FALSE
+2002,2,Auckland,North Island,FALSE,Beef cattle,172348,FALSE,NA,TRUE
+2003,2,Auckland,North Island,FALSE,Beef cattle,180066,FALSE,NA,FALSE
+2004,2,Auckland,North Island,FALSE,Beef cattle,166039,FALSE,NA,FALSE
+2005,2,Auckland,North Island,FALSE,Beef cattle,167868,FALSE,NA,FALSE
+2006,2,Auckland,North Island,FALSE,Beef cattle,147748,FALSE,NA,FALSE
+2007,2,Auckland,North Island,FALSE,Beef cattle,156787,FALSE,NA,TRUE
+2008,2,Auckland,North Island,FALSE,Beef cattle,143366,FALSE,NA,FALSE
+2009,2,Auckland,North Island,FALSE,Beef cattle,135008,FALSE,NA,FALSE
+2010,2,Auckland,North Island,FALSE,Beef cattle,133998,FALSE,NA,FALSE
+2011,2,Auckland,North Island,FALSE,Beef cattle,120337,FALSE,NA,FALSE
+2012,2,Auckland,North Island,FALSE,Beef cattle,117458,FALSE,NA,TRUE
+2013,2,Auckland,North Island,FALSE,Beef cattle,115826,FALSE,NA,FALSE
+2014,2,Auckland,North Island,FALSE,Beef cattle,119267,FALSE,NA,FALSE
+2015,2,Auckland,North Island,FALSE,Beef cattle,111292,FALSE,NA,FALSE
+2016,2,Auckland,North Island,FALSE,Beef cattle,121690,FALSE,NA,FALSE
+2017,2,Auckland,North Island,FALSE,Beef cattle,111948,FALSE,NA,TRUE
+2018,2,Auckland,North Island,FALSE,Beef cattle,113927,FALSE,NA,FALSE
+2019,2,Auckland,North Island,FALSE,Beef cattle,118180,FALSE,NA,FALSE
+2020,2,Auckland,North Island,FALSE,Beef cattle,113340,FALSE,NA,FALSE
+2021,2,Auckland,North Island,FALSE,Beef cattle,124698,FALSE,NA,FALSE
+2022,2,Auckland,North Island,FALSE,Beef cattle,114532,FALSE,NA,TRUE
+2023,2,Auckland,North Island,FALSE,Beef cattle,109950,FALSE,NA,FALSE
+2024,2,Auckland,North Island,FALSE,Beef cattle,101930,FALSE,NA,FALSE
+2025,2,Auckland,North Island,FALSE,Beef cattle,118281,FALSE,NA,FALSE
+2002,20,Total New Zealand,NA,TRUE,Beef cattle,4491281,FALSE,NA,TRUE
+2003,20,Total New Zealand,NA,TRUE,Beef cattle,4626617,FALSE,NA,FALSE
+2004,20,Total New Zealand,NA,TRUE,Beef cattle,4447400,FALSE,NA,FALSE
+2005,20,Total New Zealand,NA,TRUE,Beef cattle,4423626,FALSE,NA,FALSE
+2006,20,Total New Zealand,NA,TRUE,Beef cattle,4439136,FALSE,NA,FALSE
+2007,20,Total New Zealand,NA,TRUE,Beef cattle,4393617,FALSE,NA,TRUE
+2008,20,Total New Zealand,NA,TRUE,Beef cattle,4136872,FALSE,NA,FALSE
+2009,20,Total New Zealand,NA,TRUE,Beef cattle,4100718,FALSE,NA,FALSE
+2010,20,Total New Zealand,NA,TRUE,Beef cattle,3948520,FALSE,NA,FALSE
+2011,20,Total New Zealand,NA,TRUE,Beef cattle,3846414,FALSE,NA,FALSE
+2012,20,Total New Zealand,NA,TRUE,Beef cattle,3734412,FALSE,NA,TRUE
+2013,20,Total New Zealand,NA,TRUE,Beef cattle,3698522,FALSE,NA,FALSE
+2014,20,Total New Zealand,NA,TRUE,Beef cattle,3669862,FALSE,NA,FALSE
+2015,20,Total New Zealand,NA,TRUE,Beef cattle,3547228,FALSE,NA,FALSE
+2016,20,Total New Zealand,NA,TRUE,Beef cattle,3533054,FALSE,NA,FALSE
+2017,20,Total New Zealand,NA,TRUE,Beef cattle,3616091,FALSE,NA,TRUE
+2018,20,Total New Zealand,NA,TRUE,Beef cattle,3721262,FALSE,NA,FALSE
+2019,20,Total New Zealand,NA,TRUE,Beef cattle,3889996,FALSE,NA,FALSE
+2020,20,Total New Zealand,NA,TRUE,Beef cattle,3882566,FALSE,NA,FALSE
+2021,20,Total New Zealand,NA,TRUE,Beef cattle,3964811,FALSE,NA,FALSE
+2022,20,Total New Zealand,NA,TRUE,Beef cattle,3821156,FALSE,NA,TRUE
+2023,20,Total New Zealand,NA,TRUE,Beef cattle,3654034,FALSE,NA,FALSE
+2024,20,Total New Zealand,NA,TRUE,Beef cattle,3679443,FALSE,NA,FALSE
+2025,20,Total New Zealand,NA,TRUE,Beef cattle,3832668,FALSE,NA,FALSE
+2002,3,Waikato,North Island,FALSE,Beef cattle,666884,FALSE,NA,TRUE
+2003,3,Waikato,North Island,FALSE,Beef cattle,696233,FALSE,NA,FALSE
+2004,3,Waikato,North Island,FALSE,Beef cattle,653108,FALSE,NA,FALSE
+2005,3,Waikato,North Island,FALSE,Beef cattle,676599,FALSE,NA,FALSE
+2006,3,Waikato,North Island,FALSE,Beef cattle,661261,FALSE,NA,FALSE
+2007,3,Waikato,North Island,FALSE,Beef cattle,676584,FALSE,NA,TRUE
+2008,3,Waikato,North Island,FALSE,Beef cattle,576461,FALSE,NA,FALSE
+2009,3,Waikato,North Island,FALSE,Beef cattle,598002,FALSE,NA,FALSE
+2010,3,Waikato,North Island,FALSE,Beef cattle,535350,FALSE,NA,FALSE
+2011,3,Waikato,North Island,FALSE,Beef cattle,515358,FALSE,NA,FALSE
+2012,3,Waikato,North Island,FALSE,Beef cattle,505869,FALSE,NA,TRUE
+2013,3,Waikato,North Island,FALSE,Beef cattle,501614,FALSE,NA,FALSE
+2014,3,Waikato,North Island,FALSE,Beef cattle,469331,FALSE,NA,FALSE
+2015,3,Waikato,North Island,FALSE,Beef cattle,463518,FALSE,NA,FALSE
+2016,3,Waikato,North Island,FALSE,Beef cattle,498662,FALSE,NA,FALSE
+2017,3,Waikato,North Island,FALSE,Beef cattle,488033,FALSE,NA,TRUE
+2018,3,Waikato,North Island,FALSE,Beef cattle,517191,FALSE,NA,FALSE
+2019,3,Waikato,North Island,FALSE,Beef cattle,546980,FALSE,NA,FALSE
+2020,3,Waikato,North Island,FALSE,Beef cattle,539643,FALSE,NA,FALSE
+2021,3,Waikato,North Island,FALSE,Beef cattle,621833,FALSE,NA,FALSE
+2022,3,Waikato,North Island,FALSE,Beef cattle,517314,FALSE,NA,TRUE
+2023,3,Waikato,North Island,FALSE,Beef cattle,513735,FALSE,NA,FALSE
+2024,3,Waikato,North Island,FALSE,Beef cattle,516890,FALSE,NA,FALSE
+2025,3,Waikato,North Island,FALSE,Beef cattle,558418,FALSE,NA,FALSE
+2002,4,Bay of Plenty,North Island,FALSE,Beef cattle,134815,FALSE,NA,TRUE
+2003,4,Bay of Plenty,North Island,FALSE,Beef cattle,125306,FALSE,NA,FALSE
+2004,4,Bay of Plenty,North Island,FALSE,Beef cattle,116729,FALSE,NA,FALSE
+2005,4,Bay of Plenty,North Island,FALSE,Beef cattle,108344,FALSE,NA,FALSE
+2006,4,Bay of Plenty,North Island,FALSE,Beef cattle,117435,FALSE,NA,FALSE
+2007,4,Bay of Plenty,North Island,FALSE,Beef cattle,119743,FALSE,NA,TRUE
+2008,4,Bay of Plenty,North Island,FALSE,Beef cattle,102682,FALSE,NA,FALSE
+2009,4,Bay of Plenty,North Island,FALSE,Beef cattle,109541,FALSE,NA,FALSE
+2010,4,Bay of Plenty,North Island,FALSE,Beef cattle,82840,FALSE,NA,FALSE
+2011,4,Bay of Plenty,North Island,FALSE,Beef cattle,83793,FALSE,NA,FALSE
+2012,4,Bay of Plenty,North Island,FALSE,Beef cattle,93357,FALSE,NA,TRUE
+2013,4,Bay of Plenty,North Island,FALSE,Beef cattle,92984,FALSE,NA,FALSE
+2014,4,Bay of Plenty,North Island,FALSE,Beef cattle,87783,FALSE,NA,FALSE
+2015,4,Bay of Plenty,North Island,FALSE,Beef cattle,90768,FALSE,NA,FALSE
+2016,4,Bay of Plenty,North Island,FALSE,Beef cattle,92583,FALSE,NA,FALSE
+2017,4,Bay of Plenty,North Island,FALSE,Beef cattle,104751,FALSE,NA,TRUE
+2018,4,Bay of Plenty,North Island,FALSE,Beef cattle,96287,FALSE,NA,FALSE
+2019,4,Bay of Plenty,North Island,FALSE,Beef cattle,106802,FALSE,NA,FALSE
+2020,4,Bay of Plenty,North Island,FALSE,Beef cattle,110112,FALSE,NA,FALSE
+2021,4,Bay of Plenty,North Island,FALSE,Beef cattle,NA,TRUE,s,FALSE
+2022,4,Bay of Plenty,North Island,FALSE,Beef cattle,131990,FALSE,NA,TRUE
+2023,4,Bay of Plenty,North Island,FALSE,Beef cattle,103929,FALSE,NA,FALSE
+2024,4,Bay of Plenty,North Island,FALSE,Beef cattle,101973,FALSE,NA,FALSE
+2025,4,Bay of Plenty,North Island,FALSE,Beef cattle,105879,FALSE,NA,FALSE
+2002,5,Gisborne,North Island,FALSE,Beef cattle,309823,FALSE,NA,TRUE
+2003,5,Gisborne,North Island,FALSE,Beef cattle,349913,FALSE,NA,FALSE
+2004,5,Gisborne,North Island,FALSE,Beef cattle,341676,FALSE,NA,FALSE
+2005,5,Gisborne,North Island,FALSE,Beef cattle,300670,FALSE,NA,FALSE
+2006,5,Gisborne,North Island,FALSE,Beef cattle,305050,FALSE,NA,FALSE
+2007,5,Gisborne,North Island,FALSE,Beef cattle,287296,FALSE,NA,TRUE
+2008,5,Gisborne,North Island,FALSE,Beef cattle,287079,FALSE,NA,FALSE
+2009,5,Gisborne,North Island,FALSE,Beef cattle,249657,FALSE,NA,FALSE
+2010,5,Gisborne,North Island,FALSE,Beef cattle,262073,FALSE,NA,FALSE
+2011,5,Gisborne,North Island,FALSE,Beef cattle,272017,FALSE,NA,FALSE
+2012,5,Gisborne,North Island,FALSE,Beef cattle,267599,FALSE,NA,TRUE
+2013,5,Gisborne,North Island,FALSE,Beef cattle,260456,FALSE,NA,FALSE
+2014,5,Gisborne,North Island,FALSE,Beef cattle,277484,FALSE,NA,FALSE
+2015,5,Gisborne,North Island,FALSE,Beef cattle,244826,FALSE,NA,FALSE
+2016,5,Gisborne,North Island,FALSE,Beef cattle,243273,FALSE,NA,FALSE
+2017,5,Gisborne,North Island,FALSE,Beef cattle,247238,FALSE,NA,TRUE
+2018,5,Gisborne,North Island,FALSE,Beef cattle,261384,FALSE,NA,FALSE
+2019,5,Gisborne,North Island,FALSE,Beef cattle,254428,FALSE,NA,FALSE
+2020,5,Gisborne,North Island,FALSE,Beef cattle,249615,FALSE,NA,FALSE
+2021,5,Gisborne,North Island,FALSE,Beef cattle,261018,FALSE,NA,FALSE
+2022,5,Gisborne,North Island,FALSE,Beef cattle,234366,FALSE,NA,TRUE
+2023,5,Gisborne,North Island,FALSE,Beef cattle,227786,FALSE,NA,FALSE
+2024,5,Gisborne,North Island,FALSE,Beef cattle,217117,FALSE,NA,FALSE
+2025,5,Gisborne,North Island,FALSE,Beef cattle,227439,FALSE,NA,FALSE
+2002,6,Hawke's Bay,North Island,FALSE,Beef cattle,555989,FALSE,NA,TRUE
+2003,6,Hawke's Bay,North Island,FALSE,Beef cattle,574403,FALSE,NA,FALSE
+2004,6,Hawke's Bay,North Island,FALSE,Beef cattle,612870,FALSE,NA,FALSE
+2005,6,Hawke's Bay,North Island,FALSE,Beef cattle,528513,FALSE,NA,FALSE
+2006,6,Hawke's Bay,North Island,FALSE,Beef cattle,528809,FALSE,NA,FALSE
+2007,6,Hawke's Bay,North Island,FALSE,Beef cattle,438366,FALSE,NA,TRUE
+2008,6,Hawke's Bay,North Island,FALSE,Beef cattle,493393,FALSE,NA,FALSE
+2009,6,Hawke's Bay,North Island,FALSE,Beef cattle,436207,FALSE,NA,FALSE
+2010,6,Hawke's Bay,North Island,FALSE,Beef cattle,454204,FALSE,NA,FALSE
+2011,6,Hawke's Bay,North Island,FALSE,Beef cattle,488087,FALSE,NA,FALSE
+2012,6,Hawke's Bay,North Island,FALSE,Beef cattle,471010,FALSE,NA,TRUE
+2013,6,Hawke's Bay,North Island,FALSE,Beef cattle,433768,FALSE,NA,FALSE
+2014,6,Hawke's Bay,North Island,FALSE,Beef cattle,441575,FALSE,NA,FALSE
+2015,6,Hawke's Bay,North Island,FALSE,Beef cattle,441919,FALSE,NA,FALSE
+2016,6,Hawke's Bay,North Island,FALSE,Beef cattle,434837,FALSE,NA,FALSE
+2017,6,Hawke's Bay,North Island,FALSE,Beef cattle,421163,FALSE,NA,TRUE
+2018,6,Hawke's Bay,North Island,FALSE,Beef cattle,428528,FALSE,NA,FALSE
+2019,6,Hawke's Bay,North Island,FALSE,Beef cattle,448764,FALSE,NA,FALSE
+2020,6,Hawke's Bay,North Island,FALSE,Beef cattle,400456,FALSE,NA,FALSE
+2021,6,Hawke's Bay,North Island,FALSE,Beef cattle,418274,FALSE,NA,FALSE
+2022,6,Hawke's Bay,North Island,FALSE,Beef cattle,456700,FALSE,NA,TRUE
+2023,6,Hawke's Bay,North Island,FALSE,Beef cattle,425020,FALSE,NA,FALSE
+2024,6,Hawke's Bay,North Island,FALSE,Beef cattle,423573,FALSE,NA,FALSE
+2025,6,Hawke's Bay,North Island,FALSE,Beef cattle,453815,FALSE,NA,FALSE
+2002,7,Taranaki,North Island,FALSE,Beef cattle,127218,FALSE,NA,TRUE
+2003,7,Taranaki,North Island,FALSE,Beef cattle,121184,FALSE,NA,FALSE
+2004,7,Taranaki,North Island,FALSE,Beef cattle,122957,FALSE,NA,FALSE
+2005,7,Taranaki,North Island,FALSE,Beef cattle,130935,FALSE,NA,FALSE
+2006,7,Taranaki,North Island,FALSE,Beef cattle,129368,FALSE,NA,FALSE
+2007,7,Taranaki,North Island,FALSE,Beef cattle,136715,FALSE,NA,TRUE
+2008,7,Taranaki,North Island,FALSE,Beef cattle,132092,FALSE,NA,FALSE
+2009,7,Taranaki,North Island,FALSE,Beef cattle,126336,FALSE,NA,FALSE
+2010,7,Taranaki,North Island,FALSE,Beef cattle,133687,FALSE,NA,FALSE
+2011,7,Taranaki,North Island,FALSE,Beef cattle,118632,FALSE,NA,FALSE
+2012,7,Taranaki,North Island,FALSE,Beef cattle,103546,FALSE,NA,TRUE
+2013,7,Taranaki,North Island,FALSE,Beef cattle,118526,FALSE,NA,FALSE
+2014,7,Taranaki,North Island,FALSE,Beef cattle,129775,FALSE,NA,FALSE
+2015,7,Taranaki,North Island,FALSE,Beef cattle,128274,FALSE,NA,FALSE
+2016,7,Taranaki,North Island,FALSE,Beef cattle,106619,FALSE,NA,FALSE
+2017,7,Taranaki,North Island,FALSE,Beef cattle,117954,FALSE,NA,TRUE
+2018,7,Taranaki,North Island,FALSE,Beef cattle,116437,FALSE,NA,FALSE
+2019,7,Taranaki,North Island,FALSE,Beef cattle,125144,FALSE,NA,FALSE
+2020,7,Taranaki,North Island,FALSE,Beef cattle,122399,FALSE,NA,FALSE
+2021,7,Taranaki,North Island,FALSE,Beef cattle,128607,FALSE,NA,FALSE
+2022,7,Taranaki,North Island,FALSE,Beef cattle,133317,FALSE,NA,TRUE
+2023,7,Taranaki,North Island,FALSE,Beef cattle,114468,FALSE,NA,FALSE
+2024,7,Taranaki,North Island,FALSE,Beef cattle,134390,FALSE,NA,FALSE
+2025,7,Taranaki,North Island,FALSE,Beef cattle,118407,FALSE,NA,FALSE
+2002,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,726306,FALSE,NA,TRUE
+2003,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,699264,FALSE,NA,FALSE
+2004,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,641607,FALSE,NA,FALSE
+2005,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,696501,FALSE,NA,FALSE
+2006,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,701871,FALSE,NA,FALSE
+2007,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,680960,FALSE,NA,TRUE
+2008,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,583129,FALSE,NA,FALSE
+2009,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,609701,FALSE,NA,FALSE
+2010,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,626533,FALSE,NA,FALSE
+2011,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,593632,FALSE,NA,FALSE
+2012,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,579565,FALSE,NA,TRUE
+2013,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,570144,FALSE,NA,FALSE
+2014,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,580988,FALSE,NA,FALSE
+2015,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,567333,FALSE,NA,FALSE
+2016,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,543526,FALSE,NA,FALSE
+2017,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,567856,FALSE,NA,TRUE
+2018,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,554018,FALSE,NA,FALSE
+2019,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,574889,FALSE,NA,FALSE
+2020,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,571743,FALSE,NA,FALSE
+2021,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,594771,FALSE,NA,FALSE
+2022,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,561337,FALSE,NA,TRUE
+2023,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,517451,FALSE,NA,FALSE
+2024,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,520736,FALSE,NA,FALSE
+2025,8,Manawatu-Whanganui,North Island,FALSE,Beef cattle,577155,FALSE,NA,FALSE
+2002,9,Wellington,North Island,FALSE,Beef cattle,181320,FALSE,NA,TRUE
+2003,9,Wellington,North Island,FALSE,Beef cattle,176290,FALSE,NA,FALSE
+2004,9,Wellington,North Island,FALSE,Beef cattle,174206,FALSE,NA,FALSE
+2005,9,Wellington,North Island,FALSE,Beef cattle,171035,FALSE,NA,FALSE
+2006,9,Wellington,North Island,FALSE,Beef cattle,176204,FALSE,NA,FALSE
+2007,9,Wellington,North Island,FALSE,Beef cattle,155910,FALSE,NA,TRUE
+2008,9,Wellington,North Island,FALSE,Beef cattle,140381,FALSE,NA,FALSE
+2009,9,Wellington,North Island,FALSE,Beef cattle,146794,FALSE,NA,FALSE
+2010,9,Wellington,North Island,FALSE,Beef cattle,143398,FALSE,NA,FALSE
+2011,9,Wellington,North Island,FALSE,Beef cattle,150561,FALSE,NA,FALSE
+2012,9,Wellington,North Island,FALSE,Beef cattle,140420,FALSE,NA,TRUE
+2013,9,Wellington,North Island,FALSE,Beef cattle,131471,FALSE,NA,FALSE
+2014,9,Wellington,North Island,FALSE,Beef cattle,148369,FALSE,NA,FALSE
+2015,9,Wellington,North Island,FALSE,Beef cattle,121431,FALSE,NA,FALSE
+2016,9,Wellington,North Island,FALSE,Beef cattle,110801,FALSE,NA,FALSE
+2017,9,Wellington,North Island,FALSE,Beef cattle,134924,FALSE,NA,TRUE
+2018,9,Wellington,North Island,FALSE,Beef cattle,131828,FALSE,NA,FALSE
+2019,9,Wellington,North Island,FALSE,Beef cattle,149976,FALSE,NA,FALSE
+2020,9,Wellington,North Island,FALSE,Beef cattle,151838,FALSE,NA,FALSE
+2021,9,Wellington,North Island,FALSE,Beef cattle,153655,FALSE,NA,FALSE
+2022,9,Wellington,North Island,FALSE,Beef cattle,146260,FALSE,NA,TRUE
+2023,9,Wellington,North Island,FALSE,Beef cattle,134831,FALSE,NA,FALSE
+2024,9,Wellington,North Island,FALSE,Beef cattle,136841,FALSE,NA,FALSE
+2025,9,Wellington,North Island,FALSE,Beef cattle,144086,FALSE,NA,FALSE
+2002,1,Northland,North Island,FALSE,Dairy cattle,405387,FALSE,NA,TRUE
+2003,1,Northland,North Island,FALSE,Dairy cattle,374019,FALSE,NA,FALSE
+2004,1,Northland,North Island,FALSE,Dairy cattle,399064,FALSE,NA,FALSE
+2005,1,Northland,North Island,FALSE,Dairy cattle,343195,FALSE,NA,FALSE
+2006,1,Northland,North Island,FALSE,Dairy cattle,378152,FALSE,NA,FALSE
+2007,1,Northland,North Island,FALSE,Dairy cattle,367183,FALSE,NA,TRUE
+2008,1,Northland,North Island,FALSE,Dairy cattle,392193,FALSE,NA,FALSE
+2009,1,Northland,North Island,FALSE,Dairy cattle,392577,FALSE,NA,FALSE
+2010,1,Northland,North Island,FALSE,Dairy cattle,353314,FALSE,NA,FALSE
+2011,1,Northland,North Island,FALSE,Dairy cattle,384636,FALSE,NA,FALSE
+2012,1,Northland,North Island,FALSE,Dairy cattle,397764,FALSE,NA,TRUE
+2013,1,Northland,North Island,FALSE,Dairy cattle,383057,FALSE,NA,FALSE
+2014,1,Northland,North Island,FALSE,Dairy cattle,352834,FALSE,NA,FALSE
+2015,1,Northland,North Island,FALSE,Dairy cattle,380616,FALSE,NA,FALSE
+2016,1,Northland,North Island,FALSE,Dairy cattle,404415,FALSE,NA,FALSE
+2017,1,Northland,North Island,FALSE,Dairy cattle,379401,FALSE,NA,TRUE
+2018,1,Northland,North Island,FALSE,Dairy cattle,367281,FALSE,NA,FALSE
+2019,1,Northland,North Island,FALSE,Dairy cattle,334733,FALSE,NA,FALSE
+2020,1,Northland,North Island,FALSE,Dairy cattle,311282,FALSE,NA,FALSE
+2021,1,Northland,North Island,FALSE,Dairy cattle,310765,FALSE,NA,FALSE
+2022,1,Northland,North Island,FALSE,Dairy cattle,293385,FALSE,NA,TRUE
+2023,1,Northland,North Island,FALSE,Dairy cattle,280526,FALSE,NA,FALSE
+2024,1,Northland,North Island,FALSE,Dairy cattle,291541,FALSE,NA,FALSE
+2025,1,Northland,North Island,FALSE,Dairy cattle,274619,FALSE,NA,FALSE
+2002,10,Total North Island,NA,TRUE,Dairy cattle,3831529,FALSE,NA,TRUE
+2003,10,Total North Island,NA,TRUE,Dairy cattle,3792582,FALSE,NA,FALSE
+2004,10,Total North Island,NA,TRUE,Dairy cattle,3787210,FALSE,NA,FALSE
+2005,10,Total North Island,NA,TRUE,Dairy cattle,3731709,FALSE,NA,FALSE
+2006,10,Total North Island,NA,TRUE,Dairy cattle,3714682,FALSE,NA,FALSE
+2007,10,Total North Island,NA,TRUE,Dairy cattle,3612916,FALSE,NA,TRUE
+2008,10,Total North Island,NA,TRUE,Dairy cattle,3757557,FALSE,NA,FALSE
+2009,10,Total North Island,NA,TRUE,Dairy cattle,3796485,FALSE,NA,FALSE
+2010,10,Total North Island,NA,TRUE,Dairy cattle,3857019,FALSE,NA,FALSE
+2011,10,Total North Island,NA,TRUE,Dairy cattle,3962614,FALSE,NA,FALSE
+2012,10,Total North Island,NA,TRUE,Dairy cattle,3957916,FALSE,NA,TRUE
+2013,10,Total North Island,NA,TRUE,Dairy cattle,3912003,FALSE,NA,FALSE
+2014,10,Total North Island,NA,TRUE,Dairy cattle,3978828,FALSE,NA,FALSE
+2015,10,Total North Island,NA,TRUE,Dairy cattle,3819694,FALSE,NA,FALSE
+2016,10,Total North Island,NA,TRUE,Dairy cattle,4057348,FALSE,NA,FALSE
+2017,10,Total North Island,NA,TRUE,Dairy cattle,3956282,FALSE,NA,TRUE
+2018,10,Total North Island,NA,TRUE,Dairy cattle,3816099,FALSE,NA,FALSE
+2019,10,Total North Island,NA,TRUE,Dairy cattle,3821519,FALSE,NA,FALSE
+2020,10,Total North Island,NA,TRUE,Dairy cattle,3657502,FALSE,NA,FALSE
+2021,10,Total North Island,NA,TRUE,Dairy cattle,3676179,FALSE,NA,FALSE
+2022,10,Total North Island,NA,TRUE,Dairy cattle,3446821,FALSE,NA,TRUE
+2023,10,Total North Island,NA,TRUE,Dairy cattle,3334436,FALSE,NA,FALSE
+2024,10,Total North Island,NA,TRUE,Dairy cattle,3315676,FALSE,NA,FALSE
+2025,10,Total North Island,NA,TRUE,Dairy cattle,3264195,FALSE,NA,FALSE
+2002,11,Tasman,South Island,FALSE,Dairy cattle,67473,FALSE,NA,TRUE
+2003,11,Tasman,South Island,FALSE,Dairy cattle,71206,FALSE,NA,FALSE
+2004,11,Tasman,South Island,FALSE,Dairy cattle,70848,FALSE,NA,FALSE
+2005,11,Tasman,South Island,FALSE,Dairy cattle,67535,FALSE,NA,FALSE
+2006,11,Tasman,South Island,FALSE,Dairy cattle,65994,FALSE,NA,FALSE
+2007,11,Tasman,South Island,FALSE,Dairy cattle,63849,FALSE,NA,TRUE
+2008,11,Tasman,South Island,FALSE,Dairy cattle,70689,FALSE,NA,FALSE
+2009,11,Tasman,South Island,FALSE,Dairy cattle,86531,FALSE,NA,FALSE
+2010,11,Tasman,South Island,FALSE,Dairy cattle,71088,FALSE,NA,FALSE
+2011,11,Tasman,South Island,FALSE,Dairy cattle,72803,FALSE,NA,FALSE
+2012,11,Tasman,South Island,FALSE,Dairy cattle,71956,FALSE,NA,TRUE
+2013,11,Tasman,South Island,FALSE,Dairy cattle,76283,FALSE,NA,FALSE
+2014,11,Tasman,South Island,FALSE,Dairy cattle,77972,FALSE,NA,FALSE
+2015,11,Tasman,South Island,FALSE,Dairy cattle,77863,FALSE,NA,FALSE
+2016,11,Tasman,South Island,FALSE,Dairy cattle,60980,FALSE,NA,FALSE
+2017,11,Tasman,South Island,FALSE,Dairy cattle,66114,FALSE,NA,TRUE
+2018,11,Tasman,South Island,FALSE,Dairy cattle,77694,FALSE,NA,FALSE
+2019,11,Tasman,South Island,FALSE,Dairy cattle,64690,FALSE,NA,FALSE
+2020,11,Tasman,South Island,FALSE,Dairy cattle,59397,FALSE,NA,FALSE
+2021,11,Tasman,South Island,FALSE,Dairy cattle,49798,FALSE,NA,FALSE
+2022,11,Tasman,South Island,FALSE,Dairy cattle,56091,FALSE,NA,TRUE
+2023,11,Tasman,South Island,FALSE,Dairy cattle,51145,FALSE,NA,FALSE
+2024,11,Tasman,South Island,FALSE,Dairy cattle,59720,FALSE,NA,FALSE
+2025,11,Tasman,South Island,FALSE,Dairy cattle,67778,FALSE,NA,FALSE
+2007,12,Nelson,South Island,FALSE,Dairy cattle,1862,FALSE,NA,TRUE
+2012,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,c,TRUE
+2013,12,Nelson,South Island,FALSE,Dairy cattle,1259,FALSE,NA,FALSE
+2014,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2015,12,Nelson,South Island,FALSE,Dairy cattle,8459,FALSE,NA,FALSE
+2016,12,Nelson,South Island,FALSE,Dairy cattle,2330,FALSE,NA,FALSE
+2017,12,Nelson,South Island,FALSE,Dairy cattle,2925,FALSE,NA,TRUE
+2018,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2019,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2020,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2021,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2022,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,TRUE
+2023,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2024,12,Nelson,South Island,FALSE,Dairy cattle,1510,FALSE,NA,FALSE
+2025,12,Nelson,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2002,13,Marlborough,South Island,FALSE,Dairy cattle,32526,FALSE,NA,TRUE
+2003,13,Marlborough,South Island,FALSE,Dairy cattle,28233,FALSE,NA,FALSE
+2004,13,Marlborough,South Island,FALSE,Dairy cattle,26831,FALSE,NA,FALSE
+2005,13,Marlborough,South Island,FALSE,Dairy cattle,30604,FALSE,NA,FALSE
+2006,13,Marlborough,South Island,FALSE,Dairy cattle,25783,FALSE,NA,FALSE
+2007,13,Marlborough,South Island,FALSE,Dairy cattle,23899,FALSE,NA,TRUE
+2008,13,Marlborough,South Island,FALSE,Dairy cattle,33544,FALSE,NA,FALSE
+2010,13,Marlborough,South Island,FALSE,Dairy cattle,25980,FALSE,NA,FALSE
+2011,13,Marlborough,South Island,FALSE,Dairy cattle,30012,FALSE,NA,FALSE
+2012,13,Marlborough,South Island,FALSE,Dairy cattle,33218,FALSE,NA,TRUE
+2013,13,Marlborough,South Island,FALSE,Dairy cattle,27811,FALSE,NA,FALSE
+2014,13,Marlborough,South Island,FALSE,Dairy cattle,40945,FALSE,NA,FALSE
+2015,13,Marlborough,South Island,FALSE,Dairy cattle,27040,FALSE,NA,FALSE
+2016,13,Marlborough,South Island,FALSE,Dairy cattle,25148,FALSE,NA,FALSE
+2017,13,Marlborough,South Island,FALSE,Dairy cattle,25315,FALSE,NA,TRUE
+2018,13,Marlborough,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2019,13,Marlborough,South Island,FALSE,Dairy cattle,18223,FALSE,NA,FALSE
+2020,13,Marlborough,South Island,FALSE,Dairy cattle,17933,FALSE,NA,FALSE
+2021,13,Marlborough,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2022,13,Marlborough,South Island,FALSE,Dairy cattle,18730,FALSE,NA,TRUE
+2023,13,Marlborough,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2024,13,Marlborough,South Island,FALSE,Dairy cattle,16351,FALSE,NA,FALSE
+2025,13,Marlborough,South Island,FALSE,Dairy cattle,15280,FALSE,NA,FALSE
+2002,14,West Coast,South Island,FALSE,Dairy cattle,124640,FALSE,NA,TRUE
+2003,14,West Coast,South Island,FALSE,Dairy cattle,122572,FALSE,NA,FALSE
+2004,14,West Coast,South Island,FALSE,Dairy cattle,141401,FALSE,NA,FALSE
+2005,14,West Coast,South Island,FALSE,Dairy cattle,142370,FALSE,NA,FALSE
+2006,14,West Coast,South Island,FALSE,Dairy cattle,148730,FALSE,NA,FALSE
+2007,14,West Coast,South Island,FALSE,Dairy cattle,152481,FALSE,NA,TRUE
+2008,14,West Coast,South Island,FALSE,Dairy cattle,152869,FALSE,NA,FALSE
+2009,14,West Coast,South Island,FALSE,Dairy cattle,179416,FALSE,NA,FALSE
+2010,14,West Coast,South Island,FALSE,Dairy cattle,160791,FALSE,NA,FALSE
+2011,14,West Coast,South Island,FALSE,Dairy cattle,179308,FALSE,NA,FALSE
+2012,14,West Coast,South Island,FALSE,Dairy cattle,173651,FALSE,NA,TRUE
+2013,14,West Coast,South Island,FALSE,Dairy cattle,178907,FALSE,NA,FALSE
+2014,14,West Coast,South Island,FALSE,Dairy cattle,188417,FALSE,NA,FALSE
+2015,14,West Coast,South Island,FALSE,Dairy cattle,182298,FALSE,NA,FALSE
+2016,14,West Coast,South Island,FALSE,Dairy cattle,180956,FALSE,NA,FALSE
+2017,14,West Coast,South Island,FALSE,Dairy cattle,156204,FALSE,NA,TRUE
+2018,14,West Coast,South Island,FALSE,Dairy cattle,143531,FALSE,NA,FALSE
+2019,14,West Coast,South Island,FALSE,Dairy cattle,152552,FALSE,NA,FALSE
+2020,14,West Coast,South Island,FALSE,Dairy cattle,177297,FALSE,NA,FALSE
+2021,14,West Coast,South Island,FALSE,Dairy cattle,139137,FALSE,NA,FALSE
+2022,14,West Coast,South Island,FALSE,Dairy cattle,166093,FALSE,NA,TRUE
+2023,14,West Coast,South Island,FALSE,Dairy cattle,162022,FALSE,NA,FALSE
+2024,14,West Coast,South Island,FALSE,Dairy cattle,161500,FALSE,NA,FALSE
+2025,14,West Coast,South Island,FALSE,Dairy cattle,140273,FALSE,NA,FALSE
+2002,15,Canterbury,South Island,FALSE,Dairy cattle,542610,FALSE,NA,TRUE
+2003,15,Canterbury,South Island,FALSE,Dairy cattle,556339,FALSE,NA,FALSE
+2004,15,Canterbury,South Island,FALSE,Dairy cattle,599643,FALSE,NA,FALSE
+2005,15,Canterbury,South Island,FALSE,Dairy cattle,604756,FALSE,NA,FALSE
+2006,15,Canterbury,South Island,FALSE,Dairy cattle,655676,FALSE,NA,FALSE
+2007,15,Canterbury,South Island,FALSE,Dairy cattle,754937,FALSE,NA,TRUE
+2008,15,Canterbury,South Island,FALSE,Dairy cattle,831666,FALSE,NA,FALSE
+2009,15,Canterbury,South Island,FALSE,Dairy cattle,918480,FALSE,NA,FALSE
+2010,15,Canterbury,South Island,FALSE,Dairy cattle,938453,FALSE,NA,FALSE
+2011,15,Canterbury,South Island,FALSE,Dairy cattle,1006742,FALSE,NA,FALSE
+2012,15,Canterbury,South Island,FALSE,Dairy cattle,1200293,FALSE,NA,TRUE
+2013,15,Canterbury,South Island,FALSE,Dairy cattle,1304618,FALSE,NA,FALSE
+2014,15,Canterbury,South Island,FALSE,Dairy cattle,1333220,FALSE,NA,FALSE
+2015,15,Canterbury,South Island,FALSE,Dairy cattle,1253993,FALSE,NA,FALSE
+2016,15,Canterbury,South Island,FALSE,Dairy cattle,1271057,FALSE,NA,FALSE
+2017,15,Canterbury,South Island,FALSE,Dairy cattle,1308058,FALSE,NA,TRUE
+2018,15,Canterbury,South Island,FALSE,Dairy cattle,1326513,FALSE,NA,FALSE
+2019,15,Canterbury,South Island,FALSE,Dairy cattle,1212575,FALSE,NA,FALSE
+2020,15,Canterbury,South Island,FALSE,Dairy cattle,1246299,FALSE,NA,FALSE
+2021,15,Canterbury,South Island,FALSE,Dairy cattle,1325185,FALSE,NA,FALSE
+2022,15,Canterbury,South Island,FALSE,Dairy cattle,1253519,FALSE,NA,TRUE
+2023,15,Canterbury,South Island,FALSE,Dairy cattle,1360592,FALSE,NA,FALSE
+2024,15,Canterbury,South Island,FALSE,Dairy cattle,1255814,FALSE,NA,FALSE
+2025,15,Canterbury,South Island,FALSE,Dairy cattle,1337343,FALSE,NA,FALSE
+2002,16,Otago,South Island,FALSE,Dairy cattle,204802,FALSE,NA,TRUE
+2003,16,Otago,South Island,FALSE,Dairy cattle,181484,FALSE,NA,FALSE
+2004,16,Otago,South Island,FALSE,Dairy cattle,174253,FALSE,NA,FALSE
+2005,16,Otago,South Island,FALSE,Dairy cattle,161616,FALSE,NA,FALSE
+2006,16,Otago,South Island,FALSE,Dairy cattle,180734,FALSE,NA,FALSE
+2007,16,Otago,South Island,FALSE,Dairy cattle,218264,FALSE,NA,TRUE
+2008,16,Otago,South Island,FALSE,Dairy cattle,232905,FALSE,NA,FALSE
+2009,16,Otago,South Island,FALSE,Dairy cattle,257049,FALSE,NA,FALSE
+2010,16,Otago,South Island,FALSE,Dairy cattle,262417,FALSE,NA,FALSE
+2011,16,Otago,South Island,FALSE,Dairy cattle,307817,FALSE,NA,FALSE
+2012,16,Otago,South Island,FALSE,Dairy cattle,336278,FALSE,NA,TRUE
+2013,16,Otago,South Island,FALSE,Dairy cattle,367292,FALSE,NA,FALSE
+2014,16,Otago,South Island,FALSE,Dairy cattle,376743,FALSE,NA,FALSE
+2015,16,Otago,South Island,FALSE,Dairy cattle,384979,FALSE,NA,FALSE
+2016,16,Otago,South Island,FALSE,Dairy cattle,312087,FALSE,NA,FALSE
+2017,16,Otago,South Island,FALSE,Dairy cattle,333850,FALSE,NA,TRUE
+2018,16,Otago,South Island,FALSE,Dairy cattle,331151,FALSE,NA,FALSE
+2019,16,Otago,South Island,FALSE,Dairy cattle,352639,FALSE,NA,FALSE
+2020,16,Otago,South Island,FALSE,Dairy cattle,356022,FALSE,NA,FALSE
+2021,16,Otago,South Island,FALSE,Dairy cattle,368665,FALSE,NA,FALSE
+2022,16,Otago,South Island,FALSE,Dairy cattle,318493,FALSE,NA,TRUE
+2023,16,Otago,South Island,FALSE,Dairy cattle,300961,FALSE,NA,FALSE
+2024,16,Otago,South Island,FALSE,Dairy cattle,308344,FALSE,NA,FALSE
+2025,16,Otago,South Island,FALSE,Dairy cattle,284427,FALSE,NA,FALSE
+2002,17,Southland,South Island,FALSE,Dairy cattle,356220,FALSE,NA,TRUE
+2003,17,Southland,South Island,FALSE,Dairy cattle,347793,FALSE,NA,FALSE
+2004,17,Southland,South Island,FALSE,Dairy cattle,349021,FALSE,NA,FALSE
+2005,17,Southland,South Island,FALSE,Dairy cattle,348075,FALSE,NA,FALSE
+2006,17,Southland,South Island,FALSE,Dairy cattle,375911,FALSE,NA,FALSE
+2007,17,Southland,South Island,FALSE,Dairy cattle,432642,FALSE,NA,TRUE
+2008,17,Southland,South Island,FALSE,Dairy cattle,495971,FALSE,NA,FALSE
+2009,17,Southland,South Island,FALSE,Dairy cattle,589184,FALSE,NA,FALSE
+2010,17,Southland,South Island,FALSE,Dairy cattle,599198,FALSE,NA,FALSE
+2011,17,Southland,South Island,FALSE,Dairy cattle,614648,FALSE,NA,FALSE
+2012,17,Southland,South Island,FALSE,Dairy cattle,670581,FALSE,NA,TRUE
+2013,17,Southland,South Island,FALSE,Dairy cattle,615428,FALSE,NA,FALSE
+2014,17,Southland,South Island,FALSE,Dairy cattle,700039,FALSE,NA,FALSE
+2015,17,Southland,South Island,FALSE,Dairy cattle,731209,FALSE,NA,FALSE
+2016,17,Southland,South Island,FALSE,Dairy cattle,708895,FALSE,NA,FALSE
+2017,17,Southland,South Island,FALSE,Dairy cattle,681011,FALSE,NA,TRUE
+2018,17,Southland,South Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2019,17,Southland,South Island,FALSE,Dairy cattle,636241,FALSE,NA,FALSE
+2020,17,Southland,South Island,FALSE,Dairy cattle,683210,FALSE,NA,FALSE
+2021,17,Southland,South Island,FALSE,Dairy cattle,602169,FALSE,NA,FALSE
+2022,17,Southland,South Island,FALSE,Dairy cattle,667820,FALSE,NA,TRUE
+2023,17,Southland,South Island,FALSE,Dairy cattle,654208,FALSE,NA,FALSE
+2024,17,Southland,South Island,FALSE,Dairy cattle,717930,FALSE,NA,FALSE
+2025,17,Southland,South Island,FALSE,Dairy cattle,637222,FALSE,NA,FALSE
+2012,18,Chatham Islands,South Island,FALSE,Dairy cattle,NA,TRUE,c,TRUE
+2013,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2014,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2015,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2016,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2017,18,Chatham Islands,South Island,FALSE,Dairy cattle,52,FALSE,NA,TRUE
+2018,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2019,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2020,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2021,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2022,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,TRUE
+2023,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2024,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2025,18,Chatham Islands,South Island,FALSE,Dairy cattle,0,FALSE,NA,FALSE
+2002,19,Total South Island,NA,TRUE,Dairy cattle,1330060,FALSE,NA,TRUE
+2003,19,Total South Island,NA,TRUE,Dairy cattle,1309021,FALSE,NA,FALSE
+2004,19,Total South Island,NA,TRUE,Dairy cattle,1365281,FALSE,NA,FALSE
+2005,19,Total South Island,NA,TRUE,Dairy cattle,1355468,FALSE,NA,FALSE
+2006,19,Total South Island,NA,TRUE,Dairy cattle,1454875,FALSE,NA,FALSE
+2007,19,Total South Island,NA,TRUE,Dairy cattle,1647934,FALSE,NA,TRUE
+2008,19,Total South Island,NA,TRUE,Dairy cattle,1820883,FALSE,NA,FALSE
+2009,19,Total South Island,NA,TRUE,Dairy cattle,2064292,FALSE,NA,FALSE
+2010,19,Total South Island,NA,TRUE,Dairy cattle,2058433,FALSE,NA,FALSE
+2011,19,Total South Island,NA,TRUE,Dairy cattle,2211889,FALSE,NA,FALSE
+2012,19,Total South Island,NA,TRUE,Dairy cattle,2487765,FALSE,NA,TRUE
+2013,19,Total South Island,NA,TRUE,Dairy cattle,2571597,FALSE,NA,FALSE
+2014,19,Total South Island,NA,TRUE,Dairy cattle,2719498,FALSE,NA,FALSE
+2015,19,Total South Island,NA,TRUE,Dairy cattle,2665841,FALSE,NA,FALSE
+2016,19,Total South Island,NA,TRUE,Dairy cattle,2561452,FALSE,NA,FALSE
+2017,19,Total South Island,NA,TRUE,Dairy cattle,2573529,FALSE,NA,TRUE
+2018,19,Total South Island,NA,TRUE,Dairy cattle,2569441,FALSE,NA,FALSE
+2019,19,Total South Island,NA,TRUE,Dairy cattle,2439376,FALSE,NA,FALSE
+2020,19,Total South Island,NA,TRUE,Dairy cattle,2542720,FALSE,NA,FALSE
+2021,19,Total South Island,NA,TRUE,Dairy cattle,2509256,FALSE,NA,FALSE
+2022,19,Total South Island,NA,TRUE,Dairy cattle,2483212,FALSE,NA,TRUE
+2023,19,Total South Island,NA,TRUE,Dairy cattle,2550191,FALSE,NA,FALSE
+2024,19,Total South Island,NA,TRUE,Dairy cattle,2521169,FALSE,NA,FALSE
+2025,19,Total South Island,NA,TRUE,Dairy cattle,2485675,FALSE,NA,FALSE
+2002,2,Auckland,North Island,FALSE,Dairy cattle,150089,FALSE,NA,TRUE
+2003,2,Auckland,North Island,FALSE,Dairy cattle,167559,FALSE,NA,FALSE
+2004,2,Auckland,North Island,FALSE,Dairy cattle,141618,FALSE,NA,FALSE
+2005,2,Auckland,North Island,FALSE,Dairy cattle,122015,FALSE,NA,FALSE
+2006,2,Auckland,North Island,FALSE,Dairy cattle,122234,FALSE,NA,FALSE
+2007,2,Auckland,North Island,FALSE,Dairy cattle,113344,FALSE,NA,TRUE
+2008,2,Auckland,North Island,FALSE,Dairy cattle,115883,FALSE,NA,FALSE
+2009,2,Auckland,North Island,FALSE,Dairy cattle,94391,FALSE,NA,FALSE
+2010,2,Auckland,North Island,FALSE,Dairy cattle,98416,FALSE,NA,FALSE
+2011,2,Auckland,North Island,FALSE,Dairy cattle,129768,FALSE,NA,FALSE
+2012,2,Auckland,North Island,FALSE,Dairy cattle,117281,FALSE,NA,TRUE
+2013,2,Auckland,North Island,FALSE,Dairy cattle,110288,FALSE,NA,FALSE
+2014,2,Auckland,North Island,FALSE,Dairy cattle,100086,FALSE,NA,FALSE
+2015,2,Auckland,North Island,FALSE,Dairy cattle,124668,FALSE,NA,FALSE
+2016,2,Auckland,North Island,FALSE,Dairy cattle,165417,FALSE,NA,FALSE
+2017,2,Auckland,North Island,FALSE,Dairy cattle,132323,FALSE,NA,TRUE
+2018,2,Auckland,North Island,FALSE,Dairy cattle,116199,FALSE,NA,FALSE
+2019,2,Auckland,North Island,FALSE,Dairy cattle,123504,FALSE,NA,FALSE
+2020,2,Auckland,North Island,FALSE,Dairy cattle,123478,FALSE,NA,FALSE
+2021,2,Auckland,North Island,FALSE,Dairy cattle,84973,FALSE,NA,FALSE
+2022,2,Auckland,North Island,FALSE,Dairy cattle,90594,FALSE,NA,TRUE
+2023,2,Auckland,North Island,FALSE,Dairy cattle,96993,FALSE,NA,FALSE
+2024,2,Auckland,North Island,FALSE,Dairy cattle,73999,FALSE,NA,FALSE
+2025,2,Auckland,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2002,20,Total New Zealand,NA,TRUE,Dairy cattle,5161589,FALSE,NA,TRUE
+2003,20,Total New Zealand,NA,TRUE,Dairy cattle,5101603,FALSE,NA,FALSE
+2004,20,Total New Zealand,NA,TRUE,Dairy cattle,5152492,FALSE,NA,FALSE
+2005,20,Total New Zealand,NA,TRUE,Dairy cattle,5087176,FALSE,NA,FALSE
+2006,20,Total New Zealand,NA,TRUE,Dairy cattle,5169557,FALSE,NA,FALSE
+2007,20,Total New Zealand,NA,TRUE,Dairy cattle,5260850,FALSE,NA,TRUE
+2008,20,Total New Zealand,NA,TRUE,Dairy cattle,5578440,FALSE,NA,FALSE
+2009,20,Total New Zealand,NA,TRUE,Dairy cattle,5860776,FALSE,NA,FALSE
+2010,20,Total New Zealand,NA,TRUE,Dairy cattle,5915452,FALSE,NA,FALSE
+2011,20,Total New Zealand,NA,TRUE,Dairy cattle,6174503,FALSE,NA,FALSE
+2012,20,Total New Zealand,NA,TRUE,Dairy cattle,6445681,FALSE,NA,TRUE
+2013,20,Total New Zealand,NA,TRUE,Dairy cattle,6483600,FALSE,NA,FALSE
+2014,20,Total New Zealand,NA,TRUE,Dairy cattle,6698326,FALSE,NA,FALSE
+2015,20,Total New Zealand,NA,TRUE,Dairy cattle,6485535,FALSE,NA,FALSE
+2016,20,Total New Zealand,NA,TRUE,Dairy cattle,6618800,FALSE,NA,FALSE
+2017,20,Total New Zealand,NA,TRUE,Dairy cattle,6529811,FALSE,NA,TRUE
+2018,20,Total New Zealand,NA,TRUE,Dairy cattle,6385541,FALSE,NA,FALSE
+2019,20,Total New Zealand,NA,TRUE,Dairy cattle,6260895,FALSE,NA,FALSE
+2020,20,Total New Zealand,NA,TRUE,Dairy cattle,6200222,FALSE,NA,FALSE
+2021,20,Total New Zealand,NA,TRUE,Dairy cattle,6185435,FALSE,NA,FALSE
+2022,20,Total New Zealand,NA,TRUE,Dairy cattle,5930033,FALSE,NA,TRUE
+2023,20,Total New Zealand,NA,TRUE,Dairy cattle,5884627,FALSE,NA,FALSE
+2024,20,Total New Zealand,NA,TRUE,Dairy cattle,5836845,FALSE,NA,FALSE
+2025,20,Total New Zealand,NA,TRUE,Dairy cattle,5749870,FALSE,NA,FALSE
+2002,3,Waikato,North Island,FALSE,Dairy cattle,1663446,FALSE,NA,TRUE
+2003,3,Waikato,North Island,FALSE,Dairy cattle,1679882,FALSE,NA,FALSE
+2004,3,Waikato,North Island,FALSE,Dairy cattle,1685661,FALSE,NA,FALSE
+2005,3,Waikato,North Island,FALSE,Dairy cattle,1726323,FALSE,NA,FALSE
+2006,3,Waikato,North Island,FALSE,Dairy cattle,1735353,FALSE,NA,FALSE
+2007,3,Waikato,North Island,FALSE,Dairy cattle,1669472,FALSE,NA,TRUE
+2008,3,Waikato,North Island,FALSE,Dairy cattle,1717421,FALSE,NA,FALSE
+2009,3,Waikato,North Island,FALSE,Dairy cattle,1786579,FALSE,NA,FALSE
+2010,3,Waikato,North Island,FALSE,Dairy cattle,1757624,FALSE,NA,FALSE
+2011,3,Waikato,North Island,FALSE,Dairy cattle,1795785,FALSE,NA,FALSE
+2012,3,Waikato,North Island,FALSE,Dairy cattle,1832380,FALSE,NA,TRUE
+2013,3,Waikato,North Island,FALSE,Dairy cattle,1837858,FALSE,NA,FALSE
+2014,3,Waikato,North Island,FALSE,Dairy cattle,1914483,FALSE,NA,FALSE
+2015,3,Waikato,North Island,FALSE,Dairy cattle,1761949,FALSE,NA,FALSE
+2016,3,Waikato,North Island,FALSE,Dairy cattle,1855170,FALSE,NA,FALSE
+2017,3,Waikato,North Island,FALSE,Dairy cattle,1871594,FALSE,NA,TRUE
+2018,3,Waikato,North Island,FALSE,Dairy cattle,1814158,FALSE,NA,FALSE
+2019,3,Waikato,North Island,FALSE,Dairy cattle,1822904,FALSE,NA,FALSE
+2020,3,Waikato,North Island,FALSE,Dairy cattle,1766690,FALSE,NA,FALSE
+2021,3,Waikato,North Island,FALSE,Dairy cattle,1809979,FALSE,NA,FALSE
+2022,3,Waikato,North Island,FALSE,Dairy cattle,1671833,FALSE,NA,TRUE
+2023,3,Waikato,North Island,FALSE,Dairy cattle,1652671,FALSE,NA,FALSE
+2024,3,Waikato,North Island,FALSE,Dairy cattle,1566143,FALSE,NA,FALSE
+2025,3,Waikato,North Island,FALSE,Dairy cattle,1553781,FALSE,NA,FALSE
+2002,4,Bay of Plenty,North Island,FALSE,Dairy cattle,331410,FALSE,NA,TRUE
+2003,4,Bay of Plenty,North Island,FALSE,Dairy cattle,326885,FALSE,NA,FALSE
+2004,4,Bay of Plenty,North Island,FALSE,Dairy cattle,320923,FALSE,NA,FALSE
+2005,4,Bay of Plenty,North Island,FALSE,Dairy cattle,329776,FALSE,NA,FALSE
+2006,4,Bay of Plenty,North Island,FALSE,Dairy cattle,300509,FALSE,NA,FALSE
+2007,4,Bay of Plenty,North Island,FALSE,Dairy cattle,299013,FALSE,NA,TRUE
+2008,4,Bay of Plenty,North Island,FALSE,Dairy cattle,315183,FALSE,NA,FALSE
+2009,4,Bay of Plenty,North Island,FALSE,Dairy cattle,299696,FALSE,NA,FALSE
+2010,4,Bay of Plenty,North Island,FALSE,Dairy cattle,306884,FALSE,NA,FALSE
+2011,4,Bay of Plenty,North Island,FALSE,Dairy cattle,331536,FALSE,NA,FALSE
+2012,4,Bay of Plenty,North Island,FALSE,Dairy cattle,312326,FALSE,NA,TRUE
+2013,4,Bay of Plenty,North Island,FALSE,Dairy cattle,314679,FALSE,NA,FALSE
+2014,4,Bay of Plenty,North Island,FALSE,Dairy cattle,333375,FALSE,NA,FALSE
+2015,4,Bay of Plenty,North Island,FALSE,Dairy cattle,357039,FALSE,NA,FALSE
+2016,4,Bay of Plenty,North Island,FALSE,Dairy cattle,339170,FALSE,NA,FALSE
+2017,4,Bay of Plenty,North Island,FALSE,Dairy cattle,325175,FALSE,NA,TRUE
+2018,4,Bay of Plenty,North Island,FALSE,Dairy cattle,306711,FALSE,NA,FALSE
+2019,4,Bay of Plenty,North Island,FALSE,Dairy cattle,317633,FALSE,NA,FALSE
+2020,4,Bay of Plenty,North Island,FALSE,Dairy cattle,294791,FALSE,NA,FALSE
+2021,4,Bay of Plenty,North Island,FALSE,Dairy cattle,313358,FALSE,NA,FALSE
+2022,4,Bay of Plenty,North Island,FALSE,Dairy cattle,302673,FALSE,NA,TRUE
+2023,4,Bay of Plenty,North Island,FALSE,Dairy cattle,244240,FALSE,NA,FALSE
+2024,4,Bay of Plenty,North Island,FALSE,Dairy cattle,297887,FALSE,NA,FALSE
+2025,4,Bay of Plenty,North Island,FALSE,Dairy cattle,290819,FALSE,NA,FALSE
+2002,5,Gisborne,North Island,FALSE,Dairy cattle,12533,FALSE,NA,TRUE
+2003,5,Gisborne,North Island,FALSE,Dairy cattle,6969,FALSE,NA,FALSE
+2007,5,Gisborne,North Island,FALSE,Dairy cattle,7891,FALSE,NA,TRUE
+2008,5,Gisborne,North Island,FALSE,Dairy cattle,16432,FALSE,NA,FALSE
+2010,5,Gisborne,North Island,FALSE,Dairy cattle,10535,FALSE,NA,FALSE
+2011,5,Gisborne,North Island,FALSE,Dairy cattle,17806,FALSE,NA,FALSE
+2012,5,Gisborne,North Island,FALSE,Dairy cattle,17095,FALSE,NA,TRUE
+2013,5,Gisborne,North Island,FALSE,Dairy cattle,19332,FALSE,NA,FALSE
+2014,5,Gisborne,North Island,FALSE,Dairy cattle,15153,FALSE,NA,FALSE
+2015,5,Gisborne,North Island,FALSE,Dairy cattle,10341,FALSE,NA,FALSE
+2016,5,Gisborne,North Island,FALSE,Dairy cattle,11950,FALSE,NA,FALSE
+2017,5,Gisborne,North Island,FALSE,Dairy cattle,9407,FALSE,NA,TRUE
+2018,5,Gisborne,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2019,5,Gisborne,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2020,5,Gisborne,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2021,5,Gisborne,North Island,FALSE,Dairy cattle,10144,FALSE,NA,FALSE
+2022,5,Gisborne,North Island,FALSE,Dairy cattle,8710,FALSE,NA,TRUE
+2023,5,Gisborne,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2024,5,Gisborne,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2025,5,Gisborne,North Island,FALSE,Dairy cattle,4076,FALSE,NA,FALSE
+2002,6,Hawke's Bay,North Island,FALSE,Dairy cattle,88982,FALSE,NA,TRUE
+2003,6,Hawke's Bay,North Island,FALSE,Dairy cattle,92852,FALSE,NA,FALSE
+2004,6,Hawke's Bay,North Island,FALSE,Dairy cattle,91786,FALSE,NA,FALSE
+2005,6,Hawke's Bay,North Island,FALSE,Dairy cattle,82772,FALSE,NA,FALSE
+2006,6,Hawke's Bay,North Island,FALSE,Dairy cattle,79419,FALSE,NA,FALSE
+2007,6,Hawke's Bay,North Island,FALSE,Dairy cattle,80200,FALSE,NA,TRUE
+2008,6,Hawke's Bay,North Island,FALSE,Dairy cattle,99931,FALSE,NA,FALSE
+2009,6,Hawke's Bay,North Island,FALSE,Dairy cattle,93871,FALSE,NA,FALSE
+2010,6,Hawke's Bay,North Island,FALSE,Dairy cattle,113465,FALSE,NA,FALSE
+2011,6,Hawke's Bay,North Island,FALSE,Dairy cattle,90655,FALSE,NA,FALSE
+2012,6,Hawke's Bay,North Island,FALSE,Dairy cattle,93047,FALSE,NA,TRUE
+2013,6,Hawke's Bay,North Island,FALSE,Dairy cattle,95098,FALSE,NA,FALSE
+2014,6,Hawke's Bay,North Island,FALSE,Dairy cattle,98100,FALSE,NA,FALSE
+2015,6,Hawke's Bay,North Island,FALSE,Dairy cattle,81738,FALSE,NA,FALSE
+2016,6,Hawke's Bay,North Island,FALSE,Dairy cattle,90854,FALSE,NA,FALSE
+2017,6,Hawke's Bay,North Island,FALSE,Dairy cattle,87675,FALSE,NA,TRUE
+2018,6,Hawke's Bay,North Island,FALSE,Dairy cattle,87267,FALSE,NA,FALSE
+2019,6,Hawke's Bay,North Island,FALSE,Dairy cattle,78002,FALSE,NA,FALSE
+2020,6,Hawke's Bay,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2021,6,Hawke's Bay,North Island,FALSE,Dairy cattle,72208,FALSE,NA,FALSE
+2022,6,Hawke's Bay,North Island,FALSE,Dairy cattle,68446,FALSE,NA,TRUE
+2023,6,Hawke's Bay,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2024,6,Hawke's Bay,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2025,6,Hawke's Bay,North Island,FALSE,Dairy cattle,64015,FALSE,NA,FALSE
+2002,7,Taranaki,North Island,FALSE,Dairy cattle,651700,FALSE,NA,TRUE
+2003,7,Taranaki,North Island,FALSE,Dairy cattle,623459,FALSE,NA,FALSE
+2004,7,Taranaki,North Island,FALSE,Dairy cattle,664922,FALSE,NA,FALSE
+2005,7,Taranaki,North Island,FALSE,Dairy cattle,615592,FALSE,NA,FALSE
+2006,7,Taranaki,North Island,FALSE,Dairy cattle,598667,FALSE,NA,FALSE
+2007,7,Taranaki,North Island,FALSE,Dairy cattle,589573,FALSE,NA,TRUE
+2008,7,Taranaki,North Island,FALSE,Dairy cattle,571505,FALSE,NA,FALSE
+2009,7,Taranaki,North Island,FALSE,Dairy cattle,607436,FALSE,NA,FALSE
+2010,7,Taranaki,North Island,FALSE,Dairy cattle,645891,FALSE,NA,FALSE
+2011,7,Taranaki,North Island,FALSE,Dairy cattle,625315,FALSE,NA,FALSE
+2012,7,Taranaki,North Island,FALSE,Dairy cattle,604383,FALSE,NA,TRUE
+2013,7,Taranaki,North Island,FALSE,Dairy cattle,595014,FALSE,NA,FALSE
+2014,7,Taranaki,North Island,FALSE,Dairy cattle,585948,FALSE,NA,FALSE
+2015,7,Taranaki,North Island,FALSE,Dairy cattle,541931,FALSE,NA,FALSE
+2016,7,Taranaki,North Island,FALSE,Dairy cattle,555532,FALSE,NA,FALSE
+2017,7,Taranaki,North Island,FALSE,Dairy cattle,590846,FALSE,NA,TRUE
+2018,7,Taranaki,North Island,FALSE,Dairy cattle,547910,FALSE,NA,FALSE
+2019,7,Taranaki,North Island,FALSE,Dairy cattle,587033,FALSE,NA,FALSE
+2020,7,Taranaki,North Island,FALSE,Dairy cattle,554560,FALSE,NA,FALSE
+2021,7,Taranaki,North Island,FALSE,Dairy cattle,538418,FALSE,NA,FALSE
+2022,7,Taranaki,North Island,FALSE,Dairy cattle,517962,FALSE,NA,TRUE
+2023,7,Taranaki,North Island,FALSE,Dairy cattle,493358,FALSE,NA,FALSE
+2024,7,Taranaki,North Island,FALSE,Dairy cattle,504392,FALSE,NA,FALSE
+2025,7,Taranaki,North Island,FALSE,Dairy cattle,481242,FALSE,NA,FALSE
+2002,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,416802,FALSE,NA,TRUE
+2003,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,408986,FALSE,NA,FALSE
+2004,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,381464,FALSE,NA,FALSE
+2005,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,410765,FALSE,NA,FALSE
+2006,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,390125,FALSE,NA,FALSE
+2007,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,393453,FALSE,NA,TRUE
+2008,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,425484,FALSE,NA,FALSE
+2009,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,424880,FALSE,NA,FALSE
+2010,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,478514,FALSE,NA,FALSE
+2011,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,472992,FALSE,NA,FALSE
+2012,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,475466,FALSE,NA,TRUE
+2013,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,448030,FALSE,NA,FALSE
+2014,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,481249,FALSE,NA,FALSE
+2015,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,451421,FALSE,NA,FALSE
+2016,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,524295,FALSE,NA,FALSE
+2017,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,463057,FALSE,NA,TRUE
+2018,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,486470,FALSE,NA,FALSE
+2019,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,467626,FALSE,NA,FALSE
+2020,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,436747,FALSE,NA,FALSE
+2021,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,443824,FALSE,NA,FALSE
+2022,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,409971,FALSE,NA,TRUE
+2023,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,398390,FALSE,NA,FALSE
+2024,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,410257,FALSE,NA,FALSE
+2025,8,Manawatu-Whanganui,North Island,FALSE,Dairy cattle,436024,FALSE,NA,FALSE
+2002,9,Wellington,North Island,FALSE,Dairy cattle,111180,FALSE,NA,TRUE
+2003,9,Wellington,North Island,FALSE,Dairy cattle,111973,FALSE,NA,FALSE
+2004,9,Wellington,North Island,FALSE,Dairy cattle,95021,FALSE,NA,FALSE
+2005,9,Wellington,North Island,FALSE,Dairy cattle,95274,FALSE,NA,FALSE
+2006,9,Wellington,North Island,FALSE,Dairy cattle,103290,FALSE,NA,FALSE
+2007,9,Wellington,North Island,FALSE,Dairy cattle,92787,FALSE,NA,TRUE
+2008,9,Wellington,North Island,FALSE,Dairy cattle,103525,FALSE,NA,FALSE
+2009,9,Wellington,North Island,FALSE,Dairy cattle,85331,FALSE,NA,FALSE
+2010,9,Wellington,North Island,FALSE,Dairy cattle,92375,FALSE,NA,FALSE
+2011,9,Wellington,North Island,FALSE,Dairy cattle,114120,FALSE,NA,FALSE
+2012,9,Wellington,North Island,FALSE,Dairy cattle,108174,FALSE,NA,TRUE
+2013,9,Wellington,North Island,FALSE,Dairy cattle,108647,FALSE,NA,FALSE
+2014,9,Wellington,North Island,FALSE,Dairy cattle,97599,FALSE,NA,FALSE
+2015,9,Wellington,North Island,FALSE,Dairy cattle,109992,FALSE,NA,FALSE
+2016,9,Wellington,North Island,FALSE,Dairy cattle,110543,FALSE,NA,FALSE
+2017,9,Wellington,North Island,FALSE,Dairy cattle,96804,FALSE,NA,TRUE
+2018,9,Wellington,North Island,FALSE,Dairy cattle,79130,FALSE,NA,FALSE
+2019,9,Wellington,North Island,FALSE,Dairy cattle,82779,FALSE,NA,FALSE
+2020,9,Wellington,North Island,FALSE,Dairy cattle,100234,FALSE,NA,FALSE
+2021,9,Wellington,North Island,FALSE,Dairy cattle,92511,FALSE,NA,FALSE
+2022,9,Wellington,North Island,FALSE,Dairy cattle,83247,FALSE,NA,TRUE
+2023,9,Wellington,North Island,FALSE,Dairy cattle,86861,FALSE,NA,FALSE
+2024,9,Wellington,North Island,FALSE,Dairy cattle,83339,FALSE,NA,FALSE
+2025,9,Wellington,North Island,FALSE,Dairy cattle,NA,TRUE,s,FALSE
+2002,1,Northland,North Island,FALSE,Sheep,522189,FALSE,NA,TRUE
+2003,1,Northland,North Island,FALSE,Sheep,530059,FALSE,NA,FALSE
+2004,1,Northland,North Island,FALSE,Sheep,494357,FALSE,NA,FALSE
+2005,1,Northland,North Island,FALSE,Sheep,556734,FALSE,NA,FALSE
+2006,1,Northland,North Island,FALSE,Sheep,525830,FALSE,NA,FALSE
+2007,1,Northland,North Island,FALSE,Sheep,534452,FALSE,NA,TRUE
+2008,1,Northland,North Island,FALSE,Sheep,504286,FALSE,NA,FALSE
+2009,1,Northland,North Island,FALSE,Sheep,429401,FALSE,NA,FALSE
+2010,1,Northland,North Island,FALSE,Sheep,430740,FALSE,NA,FALSE
+2011,1,Northland,North Island,FALSE,Sheep,400480,FALSE,NA,FALSE
+2012,1,Northland,North Island,FALSE,Sheep,440955,FALSE,NA,TRUE
+2013,1,Northland,North Island,FALSE,Sheep,427281,FALSE,NA,FALSE
+2014,1,Northland,North Island,FALSE,Sheep,331251,FALSE,NA,FALSE
+2015,1,Northland,North Island,FALSE,Sheep,381256,FALSE,NA,FALSE
+2016,1,Northland,North Island,FALSE,Sheep,366197,FALSE,NA,FALSE
+2017,1,Northland,North Island,FALSE,Sheep,328033,FALSE,NA,TRUE
+2018,1,Northland,North Island,FALSE,Sheep,279598,FALSE,NA,FALSE
+2019,1,Northland,North Island,FALSE,Sheep,278060,FALSE,NA,FALSE
+2020,1,Northland,North Island,FALSE,Sheep,235789,FALSE,NA,FALSE
+2021,1,Northland,North Island,FALSE,Sheep,239949,FALSE,NA,FALSE
+2022,1,Northland,North Island,FALSE,Sheep,224419,FALSE,NA,TRUE
+2023,1,Northland,North Island,FALSE,Sheep,190494,FALSE,NA,FALSE
+2024,1,Northland,North Island,FALSE,Sheep,181858,FALSE,NA,FALSE
+2025,1,Northland,North Island,FALSE,Sheep,174216,FALSE,NA,FALSE
+2002,10,Total North Island,NA,TRUE,Sheep,18440251,FALSE,NA,TRUE
+2003,10,Total North Island,NA,TRUE,Sheep,18410006,FALSE,NA,FALSE
+2004,10,Total North Island,NA,TRUE,Sheep,18734141,FALSE,NA,FALSE
+2005,10,Total North Island,NA,TRUE,Sheep,19030764,FALSE,NA,FALSE
+2006,10,Total North Island,NA,TRUE,Sheep,19540453,FALSE,NA,FALSE
+2007,10,Total North Island,NA,TRUE,Sheep,18542263,FALSE,NA,TRUE
+2008,10,Total North Island,NA,TRUE,Sheep,16988328,FALSE,NA,FALSE
+2009,10,Total North Island,NA,TRUE,Sheep,16077872,FALSE,NA,FALSE
+2010,10,Total North Island,NA,TRUE,Sheep,16029077,FALSE,NA,FALSE
+2011,10,Total North Island,NA,TRUE,Sheep,15460626,FALSE,NA,FALSE
+2012,10,Total North Island,NA,TRUE,Sheep,15267450,FALSE,NA,TRUE
+2013,10,Total North Island,NA,TRUE,Sheep,14958467,FALSE,NA,FALSE
+2014,10,Total North Island,NA,TRUE,Sheep,14362495,FALSE,NA,FALSE
+2015,10,Total North Island,NA,TRUE,Sheep,14511616,FALSE,NA,FALSE
+2016,10,Total North Island,NA,TRUE,Sheep,13693541,FALSE,NA,FALSE
+2017,10,Total North Island,NA,TRUE,Sheep,13619105,FALSE,NA,TRUE
+2018,10,Total North Island,NA,TRUE,Sheep,13584445,FALSE,NA,FALSE
+2019,10,Total North Island,NA,TRUE,Sheep,13166876,FALSE,NA,FALSE
+2020,10,Total North Island,NA,TRUE,Sheep,12450073,FALSE,NA,FALSE
+2021,10,Total North Island,NA,TRUE,Sheep,12686342,FALSE,NA,FALSE
+2022,10,Total North Island,NA,TRUE,Sheep,12284432,FALSE,NA,TRUE
+2023,10,Total North Island,NA,TRUE,Sheep,12001998,FALSE,NA,FALSE
+2024,10,Total North Island,NA,TRUE,Sheep,11644650,FALSE,NA,FALSE
+2025,10,Total North Island,NA,TRUE,Sheep,11487659,FALSE,NA,FALSE
+2002,11,Tasman,South Island,FALSE,Sheep,356240,FALSE,NA,TRUE
+2003,11,Tasman,South Island,FALSE,Sheep,402925,FALSE,NA,FALSE
+2004,11,Tasman,South Island,FALSE,Sheep,339028,FALSE,NA,FALSE
+2005,11,Tasman,South Island,FALSE,Sheep,325874,FALSE,NA,FALSE
+2006,11,Tasman,South Island,FALSE,Sheep,323542,FALSE,NA,FALSE
+2007,11,Tasman,South Island,FALSE,Sheep,348485,FALSE,NA,TRUE
+2009,11,Tasman,South Island,FALSE,Sheep,327770,FALSE,NA,FALSE
+2010,11,Tasman,South Island,FALSE,Sheep,317299,FALSE,NA,FALSE
+2011,11,Tasman,South Island,FALSE,Sheep,249640,FALSE,NA,FALSE
+2012,11,Tasman,South Island,FALSE,Sheep,276877,FALSE,NA,TRUE
+2013,11,Tasman,South Island,FALSE,Sheep,265858,FALSE,NA,FALSE
+2014,11,Tasman,South Island,FALSE,Sheep,242694,FALSE,NA,FALSE
+2015,11,Tasman,South Island,FALSE,Sheep,354757,FALSE,NA,FALSE
+2016,11,Tasman,South Island,FALSE,Sheep,253149,FALSE,NA,FALSE
+2017,11,Tasman,South Island,FALSE,Sheep,261878,FALSE,NA,TRUE
+2018,11,Tasman,South Island,FALSE,Sheep,246328,FALSE,NA,FALSE
+2019,11,Tasman,South Island,FALSE,Sheep,234007,FALSE,NA,FALSE
+2020,11,Tasman,South Island,FALSE,Sheep,165437,FALSE,NA,FALSE
+2021,11,Tasman,South Island,FALSE,Sheep,236736,FALSE,NA,FALSE
+2022,11,Tasman,South Island,FALSE,Sheep,189622,FALSE,NA,TRUE
+2023,11,Tasman,South Island,FALSE,Sheep,209632,FALSE,NA,FALSE
+2024,11,Tasman,South Island,FALSE,Sheep,188409,FALSE,NA,FALSE
+2025,11,Tasman,South Island,FALSE,Sheep,194237,FALSE,NA,FALSE
+2002,12,Nelson,South Island,FALSE,Sheep,11089,FALSE,NA,TRUE
+2005,12,Nelson,South Island,FALSE,Sheep,17138,FALSE,NA,FALSE
+2007,12,Nelson,South Island,FALSE,Sheep,7639,FALSE,NA,TRUE
+2008,12,Nelson,South Island,FALSE,Sheep,8671,FALSE,NA,FALSE
+2009,12,Nelson,South Island,FALSE,Sheep,4673,FALSE,NA,FALSE
+2010,12,Nelson,South Island,FALSE,Sheep,11974,FALSE,NA,FALSE
+2011,12,Nelson,South Island,FALSE,Sheep,13743,FALSE,NA,FALSE
+2012,12,Nelson,South Island,FALSE,Sheep,6466,FALSE,NA,TRUE
+2013,12,Nelson,South Island,FALSE,Sheep,6032,FALSE,NA,FALSE
+2014,12,Nelson,South Island,FALSE,Sheep,8925,FALSE,NA,FALSE
+2015,12,Nelson,South Island,FALSE,Sheep,8531,FALSE,NA,FALSE
+2016,12,Nelson,South Island,FALSE,Sheep,4729,FALSE,NA,FALSE
+2017,12,Nelson,South Island,FALSE,Sheep,NA,TRUE,s,TRUE
+2018,12,Nelson,South Island,FALSE,Sheep,27286,FALSE,NA,FALSE
+2019,12,Nelson,South Island,FALSE,Sheep,10222,FALSE,NA,FALSE
+2020,12,Nelson,South Island,FALSE,Sheep,13062,FALSE,NA,FALSE
+2021,12,Nelson,South Island,FALSE,Sheep,1899,FALSE,NA,FALSE
+2022,12,Nelson,South Island,FALSE,Sheep,NA,TRUE,s,TRUE
+2023,12,Nelson,South Island,FALSE,Sheep,11863,FALSE,NA,FALSE
+2024,12,Nelson,South Island,FALSE,Sheep,1734,FALSE,NA,FALSE
+2025,12,Nelson,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2002,13,Marlborough,South Island,FALSE,Sheep,785115,FALSE,NA,TRUE
+2003,13,Marlborough,South Island,FALSE,Sheep,741038,FALSE,NA,FALSE
+2004,13,Marlborough,South Island,FALSE,Sheep,675284,FALSE,NA,FALSE
+2005,13,Marlborough,South Island,FALSE,Sheep,638031,FALSE,NA,FALSE
+2006,13,Marlborough,South Island,FALSE,Sheep,648601,FALSE,NA,FALSE
+2007,13,Marlborough,South Island,FALSE,Sheep,578805,FALSE,NA,TRUE
+2008,13,Marlborough,South Island,FALSE,Sheep,517526,FALSE,NA,FALSE
+2009,13,Marlborough,South Island,FALSE,Sheep,516391,FALSE,NA,FALSE
+2010,13,Marlborough,South Island,FALSE,Sheep,522176,FALSE,NA,FALSE
+2011,13,Marlborough,South Island,FALSE,Sheep,425299,FALSE,NA,FALSE
+2012,13,Marlborough,South Island,FALSE,Sheep,547180,FALSE,NA,TRUE
+2013,13,Marlborough,South Island,FALSE,Sheep,518372,FALSE,NA,FALSE
+2014,13,Marlborough,South Island,FALSE,Sheep,544578,FALSE,NA,FALSE
+2015,13,Marlborough,South Island,FALSE,Sheep,453191,FALSE,NA,FALSE
+2016,13,Marlborough,South Island,FALSE,Sheep,434222,FALSE,NA,FALSE
+2017,13,Marlborough,South Island,FALSE,Sheep,468697,FALSE,NA,TRUE
+2018,13,Marlborough,South Island,FALSE,Sheep,495942,FALSE,NA,FALSE
+2019,13,Marlborough,South Island,FALSE,Sheep,518125,FALSE,NA,FALSE
+2020,13,Marlborough,South Island,FALSE,Sheep,556764,FALSE,NA,FALSE
+2021,13,Marlborough,South Island,FALSE,Sheep,471763,FALSE,NA,FALSE
+2022,13,Marlborough,South Island,FALSE,Sheep,432323,FALSE,NA,TRUE
+2023,13,Marlborough,South Island,FALSE,Sheep,414938,FALSE,NA,FALSE
+2024,13,Marlborough,South Island,FALSE,Sheep,374416,FALSE,NA,FALSE
+2025,13,Marlborough,South Island,FALSE,Sheep,374348,FALSE,NA,FALSE
+2002,14,West Coast,South Island,FALSE,Sheep,92508,FALSE,NA,TRUE
+2003,14,West Coast,South Island,FALSE,Sheep,83978,FALSE,NA,FALSE
+2004,14,West Coast,South Island,FALSE,Sheep,81941,FALSE,NA,FALSE
+2005,14,West Coast,South Island,FALSE,Sheep,74988,FALSE,NA,FALSE
+2006,14,West Coast,South Island,FALSE,Sheep,78067,FALSE,NA,FALSE
+2007,14,West Coast,South Island,FALSE,Sheep,54094,FALSE,NA,TRUE
+2008,14,West Coast,South Island,FALSE,Sheep,43156,FALSE,NA,FALSE
+2009,14,West Coast,South Island,FALSE,Sheep,42889,FALSE,NA,FALSE
+2010,14,West Coast,South Island,FALSE,Sheep,41523,FALSE,NA,FALSE
+2011,14,West Coast,South Island,FALSE,Sheep,34778,FALSE,NA,FALSE
+2012,14,West Coast,South Island,FALSE,Sheep,58085,FALSE,NA,TRUE
+2013,14,West Coast,South Island,FALSE,Sheep,32876,FALSE,NA,FALSE
+2014,14,West Coast,South Island,FALSE,Sheep,58642,FALSE,NA,FALSE
+2015,14,West Coast,South Island,FALSE,Sheep,24679,FALSE,NA,FALSE
+2016,14,West Coast,South Island,FALSE,Sheep,23148,FALSE,NA,FALSE
+2017,14,West Coast,South Island,FALSE,Sheep,40384,FALSE,NA,TRUE
+2018,14,West Coast,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2019,14,West Coast,South Island,FALSE,Sheep,21197,FALSE,NA,FALSE
+2020,14,West Coast,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2021,14,West Coast,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2022,14,West Coast,South Island,FALSE,Sheep,35213,FALSE,NA,TRUE
+2023,14,West Coast,South Island,FALSE,Sheep,15339,FALSE,NA,FALSE
+2024,14,West Coast,South Island,FALSE,Sheep,28534,FALSE,NA,FALSE
+2025,14,West Coast,South Island,FALSE,Sheep,52542,FALSE,NA,FALSE
+2002,15,Canterbury,South Island,FALSE,Sheep,7758336,FALSE,NA,TRUE
+2003,15,Canterbury,South Island,FALSE,Sheep,7969929,FALSE,NA,FALSE
+2004,15,Canterbury,South Island,FALSE,Sheep,7499728,FALSE,NA,FALSE
+2005,15,Canterbury,South Island,FALSE,Sheep,7602271,FALSE,NA,FALSE
+2006,15,Canterbury,South Island,FALSE,Sheep,7463075,FALSE,NA,FALSE
+2007,15,Canterbury,South Island,FALSE,Sheep,7166822,FALSE,NA,TRUE
+2008,15,Canterbury,South Island,FALSE,Sheep,6063300,FALSE,NA,FALSE
+2009,15,Canterbury,South Island,FALSE,Sheep,5504718,FALSE,NA,FALSE
+2010,15,Canterbury,South Island,FALSE,Sheep,5652101,FALSE,NA,FALSE
+2011,15,Canterbury,South Island,FALSE,Sheep,5569215,FALSE,NA,FALSE
+2012,15,Canterbury,South Island,FALSE,Sheep,5348010,FALSE,NA,TRUE
+2013,15,Canterbury,South Island,FALSE,Sheep,5222094,FALSE,NA,FALSE
+2014,15,Canterbury,South Island,FALSE,Sheep,4966905,FALSE,NA,FALSE
+2015,15,Canterbury,South Island,FALSE,Sheep,4501137,FALSE,NA,FALSE
+2016,15,Canterbury,South Island,FALSE,Sheep,4584936,FALSE,NA,FALSE
+2017,15,Canterbury,South Island,FALSE,Sheep,4473916,FALSE,NA,TRUE
+2018,15,Canterbury,South Island,FALSE,Sheep,4423195,FALSE,NA,FALSE
+2019,15,Canterbury,South Island,FALSE,Sheep,4572719,FALSE,NA,FALSE
+2020,15,Canterbury,South Island,FALSE,Sheep,4560405,FALSE,NA,FALSE
+2021,15,Canterbury,South Island,FALSE,Sheep,4253617,FALSE,NA,FALSE
+2022,15,Canterbury,South Island,FALSE,Sheep,4662185,FALSE,NA,TRUE
+2023,15,Canterbury,South Island,FALSE,Sheep,4527228,FALSE,NA,FALSE
+2024,15,Canterbury,South Island,FALSE,Sheep,4189852,FALSE,NA,FALSE
+2025,15,Canterbury,South Island,FALSE,Sheep,4192693,FALSE,NA,FALSE
+2002,16,Otago,South Island,FALSE,Sheep,6120918,FALSE,NA,TRUE
+2003,16,Otago,South Island,FALSE,Sheep,5945247,FALSE,NA,FALSE
+2004,16,Otago,South Island,FALSE,Sheep,5901789,FALSE,NA,FALSE
+2005,16,Otago,South Island,FALSE,Sheep,6185038,FALSE,NA,FALSE
+2006,16,Otago,South Island,FALSE,Sheep,5998440,FALSE,NA,FALSE
+2007,16,Otago,South Island,FALSE,Sheep,6031166,FALSE,NA,TRUE
+2008,16,Otago,South Island,FALSE,Sheep,5343380,FALSE,NA,FALSE
+2009,16,Otago,South Island,FALSE,Sheep,5281730,FALSE,NA,FALSE
+2010,16,Otago,South Island,FALSE,Sheep,5323860,FALSE,NA,FALSE
+2011,16,Otago,South Island,FALSE,Sheep,5203236,FALSE,NA,FALSE
+2012,16,Otago,South Island,FALSE,Sheep,5342846,FALSE,NA,TRUE
+2013,16,Otago,South Island,FALSE,Sheep,5325322,FALSE,NA,FALSE
+2014,16,Otago,South Island,FALSE,Sheep,5257716,FALSE,NA,FALSE
+2015,16,Otago,South Island,FALSE,Sheep,5120190,FALSE,NA,FALSE
+2016,16,Otago,South Island,FALSE,Sheep,4818842,FALSE,NA,FALSE
+2017,16,Otago,South Island,FALSE,Sheep,4586781,FALSE,NA,TRUE
+2018,16,Otago,South Island,FALSE,Sheep,4937228,FALSE,NA,FALSE
+2019,16,Otago,South Island,FALSE,Sheep,4888402,FALSE,NA,FALSE
+2020,16,Otago,South Island,FALSE,Sheep,4823751,FALSE,NA,FALSE
+2021,16,Otago,South Island,FALSE,Sheep,4520718,FALSE,NA,FALSE
+2022,16,Otago,South Island,FALSE,Sheep,4367739,FALSE,NA,TRUE
+2023,16,Otago,South Island,FALSE,Sheep,4110844,FALSE,NA,FALSE
+2024,16,Otago,South Island,FALSE,Sheep,4059897,FALSE,NA,FALSE
+2025,16,Otago,South Island,FALSE,Sheep,3850361,FALSE,NA,FALSE
+2002,17,Southland,South Island,FALSE,Sheep,5950657,FALSE,NA,TRUE
+2003,17,Southland,South Island,FALSE,Sheep,5855296,FALSE,NA,FALSE
+2004,17,Southland,South Island,FALSE,Sheep,5966919,FALSE,NA,FALSE
+2005,17,Southland,South Island,FALSE,Sheep,5950627,FALSE,NA,FALSE
+2006,17,Southland,South Island,FALSE,Sheep,5928761,FALSE,NA,FALSE
+2007,17,Southland,South Island,FALSE,Sheep,5662387,FALSE,NA,TRUE
+2008,17,Southland,South Island,FALSE,Sheep,4739003,FALSE,NA,FALSE
+2009,17,Southland,South Island,FALSE,Sheep,4556206,FALSE,NA,FALSE
+2010,17,Southland,South Island,FALSE,Sheep,4597335,FALSE,NA,FALSE
+2011,17,Southland,South Island,FALSE,Sheep,4112930,FALSE,NA,FALSE
+2012,17,Southland,South Island,FALSE,Sheep,4356427,FALSE,NA,TRUE
+2013,17,Southland,South Island,FALSE,Sheep,4390785,FALSE,NA,FALSE
+2014,17,Southland,South Island,FALSE,Sheep,4299214,FALSE,NA,FALSE
+2015,17,Southland,South Island,FALSE,Sheep,4072964,FALSE,NA,FALSE
+2016,17,Southland,South Island,FALSE,Sheep,3711484,FALSE,NA,FALSE
+2017,17,Southland,South Island,FALSE,Sheep,3987294,FALSE,NA,TRUE
+2018,17,Southland,South Island,FALSE,Sheep,3487730,FALSE,NA,FALSE
+2019,17,Southland,South Island,FALSE,Sheep,3326557,FALSE,NA,FALSE
+2020,17,Southland,South Island,FALSE,Sheep,3374150,FALSE,NA,FALSE
+2021,17,Southland,South Island,FALSE,Sheep,3417345,FALSE,NA,FALSE
+2022,17,Southland,South Island,FALSE,Sheep,3092545,FALSE,NA,TRUE
+2023,17,Southland,South Island,FALSE,Sheep,3046823,FALSE,NA,FALSE
+2024,17,Southland,South Island,FALSE,Sheep,3034116,FALSE,NA,FALSE
+2025,17,Southland,South Island,FALSE,Sheep,3043981,FALSE,NA,FALSE
+2002,18,Chatham Islands,South Island,FALSE,Sheep,56723,FALSE,NA,TRUE
+2007,18,Chatham Islands,South Island,FALSE,Sheep,68816,FALSE,NA,TRUE
+2008,18,Chatham Islands,South Island,FALSE,Sheep,64202,FALSE,NA,FALSE
+2010,18,Chatham Islands,South Island,FALSE,Sheep,67267,FALSE,NA,FALSE
+2011,18,Chatham Islands,South Island,FALSE,Sheep,62861,FALSE,NA,FALSE
+2012,18,Chatham Islands,South Island,FALSE,Sheep,59374,FALSE,NA,TRUE
+2013,18,Chatham Islands,South Island,FALSE,Sheep,66956,FALSE,NA,FALSE
+2014,18,Chatham Islands,South Island,FALSE,Sheep,62234,FALSE,NA,FALSE
+2015,18,Chatham Islands,South Island,FALSE,Sheep,73763,FALSE,NA,FALSE
+2016,18,Chatham Islands,South Island,FALSE,Sheep,59622,FALSE,NA,FALSE
+2017,18,Chatham Islands,South Island,FALSE,Sheep,68914,FALSE,NA,TRUE
+2018,18,Chatham Islands,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2019,18,Chatham Islands,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2020,18,Chatham Islands,South Island,FALSE,Sheep,64895,FALSE,NA,FALSE
+2021,18,Chatham Islands,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2022,18,Chatham Islands,South Island,FALSE,Sheep,49784,FALSE,NA,TRUE
+2023,18,Chatham Islands,South Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2024,18,Chatham Islands,South Island,FALSE,Sheep,61393,FALSE,NA,FALSE
+2025,18,Chatham Islands,South Island,FALSE,Sheep,48225,FALSE,NA,FALSE
+2002,19,Total South Island,NA,TRUE,Sheep,21131586,FALSE,NA,TRUE
+2003,19,Total South Island,NA,TRUE,Sheep,21142107,FALSE,NA,FALSE
+2004,19,Total South Island,NA,TRUE,Sheep,20536997,FALSE,NA,FALSE
+2005,19,Total South Island,NA,TRUE,Sheep,20848904,FALSE,NA,FALSE
+2006,19,Total South Island,NA,TRUE,Sheep,20541141,FALSE,NA,FALSE
+2007,19,Total South Island,NA,TRUE,Sheep,19918214,FALSE,NA,TRUE
+2008,19,Total South Island,NA,TRUE,Sheep,17099536,FALSE,NA,FALSE
+2009,19,Total South Island,NA,TRUE,Sheep,16305716,FALSE,NA,FALSE
+2010,19,Total South Island,NA,TRUE,Sheep,16533535,FALSE,NA,FALSE
+2011,19,Total South Island,NA,TRUE,Sheep,15671703,FALSE,NA,FALSE
+2012,19,Total South Island,NA,TRUE,Sheep,15995265,FALSE,NA,TRUE
+2013,19,Total South Island,NA,TRUE,Sheep,15828294,FALSE,NA,FALSE
+2014,19,Total South Island,NA,TRUE,Sheep,15440907,FALSE,NA,FALSE
+2015,19,Total South Island,NA,TRUE,Sheep,14609211,FALSE,NA,FALSE
+2016,19,Total South Island,NA,TRUE,Sheep,13890132,FALSE,NA,FALSE
+2017,19,Total South Island,NA,TRUE,Sheep,13907432,FALSE,NA,TRUE
+2018,19,Total South Island,NA,TRUE,Sheep,13711304,FALSE,NA,FALSE
+2019,19,Total South Island,NA,TRUE,Sheep,13654970,FALSE,NA,FALSE
+2020,19,Total South Island,NA,TRUE,Sheep,13578862,FALSE,NA,FALSE
+2021,19,Total South Island,NA,TRUE,Sheep,13046547,FALSE,NA,FALSE
+2022,19,Total South Island,NA,TRUE,Sheep,12848265,FALSE,NA,TRUE
+2023,19,Total South Island,NA,TRUE,Sheep,12357269,FALSE,NA,FALSE
+2024,19,Total South Island,NA,TRUE,Sheep,11938351,FALSE,NA,FALSE
+2025,19,Total South Island,NA,TRUE,Sheep,11764804,FALSE,NA,FALSE
+2002,2,Auckland,North Island,FALSE,Sheep,368217,FALSE,NA,TRUE
+2003,2,Auckland,North Island,FALSE,Sheep,361345,FALSE,NA,FALSE
+2004,2,Auckland,North Island,FALSE,Sheep,325188,FALSE,NA,FALSE
+2005,2,Auckland,North Island,FALSE,Sheep,318201,FALSE,NA,FALSE
+2006,2,Auckland,North Island,FALSE,Sheep,293760,FALSE,NA,FALSE
+2007,2,Auckland,North Island,FALSE,Sheep,287589,FALSE,NA,TRUE
+2008,2,Auckland,North Island,FALSE,Sheep,264979,FALSE,NA,FALSE
+2009,2,Auckland,North Island,FALSE,Sheep,257248,FALSE,NA,FALSE
+2010,2,Auckland,North Island,FALSE,Sheep,235414,FALSE,NA,FALSE
+2011,2,Auckland,North Island,FALSE,Sheep,219952,FALSE,NA,FALSE
+2012,2,Auckland,North Island,FALSE,Sheep,205270,FALSE,NA,TRUE
+2013,2,Auckland,North Island,FALSE,Sheep,212437,FALSE,NA,FALSE
+2014,2,Auckland,North Island,FALSE,Sheep,215932,FALSE,NA,FALSE
+2015,2,Auckland,North Island,FALSE,Sheep,240830,FALSE,NA,FALSE
+2016,2,Auckland,North Island,FALSE,Sheep,202200,FALSE,NA,FALSE
+2017,2,Auckland,North Island,FALSE,Sheep,253074,FALSE,NA,TRUE
+2018,2,Auckland,North Island,FALSE,Sheep,202415,FALSE,NA,FALSE
+2019,2,Auckland,North Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2020,2,Auckland,North Island,FALSE,Sheep,180218,FALSE,NA,FALSE
+2021,2,Auckland,North Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2022,2,Auckland,North Island,FALSE,Sheep,195853,FALSE,NA,TRUE
+2023,2,Auckland,North Island,FALSE,Sheep,201464,FALSE,NA,FALSE
+2024,2,Auckland,North Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2025,2,Auckland,North Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2002,20,Total New Zealand,NA,TRUE,Sheep,39571837,FALSE,NA,TRUE
+2003,20,Total New Zealand,NA,TRUE,Sheep,39552113,FALSE,NA,FALSE
+2004,20,Total New Zealand,NA,TRUE,Sheep,39271137,FALSE,NA,FALSE
+2005,20,Total New Zealand,NA,TRUE,Sheep,39879668,FALSE,NA,FALSE
+2006,20,Total New Zealand,NA,TRUE,Sheep,40081594,FALSE,NA,FALSE
+2007,20,Total New Zealand,NA,TRUE,Sheep,38460477,FALSE,NA,TRUE
+2008,20,Total New Zealand,NA,TRUE,Sheep,34087864,FALSE,NA,FALSE
+2009,20,Total New Zealand,NA,TRUE,Sheep,32383589,FALSE,NA,FALSE
+2010,20,Total New Zealand,NA,TRUE,Sheep,32562612,FALSE,NA,FALSE
+2011,20,Total New Zealand,NA,TRUE,Sheep,31132329,FALSE,NA,FALSE
+2012,20,Total New Zealand,NA,TRUE,Sheep,31262715,FALSE,NA,TRUE
+2013,20,Total New Zealand,NA,TRUE,Sheep,30786761,FALSE,NA,FALSE
+2014,20,Total New Zealand,NA,TRUE,Sheep,29803402,FALSE,NA,FALSE
+2015,20,Total New Zealand,NA,TRUE,Sheep,29120827,FALSE,NA,FALSE
+2016,20,Total New Zealand,NA,TRUE,Sheep,27583673,FALSE,NA,FALSE
+2017,20,Total New Zealand,NA,TRUE,Sheep,27526537,FALSE,NA,TRUE
+2018,20,Total New Zealand,NA,TRUE,Sheep,27295749,FALSE,NA,FALSE
+2019,20,Total New Zealand,NA,TRUE,Sheep,26821846,FALSE,NA,FALSE
+2020,20,Total New Zealand,NA,TRUE,Sheep,26028935,FALSE,NA,FALSE
+2021,20,Total New Zealand,NA,TRUE,Sheep,25732889,FALSE,NA,FALSE
+2022,20,Total New Zealand,NA,TRUE,Sheep,25132697,FALSE,NA,TRUE
+2023,20,Total New Zealand,NA,TRUE,Sheep,24359267,FALSE,NA,FALSE
+2024,20,Total New Zealand,NA,TRUE,Sheep,23583001,FALSE,NA,FALSE
+2025,20,Total New Zealand,NA,TRUE,Sheep,23252463,FALSE,NA,FALSE
+2002,3,Waikato,North Island,FALSE,Sheep,2592399,FALSE,NA,TRUE
+2003,3,Waikato,North Island,FALSE,Sheep,2409128,FALSE,NA,FALSE
+2004,3,Waikato,North Island,FALSE,Sheep,2457368,FALSE,NA,FALSE
+2005,3,Waikato,North Island,FALSE,Sheep,2555163,FALSE,NA,FALSE
+2006,3,Waikato,North Island,FALSE,Sheep,2706984,FALSE,NA,FALSE
+2007,3,Waikato,North Island,FALSE,Sheep,2660145,FALSE,NA,TRUE
+2008,3,Waikato,North Island,FALSE,Sheep,2168673,FALSE,NA,FALSE
+2009,3,Waikato,North Island,FALSE,Sheep,2101906,FALSE,NA,FALSE
+2010,3,Waikato,North Island,FALSE,Sheep,1982414,FALSE,NA,FALSE
+2011,3,Waikato,North Island,FALSE,Sheep,1838297,FALSE,NA,FALSE
+2012,3,Waikato,North Island,FALSE,Sheep,1776544,FALSE,NA,TRUE
+2013,3,Waikato,North Island,FALSE,Sheep,1926059,FALSE,NA,FALSE
+2014,3,Waikato,North Island,FALSE,Sheep,1699244,FALSE,NA,FALSE
+2015,3,Waikato,North Island,FALSE,Sheep,1646010,FALSE,NA,FALSE
+2016,3,Waikato,North Island,FALSE,Sheep,1666388,FALSE,NA,FALSE
+2017,3,Waikato,North Island,FALSE,Sheep,1478921,FALSE,NA,TRUE
+2018,3,Waikato,North Island,FALSE,Sheep,1632001,FALSE,NA,FALSE
+2019,3,Waikato,North Island,FALSE,Sheep,1524498,FALSE,NA,FALSE
+2020,3,Waikato,North Island,FALSE,Sheep,1406552,FALSE,NA,FALSE
+2021,3,Waikato,North Island,FALSE,Sheep,1540300,FALSE,NA,FALSE
+2022,3,Waikato,North Island,FALSE,Sheep,1301359,FALSE,NA,TRUE
+2023,3,Waikato,North Island,FALSE,Sheep,1378422,FALSE,NA,FALSE
+2024,3,Waikato,North Island,FALSE,Sheep,1231167,FALSE,NA,FALSE
+2025,3,Waikato,North Island,FALSE,Sheep,1313281,FALSE,NA,FALSE
+2002,4,Bay of Plenty,North Island,FALSE,Sheep,415379,FALSE,NA,TRUE
+2003,4,Bay of Plenty,North Island,FALSE,Sheep,355785,FALSE,NA,FALSE
+2004,4,Bay of Plenty,North Island,FALSE,Sheep,409095,FALSE,NA,FALSE
+2005,4,Bay of Plenty,North Island,FALSE,Sheep,356859,FALSE,NA,FALSE
+2006,4,Bay of Plenty,North Island,FALSE,Sheep,382419,FALSE,NA,FALSE
+2007,4,Bay of Plenty,North Island,FALSE,Sheep,385373,FALSE,NA,TRUE
+2008,4,Bay of Plenty,North Island,FALSE,Sheep,346445,FALSE,NA,FALSE
+2009,4,Bay of Plenty,North Island,FALSE,Sheep,331049,FALSE,NA,FALSE
+2010,4,Bay of Plenty,North Island,FALSE,Sheep,347973,FALSE,NA,FALSE
+2011,4,Bay of Plenty,North Island,FALSE,Sheep,284954,FALSE,NA,FALSE
+2012,4,Bay of Plenty,North Island,FALSE,Sheep,322882,FALSE,NA,TRUE
+2013,4,Bay of Plenty,North Island,FALSE,Sheep,312593,FALSE,NA,FALSE
+2014,4,Bay of Plenty,North Island,FALSE,Sheep,250299,FALSE,NA,FALSE
+2015,4,Bay of Plenty,North Island,FALSE,Sheep,302986,FALSE,NA,FALSE
+2016,4,Bay of Plenty,North Island,FALSE,Sheep,263380,FALSE,NA,FALSE
+2017,4,Bay of Plenty,North Island,FALSE,Sheep,281535,FALSE,NA,TRUE
+2018,4,Bay of Plenty,North Island,FALSE,Sheep,232865,FALSE,NA,FALSE
+2019,4,Bay of Plenty,North Island,FALSE,Sheep,237906,FALSE,NA,FALSE
+2020,4,Bay of Plenty,North Island,FALSE,Sheep,220729,FALSE,NA,FALSE
+2021,4,Bay of Plenty,North Island,FALSE,Sheep,NA,TRUE,s,FALSE
+2022,4,Bay of Plenty,North Island,FALSE,Sheep,208760,FALSE,NA,TRUE
+2023,4,Bay of Plenty,North Island,FALSE,Sheep,236871,FALSE,NA,FALSE
+2024,4,Bay of Plenty,North Island,FALSE,Sheep,232472,FALSE,NA,FALSE
+2025,4,Bay of Plenty,North Island,FALSE,Sheep,218552,FALSE,NA,FALSE
+2002,5,Gisborne,North Island,FALSE,Sheep,1679377,FALSE,NA,TRUE
+2003,5,Gisborne,North Island,FALSE,Sheep,1869777,FALSE,NA,FALSE
+2004,5,Gisborne,North Island,FALSE,Sheep,1847723,FALSE,NA,FALSE
+2005,5,Gisborne,North Island,FALSE,Sheep,1717266,FALSE,NA,FALSE
+2006,5,Gisborne,North Island,FALSE,Sheep,1833833,FALSE,NA,FALSE
+2007,5,Gisborne,North Island,FALSE,Sheep,1825496,FALSE,NA,TRUE
+2008,5,Gisborne,North Island,FALSE,Sheep,1679670,FALSE,NA,FALSE
+2009,5,Gisborne,North Island,FALSE,Sheep,1548344,FALSE,NA,FALSE
+2010,5,Gisborne,North Island,FALSE,Sheep,1589785,FALSE,NA,FALSE
+2011,5,Gisborne,North Island,FALSE,Sheep,1517015,FALSE,NA,FALSE
+2012,5,Gisborne,North Island,FALSE,Sheep,1547294,FALSE,NA,TRUE
+2013,5,Gisborne,North Island,FALSE,Sheep,1503378,FALSE,NA,FALSE
+2014,5,Gisborne,North Island,FALSE,Sheep,1602270,FALSE,NA,FALSE
+2015,5,Gisborne,North Island,FALSE,Sheep,1472423,FALSE,NA,FALSE
+2016,5,Gisborne,North Island,FALSE,Sheep,1515181,FALSE,NA,FALSE
+2017,5,Gisborne,North Island,FALSE,Sheep,1412045,FALSE,NA,TRUE
+2018,5,Gisborne,North Island,FALSE,Sheep,1457321,FALSE,NA,FALSE
+2019,5,Gisborne,North Island,FALSE,Sheep,1380146,FALSE,NA,FALSE
+2020,5,Gisborne,North Island,FALSE,Sheep,1365329,FALSE,NA,FALSE
+2021,5,Gisborne,North Island,FALSE,Sheep,1446290,FALSE,NA,FALSE
+2022,5,Gisborne,North Island,FALSE,Sheep,1321554,FALSE,NA,TRUE
+2023,5,Gisborne,North Island,FALSE,Sheep,1267839,FALSE,NA,FALSE
+2024,5,Gisborne,North Island,FALSE,Sheep,1233096,FALSE,NA,FALSE
+2025,5,Gisborne,North Island,FALSE,Sheep,1175255,FALSE,NA,FALSE
+2002,6,Hawke's Bay,North Island,FALSE,Sheep,3788684,FALSE,NA,TRUE
+2003,6,Hawke's Bay,North Island,FALSE,Sheep,3922729,FALSE,NA,FALSE
+2004,6,Hawke's Bay,North Island,FALSE,Sheep,4305819,FALSE,NA,FALSE
+2005,6,Hawke's Bay,North Island,FALSE,Sheep,4070230,FALSE,NA,FALSE
+2006,6,Hawke's Bay,North Island,FALSE,Sheep,4226620,FALSE,NA,FALSE
+2007,6,Hawke's Bay,North Island,FALSE,Sheep,3624018,FALSE,NA,TRUE
+2008,6,Hawke's Bay,North Island,FALSE,Sheep,3690843,FALSE,NA,FALSE
+2009,6,Hawke's Bay,North Island,FALSE,Sheep,3445616,FALSE,NA,FALSE
+2010,6,Hawke's Bay,North Island,FALSE,Sheep,3429382,FALSE,NA,FALSE
+2011,6,Hawke's Bay,North Island,FALSE,Sheep,3266872,FALSE,NA,FALSE
+2012,6,Hawke's Bay,North Island,FALSE,Sheep,3262468,FALSE,NA,TRUE
+2013,6,Hawke's Bay,North Island,FALSE,Sheep,2996560,FALSE,NA,FALSE
+2014,6,Hawke's Bay,North Island,FALSE,Sheep,2872852,FALSE,NA,FALSE
+2015,6,Hawke's Bay,North Island,FALSE,Sheep,3028852,FALSE,NA,FALSE
+2016,6,Hawke's Bay,North Island,FALSE,Sheep,2872524,FALSE,NA,FALSE
+2017,6,Hawke's Bay,North Island,FALSE,Sheep,2794237,FALSE,NA,TRUE
+2018,6,Hawke's Bay,North Island,FALSE,Sheep,2850607,FALSE,NA,FALSE
+2019,6,Hawke's Bay,North Island,FALSE,Sheep,2876262,FALSE,NA,FALSE
+2020,6,Hawke's Bay,North Island,FALSE,Sheep,2529972,FALSE,NA,FALSE
+2021,6,Hawke's Bay,North Island,FALSE,Sheep,2604116,FALSE,NA,FALSE
+2022,6,Hawke's Bay,North Island,FALSE,Sheep,2788789,FALSE,NA,TRUE
+2023,6,Hawke's Bay,North Island,FALSE,Sheep,2602911,FALSE,NA,FALSE
+2024,6,Hawke's Bay,North Island,FALSE,Sheep,2656857,FALSE,NA,FALSE
+2025,6,Hawke's Bay,North Island,FALSE,Sheep,2457435,FALSE,NA,FALSE
+2002,7,Taranaki,North Island,FALSE,Sheep,697637,FALSE,NA,TRUE
+2003,7,Taranaki,North Island,FALSE,Sheep,664627,FALSE,NA,FALSE
+2004,7,Taranaki,North Island,FALSE,Sheep,687435,FALSE,NA,FALSE
+2005,7,Taranaki,North Island,FALSE,Sheep,678700,FALSE,NA,FALSE
+2006,7,Taranaki,North Island,FALSE,Sheep,688273,FALSE,NA,FALSE
+2007,7,Taranaki,North Island,FALSE,Sheep,656144,FALSE,NA,TRUE
+2008,7,Taranaki,North Island,FALSE,Sheep,637400,FALSE,NA,FALSE
+2009,7,Taranaki,North Island,FALSE,Sheep,537850,FALSE,NA,FALSE
+2010,7,Taranaki,North Island,FALSE,Sheep,583467,FALSE,NA,FALSE
+2011,7,Taranaki,North Island,FALSE,Sheep,556982,FALSE,NA,FALSE
+2012,7,Taranaki,North Island,FALSE,Sheep,434402,FALSE,NA,TRUE
+2013,7,Taranaki,North Island,FALSE,Sheep,537355,FALSE,NA,FALSE
+2014,7,Taranaki,North Island,FALSE,Sheep,502255,FALSE,NA,FALSE
+2015,7,Taranaki,North Island,FALSE,Sheep,499840,FALSE,NA,FALSE
+2016,7,Taranaki,North Island,FALSE,Sheep,434333,FALSE,NA,FALSE
+2017,7,Taranaki,North Island,FALSE,Sheep,497505,FALSE,NA,TRUE
+2018,7,Taranaki,North Island,FALSE,Sheep,395142,FALSE,NA,FALSE
+2019,7,Taranaki,North Island,FALSE,Sheep,441933,FALSE,NA,FALSE
+2020,7,Taranaki,North Island,FALSE,Sheep,387515,FALSE,NA,FALSE
+2021,7,Taranaki,North Island,FALSE,Sheep,441897,FALSE,NA,FALSE
+2022,7,Taranaki,North Island,FALSE,Sheep,465276,FALSE,NA,TRUE
+2023,7,Taranaki,North Island,FALSE,Sheep,402895,FALSE,NA,FALSE
+2024,7,Taranaki,North Island,FALSE,Sheep,435204,FALSE,NA,FALSE
+2025,7,Taranaki,North Island,FALSE,Sheep,427646,FALSE,NA,FALSE
+2002,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6563838,FALSE,NA,TRUE
+2003,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6516684,FALSE,NA,FALSE
+2004,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6263729,FALSE,NA,FALSE
+2005,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6738633,FALSE,NA,FALSE
+2006,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6870265,FALSE,NA,FALSE
+2007,8,Manawatu-Whanganui,North Island,FALSE,Sheep,6746989,FALSE,NA,TRUE
+2008,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5916784,FALSE,NA,FALSE
+2009,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5767131,FALSE,NA,FALSE
+2010,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5796023,FALSE,NA,FALSE
+2011,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5730947,FALSE,NA,FALSE
+2012,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5612743,FALSE,NA,TRUE
+2013,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5469819,FALSE,NA,FALSE
+2014,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5328843,FALSE,NA,FALSE
+2015,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5518950,FALSE,NA,FALSE
+2016,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5040174,FALSE,NA,FALSE
+2017,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5061676,FALSE,NA,TRUE
+2018,8,Manawatu-Whanganui,North Island,FALSE,Sheep,5060276,FALSE,NA,FALSE
+2019,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4791398,FALSE,NA,FALSE
+2020,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4680562,FALSE,NA,FALSE
+2021,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4709345,FALSE,NA,FALSE
+2022,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4485482,FALSE,NA,TRUE
+2023,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4411333,FALSE,NA,FALSE
+2024,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4363196,FALSE,NA,FALSE
+2025,8,Manawatu-Whanganui,North Island,FALSE,Sheep,4309252,FALSE,NA,FALSE
+2002,9,Wellington,North Island,FALSE,Sheep,1812531,FALSE,NA,TRUE
+2003,9,Wellington,North Island,FALSE,Sheep,1779872,FALSE,NA,FALSE
+2004,9,Wellington,North Island,FALSE,Sheep,1943427,FALSE,NA,FALSE
+2005,9,Wellington,North Island,FALSE,Sheep,2038979,FALSE,NA,FALSE
+2006,9,Wellington,North Island,FALSE,Sheep,2012471,FALSE,NA,FALSE
+2007,9,Wellington,North Island,FALSE,Sheep,1822057,FALSE,NA,TRUE
+2008,9,Wellington,North Island,FALSE,Sheep,1779247,FALSE,NA,FALSE
+2009,9,Wellington,North Island,FALSE,Sheep,1659327,FALSE,NA,FALSE
+2010,9,Wellington,North Island,FALSE,Sheep,1633879,FALSE,NA,FALSE
+2011,9,Wellington,North Island,FALSE,Sheep,1645127,FALSE,NA,FALSE
+2012,9,Wellington,North Island,FALSE,Sheep,1664892,FALSE,NA,TRUE
+2013,9,Wellington,North Island,FALSE,Sheep,1572985,FALSE,NA,FALSE
+2014,9,Wellington,North Island,FALSE,Sheep,1559548,FALSE,NA,FALSE
+2015,9,Wellington,North Island,FALSE,Sheep,1420470,FALSE,NA,FALSE
+2016,9,Wellington,North Island,FALSE,Sheep,1333163,FALSE,NA,FALSE
+2017,9,Wellington,North Island,FALSE,Sheep,1512079,FALSE,NA,TRUE
+2018,9,Wellington,North Island,FALSE,Sheep,1474219,FALSE,NA,FALSE
+2019,9,Wellington,North Island,FALSE,Sheep,1434408,FALSE,NA,FALSE
+2020,9,Wellington,North Island,FALSE,Sheep,1443407,FALSE,NA,FALSE
+2021,9,Wellington,North Island,FALSE,Sheep,1290604,FALSE,NA,FALSE
+2022,9,Wellington,North Island,FALSE,Sheep,1292940,FALSE,NA,TRUE
+2023,9,Wellington,North Island,FALSE,Sheep,1309770,FALSE,NA,FALSE
+2024,9,Wellington,North Island,FALSE,Sheep,1090815,FALSE,NA,FALSE
+2025,9,Wellington,North Island,FALSE,Sheep,1165154,FALSE,NA,FALSE

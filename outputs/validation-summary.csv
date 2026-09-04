@@ -1,0 +1,6 @@
+rule,items,passes,fails,nNA
+head_non_negative,1397,1397,0,0
+value_iff_suppressed,1397,1397,0,0
+region_label_present,1397,1397,0,0
+no_duplicate_cells,1397,1397,0,0
+year_in_series_window,1397,1397,0,0

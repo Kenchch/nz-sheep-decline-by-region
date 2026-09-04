@@ -1,0 +1,25 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Where New Zealand's sheep went"
+  page-footer:
+    center: "Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence."
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 2
+    number-sections: false
+    fig-width: 9
+    fig-height: 5.5
+    code-fold: true
+    code-summary: "Show the code"
+    df-print: kable
+    embed-resources: false
+
+execute:
+  warning: false
+  message: false
