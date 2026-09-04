@@ -1,7 +1,9 @@
 name: Reproduce analysis
 
-# Checks the claim the README makes: that a clean checkout running the two
-# documented commands regenerates the committed outputs unchanged.
+# Checks the claim the report and the README both make: that a clean checkout
+# running the two documented commands regenerates the committed outputs
+# unchanged. The site is then published from the same run, so the page a reader
+# opens is always the output of a build that passed.
 #
 # Only the CSVs are compared byte-for-byte. The PNGs are rendered by ggplot2
 # against whatever fonts and graphics devices the runner has, so they are not
@@ -17,13 +19,15 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write   # the publish step pushes the rendered site to gh-pages
 
 jobs:
   reproduce:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # quarto publish needs the gh-pages history
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -31,19 +35,9 @@ jobs:
 
       - uses: quarto-dev/quarto-actions/setup@v2
 
+      # Dependencies are declared once, in DESCRIPTION. If that file goes
+      # missing this step fails rather than silently installing nothing.
       - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            any::digest
-            any::dplyr
-            any::ggplot2
-            any::janitor
-            any::knitr
-            any::readr
-            any::rmarkdown
-            any::scales
-            any::tidyr
-            any::validate
 
       - name: Verify the pinned extract against its recorded hash
         run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
@@ -56,3 +50,14 @@ jobs:
 
       - name: Committed CSV outputs must match a fresh run
         run: git diff --exit-code -- 'outputs/*.csv'
+
+      # Publishing is gated on every step above, so the live page can only ever
+      # be a version that reproduced its own outputs. Pull requests render but
+      # do not publish.
+      - name: Publish to GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

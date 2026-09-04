@@ -99,12 +99,20 @@ bytes can differ with the platform's fonts and graphics device. `R/load.R`
 verifies the extract against the SHA-256 in `SOURCE.md` before reading it and
 stops if they disagree.
 
-GitHub Actions runs the same regeneration on every push and pull request, then
-fails if any committed CSV differs. It also renders the full report, while PNGs
-are not compared byte-for-byte because graphics can differ across platforms.
-Ingestion stops on schema changes, unknown suppression flags, duplicate cells,
-missing years, or missing national totals, so a changed source shape cannot
-silently produce plausible-looking results.
+GitHub Actions runs the same regeneration on every push and pull request, fails
+if any committed CSV differs, and publishes the report to GitHub Pages from that
+same green run — so the live page is always the output of a build that
+reproduced its own outputs. It renders the figures too, but does not compare
+their bytes, because graphics differ across platforms. Ingestion stops on schema
+changes, unknown suppression flags, duplicate cells, missing years, or missing
+national totals, so a changed source shape cannot silently produce
+plausible-looking results.
+
+The check paid for itself on its first run, by failing: the pinned extract
+arrives with CRLF line endings and the recorded SHA-256 is the hash of those
+bytes, but Git had normalised them to LF on commit, so the hash gate passed on
+Windows and would have stopped every clone on Linux or macOS. Dependencies are
+declared once in [`DESCRIPTION`](DESCRIPTION), which the workflow reads.
 
 ```
 index.qmd                 the published report
