@@ -38,7 +38,7 @@ The reconciliation separates into three tiers across the 72 class-years:
 
 Completeness is the criterion for these tiers, not the residual: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
 
-In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual is one or two head on bases of 3–40 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
+In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual never exceeds two head, on bases of 3.5–31.1 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
 
 Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
 
@@ -84,7 +84,7 @@ Every methodological statement in the report was read on its source page before 
 
 ## Reproduce
 
-Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales` and `knitr`.
+Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales`, `knitr` and `rmarkdown`.
 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
@@ -93,13 +93,18 @@ Rscript R/checks.R    # regenerates outputs/*.csv
 quarto render         # regenerates the report and outputs/figures/*.png
 ```
 
-Both sets of outputs are committed, so a clean checkout that runs those two commands finishes with no diff. `R/load.R` verifies the extract against the SHA-256 in `SOURCE.md` before reading it and stops if they disagree.
+Both sets of outputs are committed. A clean checkout that runs those commands
+must reproduce the CSVs exactly; figures are regenerated too, but their binary
+bytes can differ with the platform's fonts and graphics device. `R/load.R`
+verifies the extract against the SHA-256 in `SOURCE.md` before reading it and
+stops if they disagree.
 
 GitHub Actions runs the same regeneration on every push and pull request, then
-fails if any committed output differs. Ingestion also stops on schema changes,
-unknown suppression flags, duplicate cells, missing years, or missing national
-totals, so a changed source shape cannot silently produce plausible-looking
-results.
+fails if any committed CSV differs. It also renders the full report, while PNGs
+are not compared byte-for-byte because graphics can differ across platforms.
+Ingestion stops on schema changes, unknown suppression flags, duplicate cells,
+missing years, or missing national totals, so a changed source shape cannot
+silently produce plausible-looking results.
 
 ```
 index.qmd                 the published report
