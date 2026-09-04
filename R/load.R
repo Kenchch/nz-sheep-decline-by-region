@@ -14,28 +14,45 @@ suppressPackageStartupMessages({
 
 RAW_CSV <- "data-raw/agr_agr_003_2026-09-04.csv"
 
+# The hash recorded in data-raw/SOURCE.md. Checking it turns "the data version
+# is pinned" from a claim in a markdown file into a gate that fails loudly.
+EXPECTED_SHA256 <- "e9d82621c2db8517dbf906a8b952d462a360cd2adcc351eb107e187afbe03a4c"
+
+check_extract_hash <- function(path = RAW_CSV) {
+  got <- digest::digest(file = path, algo = "sha256")
+  if (!identical(got, EXPECTED_SHA256)) {
+    stop("Pinned extract does not match the hash recorded in SOURCE.md.\n",
+         "  expected: ", EXPECTED_SHA256, "\n",
+         "  found:    ", got, call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 # The extract carries codes, not labels. These four livestock codes were each
 # verified against the published totals for June 2024 before use; the full
 # codelist has 44 entries which nest inside one another (adding all 44 for 2024
-# gives 115.7 million against a published 33.8 million), so only these four are
-# ever admitted.
+# gives 115.7 million against a published 33.8 million), so only these are ever
+# admitted.
 LIVESTOCK <- c(
   "6731" = "Sheep",
   "7193" = "Dairy cattle",
   "7077" = "Beef cattle"
 )
 
-# Region labels are reproduced exactly as Stats NZ publishes them in this
-# table, including "Hawkes Bay" and "Manawatu-Wanganui" without macrons, so
-# that a label here can be matched against the source without ambiguity.
+# The extract publishes numeric AREA codes and no labels at all: the string
+# "Canterbury" does not occur anywhere in the file. These names follow the
+# Statistical standard for geographic areas 2023 (SSGA23) regional council
+# names, including macrons and apostrophes. Note that the codelist displayed in
+# Aotearoa Data Explorer for this dataflow still shows the older spellings
+# "Hawkes Bay" and "Manawatu-Wanganui"; the SSGA23 forms are used here.
 #
-# AREA nests in the same way: 10, 19 and 20 are aggregates, not places. They are
-# kept, but flagged, so that no regional sum can accidentally include them.
+# AREA also nests: 10, 19 and 20 are aggregates, not places. They are kept, but
+# flagged, so that no regional sum can accidentally include them.
 AREA <- c(
   "1"  = "Northland",          "2"  = "Auckland",
   "3"  = "Waikato",            "4"  = "Bay of Plenty",
-  "5"  = "Gisborne",           "6"  = "Hawkes Bay",
-  "7"  = "Taranaki",           "8"  = "Manawatu-Wanganui",
+  "5"  = "Gisborne",           "6"  = "Hawke's Bay",
+  "7"  = "Taranaki",           "8"  = "Manawatū-Whanganui",
   "9"  = "Wellington",         "10" = "Total North Island",
   "11" = "Tasman",             "12" = "Nelson",
   "13" = "Marlborough",        "14" = "West Coast",
@@ -45,6 +62,11 @@ AREA <- c(
 )
 
 AREA_AGGREGATES <- c("10", "19", "20")
+
+# Chatham Islands (18) is placed under the South Island here because that is
+# where it sits in the AREA hierarchy: codes 11-18 sum exactly to code 19. This
+# follows the aggregation structure of the table, not geography. The Chatham
+# Islands are not part of the South Island.
 ISLAND_OF <- c(rep("North Island", 9), NA,
                rep("South Island", 8), NA, NA)
 names(ISLAND_OF) <- names(AREA)
@@ -54,9 +76,14 @@ names(ISLAND_OF) <- names(AREA)
 # than living in a comment.
 CENSUS_YEARS <- c(2002, 2007, 2012, 2017, 2022)
 
-load_livestock <- function(path = RAW_CSV) {
-  raw <- read_csv(path, col_types = cols(.default = col_character())) |>
+read_raw <- function(path = RAW_CSV) {
+  check_extract_hash(path)
+  read_csv(path, col_types = cols(.default = col_character())) |>
     clean_names()
+}
+
+load_livestock <- function(path = RAW_CSV) {
+  raw <- read_raw(path)
 
   stopifnot(nrow(raw) > 0)
 
@@ -67,12 +94,9 @@ load_livestock <- function(path = RAW_CSV) {
       year           = year_agr_agr_003
     ) |>
     filter(livestock_code %in% names(LIVESTOCK)) |>
-    mutate(
-      year = as.integer(year),
-      # 1994 sits before the 2002 population break and is dropped explicitly
-      # here rather than silently, so the exclusion is visible in the code.
-      .keep = "all"
-    ) |>
+    mutate(year = as.integer(year)) |>
+    # 1994 sits before the 2002 population change and is dropped explicitly
+    # here rather than silently, so the exclusion is visible in the code.
     filter(year >= 2002) |>
     transmute(
       year,
@@ -98,6 +122,19 @@ load_livestock <- function(path = RAW_CSV) {
   out
 }
 
+# Years in which a given suppression flag occurs, across every one of the 44
+# livestock codes in the raw extract rather than only the three used in the
+# analysis. This is the widest test available for the claim that the "c" flag
+# stops when the confidentiality method changed in 2017.
+all_suppression_years <- function(code, path = RAW_CSV) {
+  read_raw(path) |>
+    filter(obs_status == code) |>
+    pull(year_agr_agr_003) |>
+    as.integer() |>
+    unique() |>
+    sort()
+}
+
 # Regions only, aggregates excluded. Use this for anything that sums.
 regions_only <- function(x) filter(x, !is_aggregate)
 
@@ -105,9 +142,3 @@ regions_only <- function(x) filter(x, !is_aggregate)
 # regions whenever any region is suppressed.
 national <- function(x) filter(x, area_code == "20")
 
-if (sys.nframe() == 0) {
-  livestock <- load_livestock()
-  dir.create("outputs", showWarnings = FALSE)
-  write_csv(livestock, "outputs/livestock_regional.csv")
-  message("Wrote outputs/livestock_regional.csv (", nrow(livestock), " rows)")
-}
