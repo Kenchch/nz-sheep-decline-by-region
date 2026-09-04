@@ -1,0 +1,22 @@
+Package: nzsheep
+Title: Where New Zealand's Sheep Went
+Version: 0.0.0.9000
+Authors@R: person("Feng", "Jiang", role = "aut")
+Description: Not an R package. This file exists so that the dependencies of the
+    analysis are declared once, in a machine-readable place, and read directly
+    by the CI workflow instead of being repeated in it.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    digest,
+    dplyr,
+    ggplot2,
+    janitor,
+    knitr,
+    readr,
+    rmarkdown,
+    scales,
+    tidyr,
+    validate
