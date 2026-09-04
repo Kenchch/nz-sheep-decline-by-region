@@ -2,6 +2,9 @@
 title: "Where New Zealand's sheep went"
 subtitle: "A regional breakdown of the flock decline, 2002–2025"
 author: "Feng Jiang"
+# Pinned rather than `today`: a render-time date would make every render
+# produce a diff, which the reproducibility check would then report as a
+# failure. Bump this when the analysis is materially revised.
 date: 2026-09-04
 ---
 
@@ -824,9 +827,28 @@ quarto render         # regenerates this page and outputs/figures/*.png
 `data-raw/SOURCE.md` before reading it, then tidies it; `R/checks.R` runs the
 rules and both reconciliations; `index.qmd` produces this page and the figures.
 
-Both sets of outputs are committed, so a clean checkout that runs the two
-commands above finishes with no diff. If the extract were ever replaced without
+Both sets of outputs are committed. A clean checkout that runs the two commands
+above must reproduce the CSVs byte for byte. The figures are regenerated as
+well, but their bytes can differ with the platform's fonts and graphics device,
+so they are not compared. If the extract were ever replaced without
 `SOURCE.md` being updated, `R/load.R` stops rather than analysing it.
+
+That claim is checked rather than asserted. A GitHub Actions job runs both
+commands on a clean Ubuntu runner on every push, fails if any committed CSV
+differs, and publishes this page from the same run — so what you are reading is
+the output of a build that passed.
+
+It earned its place on the first run, by failing. The extract arrives from the
+SDMX endpoint with CRLF line endings and the recorded SHA-256 is the hash of
+those bytes, but Git had normalised them to LF on commit. The hash gate
+therefore passed on the Windows machine this was written on, where checkout
+restores the CRLFs, and would have stopped every clone on Linux or macOS at the
+first line of `R/load.R`. `data-raw` is now marked `-text` so Git leaves those
+bytes alone.
+
+The general point is worth more than the fix: a single machine cannot see a
+whole class of defect, because the thing that hides the defect is the same thing
+that makes the analysis run. Only a second platform could find that one.
 
 ```{r}
 #| label: session
