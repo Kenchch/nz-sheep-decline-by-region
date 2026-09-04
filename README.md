@@ -26,7 +26,14 @@ Five validation rules run over the analysis table on every render; all pass.
 
 The more interesting result is the reconciliation. Summing the regions and comparing against the published national total gives a residual of **exactly zero head** in every year where all seventeen regions are published and no cell is suppressed. The residual becomes non-zero for two reasons only: a suppressed region, or a region code absent from that year's table. It peaks at 2.17 percent in 2021.
 
-Suppression itself is not constant. No cell is suppressed between 2002 and 2011; suppression appears in 2012 and reaches 17.6 percent of cells in 2021. Census years sit visibly below the survey years around them. Whether the pre-2012 zeroes mean "no suppression applied" or "flag not carried in this export" cannot be determined from the extract, and the report says so.
+Suppression is also not one thing. The `OBS_STATUS` column carries two different flags, and separating them turns an apparent anomaly into confirmation of the published method:
+
+- **`C`, confidentiality.** Appears in 2012–2016 across the whole extract and **never after 2016**. Stats NZ states that `C` was used prior to 2017 and that confidentiality has since been implemented by input perturbation instead, so cells no longer need replacing with `C`. The file stops using the flag in the same year the method changed.
+- **`S`, quality suppression** — applied where sampling errors or imputation levels are high. Runs from 2014 to 2025 and peaks at 17.6 percent of cells in 2021, with census years sitting below the survey years around them, as a rule keyed to sampling error would predict.
+
+The 2012 spike is therefore not a quality problem at all: all four withheld cells that year are `C`, not `S`. Whether the absence of any flag before 2012 means "nothing withheld" or "flag not carried in this export" cannot be determined from the extract, and the report says so.
+
+Two suppressed regions are explained in the methodology rather than guessed at: sampling error could not be calculated for Nelson because only one responding unit was observed per sampled stratum.
 
 ![Share of regional cells suppressed, by year](outputs/figures/03-suppression-rate.png)
 
@@ -37,6 +44,8 @@ Stats NZ table `AGR_AGR_003`, *Livestock Numbers by Regional Council*, dataflow 
 > Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence.
 
 Code in this repository is MIT licensed. See [`LICENSE`](LICENSE).
+
+Every methodological statement in the report was read on its source page before being written down; the [report lists which page each one came from](https://kenchch.github.io/nz-sheep-decline-by-region/#sources-for-the-methodological-statements). Claims that could not be sourced there are not made.
 
 ## Method
 
@@ -49,6 +58,7 @@ Code in this repository is MIT licensed. See [`LICENSE`](LICENSE).
 ## Limitations
 
 - Non-census years are sample estimates. Sampling errors are not recomputed and no weighting is applied here; a movement in a single small region should not be read as real change.
+- Imputation is large: Stats NZ reports 30 percent of the 2025 total sheep estimate as imputed, against a 3 percent relative sampling error. Every survey-year regional figure carries that.
 - All comparisons are ratios of head counts. They say nothing about stocking rate, feed demand, land use or emissions.
 - The target population is GST-registered agricultural businesses, so coverage of the smallest farms is partial and not quantifiable from published data.
 - The 2002–2025 endpoints are a choice. A 2015–2025 window gives the same qualitative answer, with the same three regions accounting for 59 percent rather than 54 percent.

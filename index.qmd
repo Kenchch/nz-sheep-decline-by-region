@@ -68,6 +68,29 @@ supp <- regions |>
   group_by(year, is_census_year) |>
   summarise(cells = n(), suppressed_cells = sum(suppressed), .groups = "drop") |>
   mutate(rate = 100 * suppressed_cells / cells)
+
+# The two flags mean different things and are counted separately. "C" is the
+# confidentiality flag Stats NZ used before 2017; "S" is quality suppression.
+supp_by_code <- regions |>
+  filter(suppressed) |>
+  count(year, suppression_code) |>
+  left_join(select(supp, year, cells), by = "year") |>
+  mutate(
+    rate  = 100 * n / cells,
+    label = ifelse(suppression_code == "c",
+                   "C - confidentiality (pre-2017 method)",
+                   "S - quality suppression")
+  )
+
+c_years <- sort(unique(supp_by_code$year[supp_by_code$suppression_code == "c"]))
+s_years <- sort(unique(supp_by_code$year[supp_by_code$suppression_code == "s"]))
+
+# The same check across every livestock code in the raw extract, not just the
+# three used here, so the claim about the C flag is tested on the whole file.
+all_c_years <- readr::read_csv(RAW_CSV, col_types = readr::cols(.default = "c")) |>
+  janitor::clean_names() |>
+  filter(obs_status == "c") |>
+  pull(year_agr_agr_003) |> as.integer() |> unique() |> sort()
 ```
 
 ::: {.callout-note appearance="simple"}
@@ -251,15 +274,16 @@ table for that year. It is not a join error and it is not perturbation.
 ```{r}
 #| label: fig-suppression
 #| fig-cap: "Share of regional cells suppressed, by year."
-p3 <- ggplot(supp, aes(x = year, y = rate)) +
-  geom_col(aes(fill = is_census_year), width = 0.7) +
-  scale_fill_manual(values = c("FALSE" = "#95a5a6", "TRUE" = "#e07a5f"),
-                    labels = c("Sample survey", "Census"), name = NULL) +
-  scale_x_continuous(breaks = seq(2002, 2025, 3)) +
+p3 <- ggplot(supp_by_code, aes(x = year, y = rate)) +
+  geom_col(aes(fill = label), width = 0.7) +
+  scale_fill_manual(values = c("C - confidentiality (pre-2017 method)" = "#e07a5f",
+                               "S - quality suppression" = "#6c8ea4"), name = NULL) +
+  scale_x_continuous(breaks = seq(2002, 2025, 3), limits = c(2001, 2026)) +
   scale_y_continuous(labels = label_percent(scale = 1)) +
+  guides(fill = guide_legend(nrow = 2)) +
   labs(
-    title    = "Suppression appears in 2012 and rises through the recent years",
-    subtitle = "Percentage of region-by-livestock-class cells suppressed: sheep, dairy and beef cattle",
+    title    = "Two different flags, two different stories",
+    subtitle = "Percentage of region-by-livestock-class cells withheld: sheep, dairy and beef cattle",
     x = NULL, y = "Cells suppressed",
     caption  = "Source: Stats NZ, Agricultural production statistics.\nLicensed by Stats NZ for re-use under CC BY 4.0."
   ) +
@@ -276,16 +300,43 @@ ggsave("outputs/figures/03-suppression-rate.png", p3,
 p3
 ```
 
-No cell is suppressed between 2002 and 2011. Suppression appears from 2012 and
-rises through the later years, peaking at
-`r sprintf("%.1f", max(supp$rate))` percent in `r supp$year[which.max(supp$rate)]`.
-The census years 2017 and 2022 sit visibly below the survey years around them,
-which is what a rule based on sampling error or imputation share would predict.
-2012 is the exception, and this analysis does not explain it.
+Reading that chart as a single rising trend would be wrong, and the `OBS_STATUS`
+column is what makes the difference visible. Two flags are in use, and they are
+not the same mechanism.
 
-One qualification, which matters. I cannot tell from this extract whether the
-zeroes before 2012 mean that no suppression was applied, or that the flag was not
-carried in this export. The chart shows what the file contains.
+The `C` flag is confidentiality suppression. Among the three livestock classes
+used here it appears in `r paste(c_years, collapse = ", ")` and in no other year.
+Checked across every one of the 44 livestock codes in the raw extract, it appears
+in `r paste(range(all_c_years), collapse = "–")` and **never after
+`r max(all_c_years)`**.
+
+That is exactly what the published methodology predicts. Stats NZ states that
+prior to 2017, figures affected by the confidentiality provisions were denoted by
+`C`, and that since 2017 confidentiality has instead been implemented by an input
+perturbation method that adds noise at individual farm level, so output figures
+no longer have to be replaced with `C`. The flag stops in the file in the same
+year the method changed.
+
+The `S` flag is quality suppression, applied where sampling errors or imputation
+levels are high. It runs from `r min(s_years)` to `r max(s_years)`, peaking at
+`r sprintf("%.1f", max(supp$rate))` percent of cells in
+`r supp$year[which.max(supp$rate)]`. The census years 2017 and 2022 sit below the
+survey years around them, which is what a rule keyed to sampling error would
+predict, since a census has no sampling error to exceed a threshold.
+
+So the 2012 spike is not a quality problem at all. All four withheld cells that
+year carry `C`, not `S`. Separating the two flags turns an apparent anomaly into
+the expected behaviour of a confidentiality rule that was replaced in 2017.
+
+One qualification remains. I cannot tell from this extract whether the absence of
+any flag before 2012 means no cell was withheld, or that the flag was not carried
+in this export. The chart shows what the file contains.
+
+Two of the affected regions are also explained in the published methodology.
+Sampling error could not be calculated for Nelson because only one responding
+unit was observed in each sampled stratum, and at least two are needed to
+estimate a within-stratum variance. Nelson is one of the two regions this
+analysis has to drop.
 
 ### Independent recomputation
 
@@ -340,21 +391,42 @@ replaced by a single final release in mid-April.
 
 ### Survey design
 
-The reference period is the year ended 30 June. 2002, 2007, 2012, 2017 and 2022
-are census years; every other year in the series is a sample survey stratified by
-regional council, industry and size. The series starts at 2002 because of a break
-in the target population before that year, which is also why the 1994
-observation carried in the same table is excluded.
+The reference period is the year ended 30 June. Censuses were held in 2002, 2007,
+2012, 2017 and 2022, with annual sample surveys in the intervening years. The
+sample is stratified by regional council area, ANZSIC06 group and size group. The
+2025 survey drew 24,600 geographic locations from an estimated eligible
+population of 45,800; note that a geographic location is the statistical unit and
+is not the same thing as a farm.
+
+The series starts at 2002 because Stats NZ states that the population for the
+2002 census and subsequent surveys differs from that of earlier agricultural
+censuses and surveys, and that figures from 2002 onward may not be directly
+comparable with previous years. That is also why the 1994 observation carried in
+the same table is excluded here. There was no agricultural production survey at
+all in 1997, 1998 or 2001.
+
+Values for non-respondents are imputed by random hot deck imputation, with the
+imputation class formed from regional council area, ANZSIC06 group and production
+data from previous years. This matters more than it may appear: for the 2025
+survey Stats NZ reports that **30 percent** of the total sheep estimate was
+imputed, against a relative sampling error of 3 percent at 95 percent confidence.
+The response rate for the 2025 final release was 72.1 percent. The collection is
+run by Stats NZ in partnership with the Ministry for Primary Industries.
 
 ### What was excluded, and why
 
-- **Territorial authority geography** — published only in census years, so no
-  annual series exists at that level.
-- **Horticulture** — not collected in many of the years in this window.
-- **Forestry** — a definitional break in 2022, and now an MPI rather than a
-  Stats NZ collection.
-- **Farm type** — an ANZSIC96 to ANZSIC06 recode in 2007 falls inside the window.
-- **Pre-2002 data** — the population break described above.
+- **Territorial authority geography** — the surveys are designed to produce
+  results to regional council level and the censuses to territorial authority
+  level, so no annual series exists below the region.
+- **Horticulture** — not collected in 2004, 2006, 2008, 2010, 2013, 2015, 2016,
+  2018, 2021, 2023 or 2025, which is most of this window.
+- **Forestry production** — Stats NZ no longer collects or compiles forestry
+  production statistics; they are published by MPI. Stats NZ does still collect
+  forestry *land use*. The 2025 release also notes that additional National
+  Exotic Forest Description data has been received and that revisions to earlier
+  land use and forestry statistics, especially for 2016 to 2021, are planned.
+- **Pre-2002 data** — the population change described above, plus the absence of
+  any survey in 1997, 1998 and 2001.
 - **A choropleth map** — a sorted bar chart answers "which regions contributed
   most" and a map does not, because a map encodes land area rather than
   magnitude. Canterbury, Otago and Southland are also three of the largest
@@ -383,6 +455,21 @@ farm level, or any breakdown finer than what is published. The access route for
 those questions is approved microdata under the Five Safes framework, which I
 have not used here.
 
+### Sources for the methodological statements
+
+Every statement about the collection above was read on the page cited here, not
+carried over from secondary summaries.
+
+| Statement | Source |
+|---|---|
+| Census years 2002, 2007, 2012, 2017, 2022; sample surveys in between; eligible population 45,800 and sample 24,600 geographic locations; stratification by regional council, ANZSIC06 group and size group; 2025 response rate 72.1 percent; sampling error and imputation levels by line code; GST registration level of \$60,000 giving "partial and unquantifiable" coverage below it; random hot deck imputation and imputation class; `C` before 2017 and input perturbation since; `S` for data with high sample errors or imputation levels; Nelson variance not estimable; horticulture years; forestry production now MPI; Tier 1 statistics | [Agricultural Production Statistics: June 2025 (Final), DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029) |
+| Programme run in partnership with MPI; provisional mid-December plus final mid-May up to 2024, single final mid-April from 2025; 2002 population differs from earlier collections; no survey in 1997, 1998, 2001; regional council annually and territorial authority in censuses | [Agriculture Production Statistics series, DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/6362a469-f374-412e-ac25-d76fd0962003) |
+| Release date of 16 April 2026 for the year to June 2025; NEFD data and planned revisions for 2016–2021 | [Agricultural production statistics: Year to June 2025](https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2025/) |
+| Mana Ōrite Relationship Agreement signed with the Data Iwi Leaders Group of the National Iwi Chairs Forum on 30 October 2019 | [Mana Ōrite Relationship Agreement](https://www.stats.govt.nz/about-us/what-we-do/mana-orite-relationship-agreement/) |
+
+Statements I could not source on those pages are not made anywhere in this
+report. Pages read 4 September 2026.
+
 ## Limitations
 
 - Non-census years are **sample estimates**. I have not recomputed their sampling
@@ -392,25 +479,31 @@ have not used here.
   from the 2002–2025 change entirely for that reason.
 - The sheep-to-cattle comparisons are **ratios of head counts**. They are not
   claims about stocking rate, feed demand, land use or emissions.
-- The target population is GST-registered agricultural businesses. Coverage of
-  the smallest farms is partial and not quantifiable from published data.
+- The frame is Stats NZ's Business Register, which is built on GST registration.
+  The compulsory registration level is \$60,000, and Stats NZ describes coverage
+  of units below that level as "partial and unquantifiable".
+- **Imputation is large.** Stats NZ reports 30 percent of the 2025 total sheep
+  estimate as imputed. Every regional figure in a survey year carries that, and
+  this analysis does nothing to correct for it.
+- Since 2017, confidentiality has been implemented by input perturbation, which
+  adds noise at individual farm level. It is small relative to the effects
+  discussed here, but it is present in every year from 2017 on.
 - Choosing 2002 and 2025 as endpoints is a choice. A 2015–2025 window gives the
   same qualitative answer, with the same three regions accounting for 59 percent
   of the fall rather than 54 percent.
-- Input perturbation has been applied to agricultural statistics since 2017. It
-  is small relative to every effect discussed here, but it is present.
 
 ## Ethics
 
 This analysis uses published regional aggregates only. No microdata and no IDI
 access is involved, so the Five Safes framework does not apply to it.
 
-Stats NZ identifies Māori-owned farms in this collection by matching the
-Agricultural Production Survey against the Tatauranga umanga Māori population.
-Under Māori data sovereignty principles, and under the Mana Ōrite Relationship
-Agreement, the authority to interpret and narrate that data sits with iwi Māori
-and Stats NZ. It does not sit with an unaffiliated analyst. That is why this
-report does not comment on it.
+Stats NZ lists Tatauranga Umanga Māori among the internal users of this
+collection, and signed the Mana Ōrite Relationship Agreement with the Data Iwi
+Leaders Group of the National Iwi Chairs Forum in October 2019. Any Māori-specific
+cut of this data therefore sits inside an established relationship between Stats
+NZ and iwi Māori. It does not sit with an unaffiliated analyst working from
+published aggregates, which is why this report does not attempt one and does not
+characterise the terms of that agreement.
 
 ## Reproduce
 
