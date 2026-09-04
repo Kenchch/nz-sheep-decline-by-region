@@ -386,7 +386,7 @@ Table&nbsp;1
 </figure>
 </div>
 </div>
-<p>Canterbury is the one region where the substitution story carries real weight. Hawke’s Bay and Manawatū-Whanganui lost sheep <em>and</em> cattle. A negative figure in this table means that class of animal declined as well.</p>
+<p>Canterbury accounts for by far the largest absolute dairy increase of any region, at 795 thousand head. It is not, however, the highest <em>ratio</em>: West Coast gained 39 dairy cattle per 100 sheep lost, on a base so small — under 40 thousand sheep — that the ratio says more about the denominator than about land use. Hawke’s Bay and Manawatū-Whanganui lost sheep <em>and</em> cattle. A negative figure in this table means that class of animal declined as well.</p>
 </section>
 <section id="data-quality-checks" class="level2">
 <h2 class="anchored" data-anchor-id="data-quality-checks">Data quality checks</h2>
@@ -852,7 +852,7 @@ Table&nbsp;5
 </div>
 <p>In the 10 class-years where all seventeen regions are published and nothing is withheld, the regions sum to the published national total <strong>exactly, to the head</strong>.</p>
 <p>Completeness is the criterion for these tiers, not the residual. That matters here: 11 class-years reconcile to zero, one more than the Exact tier contains, because one class-year with an incomplete region row happens to reconcile exactly anyway.</p>
-<p>In 12 further fully-published class-years the residual is one or two head — never more, on bases between 3 and 40 million. I cannot attribute that from published data. It is consistent with the national aggregate being rounded independently of the regional cells, but I have not been able to source that and do not assert it. Nor can I rule out input perturbation: only two fully-published class-years fall after 2017, when perturbation was introduced, which is far too few to say anything either way.</p>
+<p>In 12 further fully-published class-years the residual never exceeds 2 head, on bases between 3 and 40 million. I cannot attribute that from published data. It is consistent with the national aggregate being rounded independently of the regional cells, but I have not been able to source that and do not assert it. Nor can I rule out input perturbation: only two fully-published class-years fall after 2017, when perturbation was introduced, which is far too few to say anything either way.</p>
 <p>Every residual larger than that — and the next smallest is 507 head — belongs to a year whose region row is incomplete, because a region is withheld or because a region code is absent from that year’s table.</p>
 <p>What the one-head residuals are <em>not</em> is an artefact of this analysis. The same discrepancy appears between cells that this analysis never sums. Adding the two published island totals and comparing them against the published national total — three aggregate cells, always published, never withheld — gives a difference of one head in 14 of the 72 class-years, and never more than 1.</p>
 <div class="cell">
@@ -1083,7 +1083,7 @@ Figure&nbsp;3: Share of regional cells withheld, by year and by flag.
 <p>That is exactly what the published methodology predicts. Stats NZ states that prior to 2017, figures affected by the confidentiality provisions were denoted by <code>C</code>, and that since 2017 confidentiality has instead been implemented by an input perturbation method that adds noise at individual farm level, so output figures no longer have to be replaced with <code>C</code>. The flag stops in the file in the same year the method changed.</p>
 <p>The <code>S</code> flag is quality suppression, applied where sampling errors or imputation levels are high. It runs from 2014 to 2025, peaking at 17.6 percent of cells in 2021. The census years 2017 and 2022 sit below the survey years around them — but not at zero, and the difference between those two statements is the mechanism.</p>
 <p>The published rule withholds data with high sample errors <strong>or</strong> high imputation levels. A census removes the first branch, which is why census years sit lower. The second branch remains, which is why they are not empty. All 5 census-year <code>S</code> cells in this table are Nelson.</p>
-<p>So the 2012 spike is not a quality problem at all. All four withheld cells that year carry <code>C</code>, not <code>S</code>. Separating the two flags turns an apparent anomaly into the expected behaviour of a confidentiality rule that was replaced in 2017.</p>
+<p>So the 2012 spike is not a quality problem at all. All 4 withheld cells that year carry <code>C</code>, not <code>S</code>. Separating the two flags turns an apparent anomaly into the expected behaviour of a confidentiality rule that was replaced in 2017.</p>
 <p>One qualification remains. I cannot tell from this extract whether the absence of any flag before 2012 means no cell was withheld, or that the flag was not carried in this export. The chart shows what the file contains.</p>
 <p>One of the two regions this analysis has to drop is explained in the published methodology rather than guessed at. Sampling error could not be calculated for Nelson because only one responding unit was observed in each sampled stratum, and at least two are needed to estimate a within-stratum variance. Auckland, the other dropped region, is simply withheld, with no reason published.</p>
 </section>
@@ -1146,6 +1146,7 @@ Table&nbsp;7
 <li><strong>Aggregates are separated, not summed.</strong> <code>AREA</code> codes 10, 19 and 20 are the North Island, South Island and New Zealand totals. They are flagged in the analysis table and excluded from every regional sum. The extract publishes no area labels at all, only numeric codes; region names here follow the Statistical standard for geographic areas 2023 (SSGA23), including macrons, which differ from the older spellings the codelist still displays in Aotearoa Data Explorer.</li>
 <li><strong>Suppressed cells stay suppressed.</strong> A suppressed cell becomes <code>NA</code> and carries a flag. It is never filled with zero and never dropped. Regions missing either endpoint are excluded from the change calculation and counted in the text.</li>
 <li><strong>Reconciliation is reported, not asserted.</strong> No fixed tolerance is set between the regional sum and the published total. The residual is computed for every year and published above.</li>
+<li><strong>Quantitative claims are computed, not transcribed.</strong> Every number in the running text of this page is an inline expression evaluated at render time against the analysis table, not typed in. Qualitative claims are stated with the scope over which they were checked. Three earlier versions of this page each carried a universal claim that was typed rather than computed, and each was contradicted by a table printed directly beneath it; this is the rule that came out of that.</li>
 </ol>
 <section id="release-schedule" class="level3">
 <h3 class="anchored" data-anchor-id="release-schedule">Release schedule</h3>
@@ -1156,6 +1157,77 @@ Table&nbsp;7
 <p>The reference period is the year ended 30 June. Censuses were held in 2002, 2007, 2012, 2017 and 2022, with annual sample surveys in the intervening years. The sample is stratified by regional council area, ANZSIC06 group and size group. The 2025 survey drew 24,600 geographic locations from an estimated eligible population of 45,800; note that a geographic location is the statistical unit and is not the same thing as a farm.</p>
 <p>The series starts at 2002 because Stats NZ states that the population for the 2002 census and subsequent surveys differs from that of earlier agricultural censuses and surveys, and that figures from 2002 onward may not be directly comparable with previous years. That is also why the 1994 observation carried in the same table is excluded here. There was no agricultural production survey at all in 1997, 1998 or 2001.</p>
 <p>Values for non-respondents are imputed by random hot deck imputation, with the imputation class formed from regional council area, ANZSIC06 group and production data from previous years. This matters more than it may appear: for the 2025 survey Stats NZ reports that <strong>30 percent</strong> of the total sheep estimate was imputed, against a relative sampling error of 3 percent at 95 percent confidence. The response rate for the 2025 final release was 72.1 percent. The collection is run by Stats NZ in partnership with the Ministry for Primary Industries.</p>
+<section id="the-headline-window-is-not-design-matched" class="level4">
+<h4 class="anchored" data-anchor-id="the-headline-window-is-not-design-matched">The headline window is not design-matched</h4>
+<p>2002 is a census and 2025 is a sample survey, so the headline differences a full-coverage count against an estimate that carries both sampling error and a 30 percent imputation rate. This is a common and accepted comparison — Stats NZ publishes the series as one — but it is an asymmetry, and this report carries the <code>is_census_year</code> flag through the analysis table precisely so that it can be checked rather than assumed.</p>
+<p>The census-to-census window that avoids the asymmetry is 2002 to 2022:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2025, census to sample survey (headline)"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> sensitivity<span class="sc">$</span>regions[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(sensitivity<span class="sc">$</span>fall[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, sensitivity<span class="sc">$</span>share[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> sensitivity<span class="sc">$</span>top3[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2022, census to census (design-matched)"</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> matched<span class="sc">$</span>regions,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(matched<span class="sc">$</span>fall),</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, matched<span class="sc">$</span>share),</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> matched<span class="sc">$</span>top3,</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-matched" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-matched-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8
+</figcaption>
+<div aria-describedby="tbl-matched-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 13%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Window</th>
+<th style="text-align: right;">Regions</th>
+<th style="text-align: right;">Fall</th>
+<th style="text-align: right;">Top three share</th>
+<th style="text-align: left;">The three regions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2002–2025, census to sample survey (headline)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16,195,353</td>
+<td style="text-align: right;">54.0%</td>
+<td style="text-align: left;">Canterbury, Southland, Otago</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2002–2022, census to census (design-matched)</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">14,446,905</td>
+<td style="text-align: right;">55.6%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The design-matched window is measurable across one more region, because Auckland is published in 2022 and withheld in 2025. It gives the same qualitative answer: a fall of 14.4 million head with the three largest decliners accounting for 55.6 percent.</p>
+<p>The 2025 endpoint is used in the headline because it is the most recent published figure, not because it is the better-matched one.</p>
+</section>
 </section>
 <section id="what-was-excluded-and-why" class="level3">
 <h3 class="anchored" data-anchor-id="what-was-excluded-and-why">What was excluded, and why</h3>
@@ -1171,7 +1243,7 @@ Table&nbsp;7
 <section id="implications-for-output-design" class="level3">
 <h3 class="anchored" data-anchor-id="implications-for-output-design">Implications for output design</h3>
 <p>Three observations follow from the checks above, and they concern the shape of the output rather than the sheep.</p>
-<p>Regional council is the only geography available annually; territorial authority exists only in census years, so any sub-regional time series is structurally unavailable rather than merely unpublished. Suppression now runs above ten percent of cells and is concentrated in the same small regions — Auckland, Nelson, Chatham Islands — so those regional trends are already unusable, and a suppression-aware grouping that pooled them would preserve more signal than suppressing them one at a time does. And the alternating census-and-survey design makes every regional series in this table structurally uneven, which belongs on the output rather than being left for a user to discover from a reconciliation residual.</p>
+<p>Regional council is the only geography available annually; territorial authority exists only in census years, so any sub-regional time series is structurally unavailable rather than merely unpublished. Suppression now runs above ten percent of cells, and it is not spread evenly. Nelson and the Chatham Islands account for 56 percent of every withheld cell in this table between them, with 8 other regions accounting for the rest. Those two trends are already unusable, and a suppression-aware grouping that pooled the smallest regions would preserve more signal than withholding them one at a time does. And the alternating census-and-survey design makes every regional series in this table structurally uneven, which belongs on the output rather than being left for a user to discover from a reconciliation residual.</p>
 <p>There is also a class of question this data cannot answer at all: anything at farm level, or any breakdown finer than what is published. The access route for those questions is approved microdata under the Five Safes framework, which I have not used here.</p>
 </section>
 <section id="sources-for-the-methodological-statements" class="level3">
@@ -1215,8 +1287,195 @@ Table&nbsp;7
 <li>The frame is Stats NZ’s Business Register, which is built on GST registration. The compulsory registration level is $60,000, and Stats NZ describes coverage of units below that level as “partial and unquantifiable”.</li>
 <li><strong>Imputation is large.</strong> Stats NZ reports 30 percent of the 2025 total sheep estimate as imputed. Every regional figure in a survey year carries that, and this analysis does nothing to correct for it.</li>
 <li>Since 2017, confidentiality has been implemented by input perturbation, which adds noise at individual farm level. It is small relative to the effects discussed here, but it is present in every year from 2017 on.</li>
-<li>Choosing 2002 and 2025 as endpoints is a choice. A 2015–2025 window gives the same qualitative answer, with the same three regions accounting for 59 percent of the fall rather than 54 percent.</li>
+<li><strong>The endpoints are of different collection designs.</strong> 2002 is a census and 2025 is a sample survey. The <code>is_census_year</code> flag is carried through the analysis table for exactly this reason, and the design-matched comparison is reported under <a href="#survey-design">Survey design</a>.</li>
+<li><strong>Choosing the start year is a choice, and the two halves of the headline survive it differently.</strong> See the sensitivity analysis below.</li>
 </ul>
+<section id="how-much-does-the-start-year-matter" class="level3">
+<h3 class="anchored" data-anchor-id="how-much-does-the-start-year-matter">How much does the start year matter?</h3>
+<p>Recomputing the headline statistic from every start year available, against the same 2025 endpoint:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Start year</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">ifelse</span>(start <span class="sc">%in%</span> CENSUS_YEARS,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">paste0</span>(start, <span class="st">" (census)"</span>), <span class="fu">as.character</span>(start)),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions measurable</span><span class="st">`</span> <span class="ot">=</span> regions,</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Fall (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(fall),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, share),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> top3</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-sensitivity" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-sensitivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9
+</figcaption>
+<div aria-describedby="tbl-sensitivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 18%">
+<col style="width: 11%">
+<col style="width: 15%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Start year</th>
+<th style="text-align: right;">Regions measurable</th>
+<th style="text-align: right;">Fall (head)</th>
+<th style="text-align: right;">Top three share</th>
+<th style="text-align: left;">The three regions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2002 (census)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16,195,353</td>
+<td style="text-align: right;">54.0%</td>
+<td style="text-align: left;">Canterbury, Southland, Otago</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2003</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16,098,121</td>
+<td style="text-align: right;">54.6%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2004</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">15,924,689</td>
+<td style="text-align: right;">52.0%</td>
+<td style="text-align: left;">Canterbury, Southland, Otago</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2005</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16,540,440</td>
+<td style="text-align: right;">52.9%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2006</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">16,738,228</td>
+<td style="text-align: right;">52.1%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2007 (census)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">15,168,071</td>
+<td style="text-align: right;">52.9%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2008</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">10,700,360</td>
+<td style="text-align: right;">48.3%</td>
+<td style="text-align: left;">Canterbury, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2009</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">9,111,028</td>
+<td style="text-align: right;">48.3%</td>
+<td style="text-align: left;">Southland, Manawatū-Whanganui, Otago</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2010</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">9,329,065</td>
+<td style="text-align: right;">48.4%</td>
+<td style="text-align: left;">Southland, Manawatū-Whanganui, Otago</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2011</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">7,919,219</td>
+<td style="text-align: right;">52.4%</td>
+<td style="text-align: left;">Manawatū-Whanganui, Canterbury, Otago</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2012 (census)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">8,053,801</td>
+<td style="text-align: right;">51.0%</td>
+<td style="text-align: left;">Otago, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2013</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">7,590,781</td>
+<td style="text-align: right;">52.5%</td>
+<td style="text-align: left;">Otago, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2014</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">6,581,367</td>
+<td style="text-align: right;">55.9%</td>
+<td style="text-align: left;">Otago, Southland, Manawatū-Whanganui</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">5,902,153</td>
+<td style="text-align: right;">59.4%</td>
+<td style="text-align: left;">Otago, Manawatū-Whanganui, Southland</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2016</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">4,408,959</td>
+<td style="text-align: right;">53.7%</td>
+<td style="text-align: left;">Otago, Manawatū-Whanganui, Southland</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2017 (census)</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">4,268,875</td>
+<td style="text-align: right;">57.0%</td>
+<td style="text-align: left;">Southland, Manawatū-Whanganui, Otago</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2018</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">4,108,545</td>
+<td style="text-align: right;">55.5%</td>
+<td style="text-align: left;">Otago, Manawatū-Whanganui, Southland</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2019</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">3,608,010</td>
+<td style="text-align: right;">53.7%</td>
+<td style="text-align: left;">Otago, Manawatū-Whanganui, Hawke’s Bay</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2020</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">2,939,552</td>
+<td style="text-align: right;">58.3%</td>
+<td style="text-align: left;">Otago, Manawatū-Whanganui, Canterbury</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>The concentration is robust. Across all 19 start years the three largest-declining regions account for between 48 and 59 percent of the fall, and the range is narrow enough that no start year would change the headline claim.</p>
+<p>Which three regions they are is not robust. Manawatū-Whanganui is in the top three in 17 of the 19 windows, Otago in 14, Southland in 16, and Canterbury in only 9 — 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2011, 2020. Canterbury dominates the window this report uses because its decline is concentrated in the early years; from a start year of 2009 or later it usually drops out of the top three altogether.</p>
+<p>That is worth stating plainly, because Canterbury is the region this report names most often. It leads the 2002–2025 window, and it is the one region where the substitution story carries weight. It is not a permanent feature of the data.</p>
+</section>
 </section>
 <section id="ethics" class="level2">
 <h2 class="anchored" data-anchor-id="ethics">Ethics</h2>
@@ -1226,12 +1485,12 @@ Table&nbsp;7
 <section id="reproduce" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce">Reproduce</h2>
 <p>Two steps, because they write different things.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/checks.R    <span class="co"># regenerates outputs/*.csv: validation, coverage, reconciliation</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render         <span class="co"># regenerates this page and outputs/figures/*.png</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/checks.R    <span class="co"># regenerates outputs/*.csv: validation, coverage, reconciliation</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render         <span class="co"># regenerates this page and outputs/figures/*.png</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>R/load.R</code> verifies the extract against the SHA-256 recorded in <code>data-raw/SOURCE.md</code> before reading it, then tidies it; <code>R/checks.R</code> runs the rules and both reconciliations; <code>index.qmd</code> produces this page and the figures.</p>
 <p>Both sets of outputs are committed, so a clean checkout that runs the two commands above finishes with no diff. If the extract were ever replaced without <code>SOURCE.md</code> being updated, <code>R/load.R</code> stops rather than analysing it.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.6.1 (2026-06-24 ucrt)
 Platform: x86_64-w64-mingw32/x64
