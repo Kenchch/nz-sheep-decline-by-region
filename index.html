@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-172ba59bd5e0b52282274ba0c0cc16fc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-3e9b1289f5f353c49b617ce48ad2bc38.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -1491,24 +1491,29 @@ Table&nbsp;9
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/checks.R    <span class="co"># regenerates outputs/*.csv: validation, coverage, reconciliation</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render         <span class="co"># regenerates this page and outputs/figures/*.png</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>R/load.R</code> verifies the extract against the SHA-256 recorded in <code>data-raw/SOURCE.md</code> before reading it, then tidies it; <code>R/checks.R</code> runs the rules and both reconciliations; <code>index.qmd</code> produces this page and the figures.</p>
-<p>Both sets of outputs are committed, so a clean checkout that runs the two commands above finishes with no diff. If the extract were ever replaced without <code>SOURCE.md</code> being updated, <code>R/load.R</code> stops rather than analysing it.</p>
+<p>Both sets of outputs are committed. A clean checkout that runs the two commands above must reproduce the CSVs byte for byte. The figures are regenerated as well, but their bytes can differ with the platform’s fonts and graphics device, so they are not compared. If the extract were ever replaced without <code>SOURCE.md</code> being updated, <code>R/load.R</code> stops rather than analysing it.</p>
+<p>That claim is checked rather than asserted. A GitHub Actions job runs both commands on a clean Ubuntu runner on every push, fails if any committed CSV differs, and publishes this page from the same run — so what you are reading is the output of a build that passed.</p>
+<p>It earned its place on the first run, by failing. The extract arrives from the SDMX endpoint with CRLF line endings and the recorded SHA-256 is the hash of those bytes, but Git had normalised them to LF on commit. The hash gate therefore passed on the Windows machine this was written on, where checkout restores the CRLFs, and would have stopped every clone on Linux or macOS at the first line of <code>R/load.R</code>. <code>data-raw</code> is now marked <code>-text</code> so Git leaves those bytes alone.</p>
+<p>The general point is worth more than the fix: a single machine cannot see a whole class of defect, because the thing that hides the defect is the same thing that makes the analysis run. Only a second platform could find that one.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>R version 4.6.1 (2026-06-24 ucrt)
-Platform: x86_64-w64-mingw32/x64
-Running under: Windows 11 x64 (build 26200)
+<pre><code>R version 4.6.1 (2026-06-24)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 24.04.4 LTS
 
 Matrix products: default
-  LAPACK version 3.12.1
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so;  LAPACK version 3.12.0
 
 locale:
-[1] LC_COLLATE=English_New Zealand.utf8  LC_CTYPE=English_New Zealand.utf8   
-[3] LC_MONETARY=English_New Zealand.utf8 LC_NUMERIC=C                        
-[5] LC_TIME=English_New Zealand.utf8    
+ [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+ [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+ [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+[10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
 
-time zone: Pacific/Auckland
-tzcode source: internal
+time zone: UTC
+tzcode source: system (glibc)
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
