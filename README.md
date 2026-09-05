@@ -59,7 +59,9 @@ Stats NZ table `AGR_AGR_003`, *Livestock Numbers by Regional Council*, dataflow 
 
 > Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence.
 
-Code in this repository is MIT licensed. See [`LICENSE`](LICENSE).
+Code in this repository is MIT licensed ([`LICENSE`](LICENSE)); the `data-raw/`
+extract stays under CC BY 4.0. Both are set out in
+[`DATA-LICENCE.md`](DATA-LICENCE.md).
 
 Every methodological statement in the report was read on its source page before being written down; the [report lists which page each one came from](https://kenchch.github.io/nz-sheep-decline-by-region/#sources-for-the-methodological-statements). Claims that could not be sourced there are not made.
 
