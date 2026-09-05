@@ -21,6 +21,34 @@
     "text": "Check\nExpected\nResult\n\n\n\n\nTotal sheep, Total New Zealand, June 2024\n23,583,001\nmatched\n\n\nTotal dairy cattle, Total New Zealand, June 2024\n5,836,845\nmatched\n\n\nTotal beef cattle, Total New Zealand, June 2024\n3,679,443\nmatched\n\n\nAREA aggregate codes\n10 = North Island, 19 = South Island, 20 = New Zealand\nconfirmed\n\n\nAREA regional codes sum to their island total (sheep, 2017)\nexact\nconfirmed\n\n\nYEAR coverage\n1994, then 2002–2025 continuous\nconfirmed\n\n\n\nOBS_STATUS takes two non-empty values in this extract: s (suppressed) and c (confidential). Every cell with an empty OBS_VALUE carries one of the two; there are no unexplained blanks."
   },
   {
+    "objectID": "DATA-LICENCE.html",
+    "href": "DATA-LICENCE.html",
+    "title": "Licensing",
+    "section": "",
+    "text": "Two different licences apply to this repository, because it contains two different kinds of thing.\n\n\nEverything in R/, index.qmd, _quarto.yml, DESCRIPTION and the workflow under .github/ is licensed under the MIT Licence. See LICENSE.\n\n\n\nThe extract in data-raw/ is published by Stats NZ and is redistributed here under the Creative Commons Attribution 4.0 International licence (CC BY 4.0), which is the licence Stats NZ applies to it. It is not covered by the MIT licence above.\nAttribution, verbatim as the licensor requires:\n\nSource data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence.\n\nFull provenance — dataflow, vintage, retrieval date and SHA-256 — is recorded in data-raw/SOURCE.md.\n\n\n\nFiles in outputs/ are derived from the Stats NZ extract. Treat them as carrying the same CC BY 4.0 attribution requirement as the data they come from."
+  },
+  {
+    "objectID": "DATA-LICENCE.html#code",
+    "href": "DATA-LICENCE.html#code",
+    "title": "Licensing",
+    "section": "",
+    "text": "Everything in R/, index.qmd, _quarto.yml, DESCRIPTION and the workflow under .github/ is licensed under the MIT Licence. See LICENSE."
+  },
+  {
+    "objectID": "DATA-LICENCE.html#data",
+    "href": "DATA-LICENCE.html#data",
+    "title": "Licensing",
+    "section": "",
+    "text": "The extract in data-raw/ is published by Stats NZ and is redistributed here under the Creative Commons Attribution 4.0 International licence (CC BY 4.0), which is the licence Stats NZ applies to it. It is not covered by the MIT licence above.\nAttribution, verbatim as the licensor requires:\n\nSource data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence.\n\nFull provenance — dataflow, vintage, retrieval date and SHA-256 — is recorded in data-raw/SOURCE.md."
+  },
+  {
+    "objectID": "DATA-LICENCE.html#outputs",
+    "href": "DATA-LICENCE.html#outputs",
+    "title": "Licensing",
+    "section": "",
+    "text": "Files in outputs/ are derived from the Stats NZ extract. Treat them as carrying the same CC BY 4.0 attribution requirement as the data they come from."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Where New Zealand’s sheep went",
