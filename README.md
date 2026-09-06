@@ -127,3 +127,11 @@ outputs/                  analysis table, validation summaries, reconciliations,
 Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
 
 Figures in this README are transcribed from the report. The report provides the calculations, source citations and rounding conventions.
+
+## How this was built
+
+I set the problem, the data contracts and the quality rules, ran the benchmarks
+and reviewed every diff; Claude Code and OpenAI Codex drafted code, refactored
+and scaffolded tests. The full note — including the `Co-Authored-By` trailers
+removed from this repository's history on 6 September 2026 — is on my profile:
+[How I use AI tools](https://github.com/Kenchch/Kenchch#how-i-use-ai-tools).
