@@ -34,7 +34,7 @@ The reconciliation separates into three tiers across the 72 class-years:
 |---|---:|---:|
 | Exact — all 17 regions published, nothing withheld | 10 | 0 head |
 | Fully published, off by a few head | 12 | 2 head |
-| Incomplete region row | 50 | 558,310 head |
+| Incomplete region row | 50 | 701,526 head |
 
 Completeness is the criterion for these tiers, not the residual: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
 
@@ -81,7 +81,7 @@ Every methodological statement in the report was read on its source page before 
 - All comparisons are ratios of head counts. They say nothing about stocking rate, feed demand, land use or emissions.
 - The target population is GST-registered agricultural businesses, so coverage of the smallest farms is partial and not quantifiable from published data.
 - **The two endpoints are different collection designs**: 2002 is a census, 2025 a sample survey, so a full-coverage count is differenced against an estimate carrying sampling error and 30 percent imputation. The design-matched window — 2002 to 2022, census to census — gives a fall of 14.4 million head across 16 measurable regions with the top three at 55.6 percent: the same qualitative answer. The report says why the 2025 endpoint is used anyway.
-- **The start year changes *which* regions lead, not *how concentrated* they are.** Recomputed from all 19 available start years, the three largest decliners always account for 48–59 percent of the fall. Which three they are rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the window this report uses because its decline is concentrated in the early years — it is not a permanent feature of the data.
+- **The start year changes *which* regions lead, not *how concentrated* they are.** Recomputed from the 19 start years that leave a window of at least five years — 2002 to 2020, against the same 2025 endpoint — the three largest decliners always account for 48–59 percent of the fall. 2021 onwards are start years in the extract too; they are excluded because a four-year window is not a decline window. Which three they are rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the window this report uses because its decline is concentrated in the early years — it is not a permanent feature of the data.
 - No map is drawn, deliberately: a choropleth encodes land area rather than magnitude, and the three largest contributors are also among the largest regions by area.
 
 ## Reproduce

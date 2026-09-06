@@ -72,8 +72,9 @@ lost_both <- substitution |>
   pull(region) |> sort() |> paste(collapse = " and ")
 
 # Endpoint sensitivity ----------------------------------------------------
-# The same headline statistic recomputed from every available start year.
-# Asserted in prose, this claim was wrong. Computed, it is a better finding.
+# The same headline statistic recomputed from every start year that leaves a
+# window of at least MIN_WINDOW years. Asserted in prose, this claim was wrong.
+# Computed, it is a better finding.
 top3_for <- function(y0, y1 = 2025) {
   ch <- regions |>
     filter(livestock_class == "Sheep", year %in% c(y0, y1)) |>
@@ -93,7 +94,16 @@ top3_for <- function(y0, y1 = 2025) {
   )
 }
 
-sensitivity <- do.call(rbind, lapply(2002:2020, top3_for))
+# The extract runs to 2025, so 2021-2024 are also start years arithmetically.
+# They are excluded: against a 2025 endpoint a 2021 start spans four years, and
+# the share taken by the top three regions stops being a statement about a
+# decline once the decline itself is small. The rule is a named constant rather
+# than a literal 2020, so the cutoff is visible instead of being something a
+# reader has to infer from the range.
+MIN_WINDOW <- 5
+LAST_START <- 2025 - MIN_WINDOW
+
+sensitivity <- do.call(rbind, lapply(2002:LAST_START, top3_for))
 
 # Split on the separator rather than substring-matching: no region name is a
 # substring of another today, but a match that silently over-counts if that
@@ -756,8 +766,11 @@ report. Pages read 4 September 2026.
 
 ### How much does the start year matter?
 
-Recomputing the headline statistic from every start year available, against the
-same 2025 endpoint:
+Recomputing the headline statistic from every start year that leaves a window
+of at least `r MIN_WINDOW` years — 2002 to `r LAST_START` — against the same
+2025 endpoint. The extract reaches 2025, so 2021 onwards are start years too;
+they are left out because a four-year window is not a decline window, and the
+top-three share stops meaning much once the fall it divides is small:
 
 ```{r}
 #| label: tbl-sensitivity
