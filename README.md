@@ -126,4 +126,4 @@ outputs/                  analysis table, validation summaries, reconciliations,
 
 Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
 
-Figures in this README are transcribed from the report. The report is the source of truth — every number in it is computed at render time.
+Figures in this README are transcribed from the report. The report provides the calculations, source citations and rounding conventions.
