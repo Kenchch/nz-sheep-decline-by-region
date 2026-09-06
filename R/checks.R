@@ -68,6 +68,11 @@ corrupt <- function(x) {
 results_corrupted <- summary(confront(corrupt(livestock), rules)) |>
   select(rule = name, items, passes, fails, nNA)
 
+stopifnot(
+  identical(as.integer(results_corrupted$fails - results$fails), c(1L, 1L, 1L, 2L, 1L)),
+  all(results$fails[results$rule != "census_year_reported"] == 0)
+)
+
 # Coverage is deliberately reported rather than asserted, because it is
 # genuinely incomplete: 2003-2009 carry fewer region codes than the rest of the
 # series, and a test that failed every year from 2003 to 2009 would be noise,

@@ -14,7 +14,6 @@ name: Reproduce analysis
 on:
   push:
     branches: [main]
-    paths-ignore: ['**.md']
   pull_request:
   workflow_dispatch:
 
