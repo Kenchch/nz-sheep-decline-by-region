@@ -233,6 +233,34 @@ never imputed and never set to zero.
 
 ## Did dairy replace the sheep?
 
+### Three endpoint windows
+
+```{r}
+#| label: tbl-dairy-windows
+dairy_windows |>
+  transmute(Window = paste(start_year, end_year, sep = "–"),
+            Design = paste(start_design, end_design, sep = " → "),
+            Class = livestock_class,
+            `Start head` = fmt(start_head), `End head` = fmt(end_head),
+            `Change (head)` = fmt(change_head),
+            `Change (%)` = sprintf("%+.1f", change_pct)) |>
+  kable(align = "lllrrrr")
+```
+
+These are published **national totals**, not sums with missing regions filled
+with zero. Splitting at 2014 separates the earlier dairy expansion from the
+later period; the 2002–2022 window compares two censuses. The other windows
+include sample-survey estimates, so their differences also carry sampling error.
+
+A head of dairy cattle and a sheep do not require the same feed. This table does
+not estimate land conversion or replacement in stock units (SU). The extract
+contains **total dairy cattle** (lc7193) and **total sheep** (lc6731), whereas
+Stats NZ separately identifies cows/heifers in milk or calf and breeding ewes.
+Applying one adult-cow/ewe coefficient to these mixed-age totals would require
+unsupported assumptions about herd composition. Stats NZ directs SU conversions
+to class-specific Beef + Lamb NZ ratios; a defensible SU analysis needs those
+classes and their matching coefficients first. [Source: Stats NZ 2025 methodology](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029).
+
 ```{r}
 #| label: fig-substitution
 #| fig-cap: "Change in sheep, dairy cattle and beef cattle in the five regions that lost the most sheep."
@@ -361,18 +389,25 @@ total against the sum of the regions.
 #| label: tbl-recon
 reconciliation |>
   filter(livestock_class == "Sheep") |>
-  left_join(select(coverage, year, regions_present, regions_suppressed), by = "year") |>
+  left_join(select(coverage, year, regions_present, regions_suppressed, regions_absent), by = "year") |>
   transmute(
     Year = year,
-    `Regions published` = regions_present,
+    `Region rows present` = regions_present,
+    `Region rows absent` = regions_absent,
     `Regions suppressed` = regions_suppressed,
     `Sum of regions` = fmt(region_sum),
     `Published national` = fmt(published),
     `Residual (head)` = fmt(residual),
     `Residual %` = sprintf("%.3f", residual_pct)
   ) |>
-  kable(align = "rrrrrrr")
+  kable(align = "rrrrrrrr")
 ```
+
+There are 17 expected regional rows for sheep in each year. An **absent row**
+is different from a present row whose value is suppressed. The exported coverage
+table records both: `suppression_rate` divides suppressed rows by present rows,
+and `suppression_rate_all_regions` divides them by 17. Neither treats absent
+rows as suppressed or as zero-valued livestock counts.
 
 The residual column is reported in head as well as in percent on purpose. At a
 base of 30 million, a percentage rounded to three decimal places renders a

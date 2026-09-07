@@ -87,7 +87,35 @@ coverage <- livestock |>
     regions_suppressed = sum(suppressed),
     .groups = "drop"
   ) |>
-  mutate(suppression_rate = regions_suppressed / regions_present)
+  mutate(
+    regions_expected = length(setdiff(names(AREA), AREA_AGGREGATES)),
+    regions_absent = regions_expected - regions_present,
+    suppression_rate = regions_suppressed / regions_present,
+    suppression_rate_all_regions = regions_suppressed / regions_expected
+  )
+
+stopifnot(all(coverage$regions_absent >= 0),
+          all(coverage$regions_with_value + coverage$regions_suppressed +
+                coverage$regions_absent == coverage$regions_expected))
+
+# National totals avoid treating absent/suppressed regional cells as zero.
+# All classes are headcounts, not feed-equivalent stock units.
+dairy_windows <- bind_rows(lapply(list(c(2002L, 2014L), c(2014L, 2025L),
+                                      c(2002L, 2022L)), function(window) {
+  livestock |>
+    filter(area_code == "20", year %in% window) |>
+    select(livestock_class, year, head) |>
+    pivot_wider(names_from = year, values_from = head) |>
+    transmute(start_year = window[1], end_year = window[2], livestock_class,
+              start_head = .data[[as.character(window[1])]],
+              end_head = .data[[as.character(window[2])]],
+              change_head = end_head - start_head,
+              change_pct = 100 * change_head / start_head,
+              start_design = ifelse(window[1] %in% CENSUS_YEARS, "census", "survey"),
+              end_design = ifelse(window[2] %in% CENSUS_YEARS, "census", "survey"))
+}))
+stopifnot(nrow(dairy_windows) == 9L, !anyNA(dairy_windows),
+          all(dairy_windows$start_head > 0))
 
 # Reconciliation: sum of non-aggregate regions against the published national
 # total, reported as a residual per year. No fixed tolerance is asserted; the
@@ -137,6 +165,7 @@ if (sys.nframe() == 0) {
   write_csv(livestock,         "outputs/livestock_regional.csv")
   write_csv(results,           "outputs/validation-summary.csv")
   write_csv(results_corrupted, "outputs/validation-summary-corrupted.csv")
+  write_csv(dairy_windows, "outputs/dairy-comparison-windows.csv")
   write_csv(coverage,          "outputs/coverage-and-suppression.csv")
   write_csv(reconciliation,    "outputs/reconciliation.csv")
   write_csv(residual_tiers,    "outputs/residual-tiers.csv")
