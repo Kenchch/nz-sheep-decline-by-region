@@ -136,3 +136,13 @@ and reviewed every diff; Claude Code and OpenAI Codex drafted code, refactored
 and scaffolded tests. The full note — including the `Co-Authored-By` trailers
 removed from this repository's history on 6 September 2026 — is on my profile:
 [How I use AI tools](https://github.com/Kenchch/Kenchch#how-i-use-ai-tools).
+
+### Coverage and comparison windows
+
+[Coverage CSV](outputs/coverage-and-suppression.csv) separates sheep region rows
+that are absent from rows whose values are suppressed. Its two suppression rates
+use present rows and all 17 expected regions respectively.
+[Three comparison windows](outputs/dairy-comparison-windows.csv) report national
+headcounts for 2002–2014, 2014–2025 and census-to-census 2002–2022. These mixed-age
+animal totals do not support an adult-cow/ewe stock-unit conversion; the
+[report](index.qmd#three-endpoint-windows) explains the required data and source.
