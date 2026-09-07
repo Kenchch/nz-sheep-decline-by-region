@@ -255,49 +255,182 @@ Figure&nbsp;1: Contribution of each region to the national fall in sheep numbers
 </section>
 <section id="did-dairy-replace-the-sheep" class="level2">
 <h2 class="anchored" data-anchor-id="did-dairy-replace-the-sheep">Did dairy replace the sheep?</h2>
+<section id="three-endpoint-windows" class="level3">
+<h3 class="anchored" data-anchor-id="three-endpoint-windows">Three endpoint windows</h3>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dumb <span class="ot">&lt;-</span> substitution <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(region <span class="sc">%in%</span> top5_regions) <span class="sc">|&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>region, <span class="at">names_to =</span> <span class="st">"livestock_class"</span>, <span class="at">values_to =</span> <span class="st">"change"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">factor</span>(region, <span class="at">levels =</span> <span class="fu">rev</span>(top5_regions)),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">livestock_class =</span> <span class="fu">factor</span>(livestock_class,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span>, <span class="st">"Dairy cattle"</span>, <span class="st">"Beef cattle"</span>)),</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">thousands =</span> change <span class="sc">/</span> <span class="fl">1e3</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dumb, <span class="fu">aes</span>(<span class="at">x =</span> thousands, <span class="at">y =</span> region)) <span class="sc">+</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="st">"grey60"</span>) <span class="sc">+</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> region), <span class="at">colour =</span> <span class="st">"grey75"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Shape as well as colour, so colour is not the only channel carrying the</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># distinction. The green and the red-brown are close under red-green colour</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># vision deficiency; WCAG 1.4.1 asks that colour not be used alone.</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> livestock_class, <span class="at">shape =</span> livestock_class), <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span> <span class="ot">=</span> <span class="st">"#2d6a4f"</span>,</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">"Dairy cattle"</span> <span class="ot">=</span> <span class="st">"#c1666b"</span>,</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">"Beef cattle"</span> <span class="ot">=</span> <span class="st">"#4a6fa5"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span> <span class="ot">=</span> <span class="dv">16</span>, <span class="st">"Dairy cattle"</span> <span class="ot">=</span> <span class="dv">17</span>,</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Beef cattle"</span> <span class="ot">=</span> <span class="dv">15</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.07</span>)) <span class="sc">+</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Where sheep left, cattle mostly did not arrive in comparable numbers"</span>,</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Change in animals, thousands of head, June 2002 to June 2025, five largest sheep declines"</span>,</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Thousand head, change over the period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/02-substitution.png"</span>, p2,</span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>p2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dairy_windows <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">Window =</span> <span class="fu">paste</span>(start_year, end_year, <span class="at">sep =</span> <span class="st">"–"</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">Design =</span> <span class="fu">paste</span>(start_design, end_design, <span class="at">sep =</span> <span class="st">" → "</span>),</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Class =</span> livestock_class,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Start head</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(start_head), <span class="st">`</span><span class="at">End head</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(end_head),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Change (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(change_head),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Change (%)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%+.1f"</span>, change_pct)) <span class="sc">|&gt;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lllrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-dairy-windows" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-dairy-windows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1
+</figcaption>
+<div aria-describedby="tbl-dairy-windows-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Window</th>
+<th style="text-align: left;">Design</th>
+<th style="text-align: left;">Class</th>
+<th style="text-align: right;">Start head</th>
+<th style="text-align: right;">End head</th>
+<th style="text-align: right;">Change (head)</th>
+<th style="text-align: right;">Change (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2002–2014</td>
+<td style="text-align: left;">census → survey</td>
+<td style="text-align: left;">Beef cattle</td>
+<td style="text-align: right;">4,491,281</td>
+<td style="text-align: right;">3,669,862</td>
+<td style="text-align: right;">-821,419</td>
+<td style="text-align: right;">-18.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2002–2014</td>
+<td style="text-align: left;">census → survey</td>
+<td style="text-align: left;">Dairy cattle</td>
+<td style="text-align: right;">5,161,589</td>
+<td style="text-align: right;">6,698,326</td>
+<td style="text-align: right;">1,536,737</td>
+<td style="text-align: right;">+29.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2002–2014</td>
+<td style="text-align: left;">census → survey</td>
+<td style="text-align: left;">Sheep</td>
+<td style="text-align: right;">39,571,837</td>
+<td style="text-align: right;">29,803,402</td>
+<td style="text-align: right;">-9,768,435</td>
+<td style="text-align: right;">-24.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2014–2025</td>
+<td style="text-align: left;">survey → survey</td>
+<td style="text-align: left;">Beef cattle</td>
+<td style="text-align: right;">3,669,862</td>
+<td style="text-align: right;">3,832,668</td>
+<td style="text-align: right;">162,806</td>
+<td style="text-align: right;">+4.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2014–2025</td>
+<td style="text-align: left;">survey → survey</td>
+<td style="text-align: left;">Dairy cattle</td>
+<td style="text-align: right;">6,698,326</td>
+<td style="text-align: right;">5,749,870</td>
+<td style="text-align: right;">-948,456</td>
+<td style="text-align: right;">-14.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2014–2025</td>
+<td style="text-align: left;">survey → survey</td>
+<td style="text-align: left;">Sheep</td>
+<td style="text-align: right;">29,803,402</td>
+<td style="text-align: right;">23,252,463</td>
+<td style="text-align: right;">-6,550,939</td>
+<td style="text-align: right;">-22.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2002–2022</td>
+<td style="text-align: left;">census → census</td>
+<td style="text-align: left;">Beef cattle</td>
+<td style="text-align: right;">4,491,281</td>
+<td style="text-align: right;">3,821,156</td>
+<td style="text-align: right;">-670,125</td>
+<td style="text-align: right;">-14.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2002–2022</td>
+<td style="text-align: left;">census → census</td>
+<td style="text-align: left;">Dairy cattle</td>
+<td style="text-align: right;">5,161,589</td>
+<td style="text-align: right;">5,930,033</td>
+<td style="text-align: right;">768,444</td>
+<td style="text-align: right;">+14.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2002–2022</td>
+<td style="text-align: left;">census → census</td>
+<td style="text-align: left;">Sheep</td>
+<td style="text-align: right;">39,571,837</td>
+<td style="text-align: right;">25,132,697</td>
+<td style="text-align: right;">-14,439,140</td>
+<td style="text-align: right;">-36.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</figure>
+</div>
+</div>
+<p>These are published <strong>national totals</strong>, not sums with missing regions filled with zero. Splitting at 2014 separates the earlier dairy expansion from the later period; the 2002–2022 window compares two censuses. The other windows include sample-survey estimates, so their differences also carry sampling error.</p>
+<p>A head of dairy cattle and a sheep do not require the same feed. This table does not estimate land conversion or replacement in stock units (SU). The extract contains <strong>total dairy cattle</strong> (lc7193) and <strong>total sheep</strong> (lc6731), whereas Stats NZ separately identifies cows/heifers in milk or calf and breeding ewes. Applying one adult-cow/ewe coefficient to these mixed-age totals would require unsupported assumptions about herd composition. Stats NZ directs SU conversions to class-specific Beef + Lamb NZ ratios; a defensible SU analysis needs those classes and their matching coefficients first. <a href="https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029">Source: Stats NZ 2025 methodology</a>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Show the code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dumb <span class="ot">&lt;-</span> substitution <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(region <span class="sc">%in%</span> top5_regions) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>region, <span class="at">names_to =</span> <span class="st">"livestock_class"</span>, <span class="at">values_to =</span> <span class="st">"change"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">region =</span> <span class="fu">factor</span>(region, <span class="at">levels =</span> <span class="fu">rev</span>(top5_regions)),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">livestock_class =</span> <span class="fu">factor</span>(livestock_class,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span>, <span class="st">"Dairy cattle"</span>, <span class="st">"Beef cattle"</span>)),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">thousands =</span> change <span class="sc">/</span> <span class="fl">1e3</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(dumb, <span class="fu">aes</span>(<span class="at">x =</span> thousands, <span class="at">y =</span> region)) <span class="sc">+</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">colour =</span> <span class="st">"grey60"</span>) <span class="sc">+</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> region), <span class="at">colour =</span> <span class="st">"grey75"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Shape as well as colour, so colour is not the only channel carrying the</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># distinction. The green and the red-brown are close under red-green colour</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># vision deficiency; WCAG 1.4.1 asks that colour not be used alone.</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> livestock_class, <span class="at">shape =</span> livestock_class), <span class="at">size =</span> <span class="fl">3.4</span>) <span class="sc">+</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span> <span class="ot">=</span> <span class="st">"#2d6a4f"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">"Dairy cattle"</span> <span class="ot">=</span> <span class="st">"#c1666b"</span>,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">"Beef cattle"</span> <span class="ot">=</span> <span class="st">"#4a6fa5"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Sheep"</span> <span class="ot">=</span> <span class="dv">16</span>, <span class="st">"Dairy cattle"</span> <span class="ot">=</span> <span class="dv">17</span>,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"Beef cattle"</span> <span class="ot">=</span> <span class="dv">15</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="fu">label_comma</span>(), <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fl">0.07</span>)) <span class="sc">+</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Where sheep left, cattle mostly did not arrive in comparable numbers"</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Change in animals, thousands of head, June 2002 to June 2025, five largest sheep declines"</span>,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Thousand head, change over the period"</span>, <span class="at">y =</span> <span class="cn">NULL</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/02-substitution.png"</span>, p2,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="fl">5.5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>p2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-substitution" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Dot chart for the five regions with the largest sheep declines. In each region the sheep marker sits far to the left of zero, between 1.3 and 3.6 million head fewer, while the dairy and beef cattle markers sit close to zero. Canterbury has the largest dairy gain at about 795 thousand and Southland about 281 thousand; in Hawke's Bay and Manawatū-Whanganui both cattle markers fall below zero, meaning cattle declined as well.">
@@ -316,20 +449,20 @@ Figure&nbsp;2: Change in sheep, dairy cattle and beef cattle in the five regions
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>substitution <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(region <span class="sc">%in%</span> top5_regions) <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Region =</span> region,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sheep lost</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(<span class="sc">-</span>Sheep),</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Dairy cattle per 100 sheep lost</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%+.1f"</span>, <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> <span class="st">`</span><span class="at">Dairy cattle</span><span class="st">`</span> <span class="sc">/</span> Sheep),</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Beef cattle per 100 sheep lost</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%+.1f"</span>, <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> <span class="st">`</span><span class="at">Beef cattle</span><span class="st">`</span> <span class="sc">/</span> Sheep)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>substitution <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(region <span class="sc">%in%</span> top5_regions) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Region =</span> region,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sheep lost</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(<span class="sc">-</span>Sheep),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Dairy cattle per 100 sheep lost</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%+.1f"</span>, <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> <span class="st">`</span><span class="at">Dairy cattle</span><span class="st">`</span> <span class="sc">/</span> Sheep),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Beef cattle per 100 sheep lost</span><span class="st">`</span>  <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%+.1f"</span>, <span class="sc">-</span><span class="dv">100</span> <span class="sc">*</span> <span class="st">`</span><span class="at">Beef cattle</span><span class="st">`</span> <span class="sc">/</span> Sheep)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-substitution" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-substitution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;1
+Table&nbsp;2
 </figcaption>
 <div aria-describedby="tbl-substitution-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -388,18 +521,19 @@ Table&nbsp;1
 </div>
 <p>Canterbury accounts for by far the largest absolute dairy increase of any region, at 795 thousand head. It is not, however, the highest <em>ratio</em>: West Coast gained 39 dairy cattle per 100 sheep lost, on a base so small — under 40 thousand sheep — that the ratio says more about the denominator than about land use. Hawke’s Bay and Manawatū-Whanganui lost sheep <em>and</em> cattle. A negative figure in this table means that class of animal declined as well.</p>
 </section>
+</section>
 <section id="data-quality-checks" class="level2">
 <h2 class="anchored" data-anchor-id="data-quality-checks">Data quality checks</h2>
 <p>Five rules run over the analysis table on every render.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(results, <span class="at">align =</span> <span class="st">"lrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(results, <span class="at">align =</span> <span class="st">"lrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-validation" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;2
+Table&nbsp;3
 </figcaption>
 <div aria-describedby="tbl-validation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -463,17 +597,17 @@ Table&nbsp;2
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>results <span class="sc">|&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rule, <span class="st">`</span><span class="at">real data</span><span class="st">`</span> <span class="ot">=</span> fails) <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(results_corrupted, rule, <span class="st">`</span><span class="at">corrupted copy</span><span class="st">`</span> <span class="ot">=</span> fails),</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"rule"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrr"</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Rule"</span>, <span class="st">"Fails on real data"</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"Fails on corrupted copy"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>results <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rule, <span class="st">`</span><span class="at">real data</span><span class="st">`</span> <span class="ot">=</span> fails) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(results_corrupted, rule, <span class="st">`</span><span class="at">corrupted copy</span><span class="st">`</span> <span class="ot">=</span> fails),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"rule"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrr"</span>, <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Rule"</span>, <span class="st">"Fails on real data"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"Fails on corrupted copy"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-validation-corrupted" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-validation-corrupted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;3
+Table&nbsp;4
 </figcaption>
 <div aria-describedby="tbl-validation-corrupted-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -524,41 +658,44 @@ Table&nbsp;3
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>reconciliation <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(livestock_class <span class="sc">==</span> <span class="st">"Sheep"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(coverage, year, regions_present, regions_suppressed), <span class="at">by =</span> <span class="st">"year"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions published</span><span class="st">`</span> <span class="ot">=</span> regions_present,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions suppressed</span><span class="st">`</span> <span class="ot">=</span> regions_suppressed,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sum of regions</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(region_sum),</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Published national</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(published),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Residual (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(residual),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Residual %</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, residual_pct)</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"rrrrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>reconciliation <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(livestock_class <span class="sc">==</span> <span class="st">"Sheep"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(<span class="fu">select</span>(coverage, year, regions_present, regions_suppressed, regions_absent), <span class="at">by =</span> <span class="st">"year"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Region rows present</span><span class="st">`</span> <span class="ot">=</span> regions_present,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Region rows absent</span><span class="st">`</span> <span class="ot">=</span> regions_absent,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions suppressed</span><span class="st">`</span> <span class="ot">=</span> regions_suppressed,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sum of regions</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(region_sum),</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Published national</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(published),</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Residual (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(residual),</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Residual %</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, residual_pct)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"rrrrrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-recon" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-recon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;4
+Table&nbsp;5
 </figcaption>
 <div aria-describedby="tbl-recon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 4%">
-<col style="width: 17%">
-<col style="width: 18%">
-<col style="width: 14%">
-<col style="width: 18%">
+<col style="width: 16%">
 <col style="width: 15%">
-<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 8%">
 </colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: right;">Year</th>
-<th style="text-align: right;">Regions published</th>
+<th style="text-align: right;">Region rows present</th>
+<th style="text-align: right;">Region rows absent</th>
 <th style="text-align: right;">Regions suppressed</th>
 <th style="text-align: right;">Sum of regions</th>
 <th style="text-align: right;">Published national</th>
@@ -571,6 +708,7 @@ Table&nbsp;4
 <td style="text-align: right;">2002</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">39,571,837</td>
 <td style="text-align: right;">39,571,837</td>
 <td style="text-align: right;">0</td>
@@ -579,6 +717,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2003</td>
 <td style="text-align: right;">15</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">39,408,419</td>
 <td style="text-align: right;">39,552,113</td>
@@ -588,6 +727,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2004</td>
 <td style="text-align: right;">15</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">39,198,830</td>
 <td style="text-align: right;">39,271,137</td>
@@ -597,6 +737,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2005</td>
 <td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">39,824,732</td>
 <td style="text-align: right;">39,879,668</td>
@@ -606,6 +747,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2006</td>
 <td style="text-align: right;">15</td>
+<td style="text-align: right;">2</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">39,980,941</td>
 <td style="text-align: right;">40,081,594</td>
@@ -616,6 +758,7 @@ Table&nbsp;4
 <td style="text-align: right;">2007</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">38,460,477</td>
 <td style="text-align: right;">38,460,477</td>
 <td style="text-align: right;">0</td>
@@ -624,6 +767,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2008</td>
 <td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">33,767,565</td>
 <td style="text-align: right;">34,087,864</td>
@@ -633,6 +777,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2009</td>
 <td style="text-align: right;">16</td>
+<td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">32,312,249</td>
 <td style="text-align: right;">32,383,589</td>
@@ -643,6 +788,7 @@ Table&nbsp;4
 <td style="text-align: right;">2010</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">32,562,612</td>
 <td style="text-align: right;">32,562,612</td>
 <td style="text-align: right;">0</td>
@@ -651,6 +797,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2011</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">31,132,328</td>
 <td style="text-align: right;">31,132,329</td>
@@ -661,6 +808,7 @@ Table&nbsp;4
 <td style="text-align: right;">2012</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">31,262,715</td>
 <td style="text-align: right;">31,262,715</td>
 <td style="text-align: right;">0</td>
@@ -669,6 +817,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">30,786,762</td>
 <td style="text-align: right;">30,786,761</td>
@@ -679,6 +828,7 @@ Table&nbsp;4
 <td style="text-align: right;">2014</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">29,803,402</td>
 <td style="text-align: right;">29,803,402</td>
 <td style="text-align: right;">0</td>
@@ -687,6 +837,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2015</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">29,120,829</td>
 <td style="text-align: right;">29,120,827</td>
@@ -697,6 +848,7 @@ Table&nbsp;4
 <td style="text-align: right;">2016</td>
 <td style="text-align: right;">17</td>
 <td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">27,583,672</td>
 <td style="text-align: right;">27,583,673</td>
 <td style="text-align: right;">1</td>
@@ -705,6 +857,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2017</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">27,506,969</td>
 <td style="text-align: right;">27,526,537</td>
@@ -714,6 +867,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2018</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">27,202,153</td>
 <td style="text-align: right;">27,295,749</td>
@@ -723,6 +877,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2019</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">26,535,840</td>
 <td style="text-align: right;">26,821,846</td>
@@ -732,6 +887,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2020</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">26,008,537</td>
 <td style="text-align: right;">26,028,935</td>
@@ -741,6 +897,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2021</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: right;">25,174,579</td>
 <td style="text-align: right;">25,732,889</td>
@@ -750,6 +907,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2022</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">25,113,843</td>
 <td style="text-align: right;">25,132,697</td>
@@ -759,6 +917,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2023</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">24,338,666</td>
 <td style="text-align: right;">24,359,267</td>
@@ -768,6 +927,7 @@ Table&nbsp;4
 <tr class="odd">
 <td style="text-align: right;">2024</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">23,363,016</td>
 <td style="text-align: right;">23,583,001</td>
@@ -777,6 +937,7 @@ Table&nbsp;4
 <tr class="even">
 <td style="text-align: right;">2025</td>
 <td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">22,997,178</td>
 <td style="text-align: right;">23,252,463</td>
@@ -790,27 +951,28 @@ Table&nbsp;4
 </figure>
 </div>
 </div>
+<p>There are 17 expected regional rows for sheep in each year. An <strong>absent row</strong> is different from a present row whose value is suppressed. The exported coverage table records both: <code>suppression_rate</code> divides suppressed rows by present rows, and <code>suppression_rate_all_regions</code> divides them by 17. Neither treats absent rows as suppressed or as zero-valued livestock counts.</p>
 <p>The residual column is reported in head as well as in percent on purpose. At a base of 30 million, a percentage rounded to three decimal places renders a discrepancy of one animal as <code>0.000</code>, which would let the table appear to support a stronger claim than the numbers do.</p>
 <p>Across all three livestock classes the residual separates into three tiers.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>residual_tiers <span class="sc">|&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(tier, <span class="at">name =</span> <span class="st">"Class-years"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    residual_tiers <span class="sc">|&gt;</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(tier) <span class="sc">|&gt;</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="st">`</span><span class="at">Largest absolute residual (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(<span class="fu">max</span>(<span class="fu">abs</span>(residual))),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">.groups =</span> <span class="st">"drop"</span>),</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"tier"</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Tier =</span> tier) <span class="sc">|&gt;</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>residual_tiers <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(tier, <span class="at">name =</span> <span class="st">"Class-years"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    residual_tiers <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(tier) <span class="sc">|&gt;</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="st">`</span><span class="at">Largest absolute residual (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(<span class="fu">max</span>(<span class="fu">abs</span>(residual))),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">.groups =</span> <span class="st">"drop"</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"tier"</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Tier =</span> tier) <span class="sc">|&gt;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-tiers" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-tiers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;5
+Table&nbsp;6
 </figcaption>
 <div aria-describedby="tbl-tiers-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -858,23 +1020,23 @@ Table&nbsp;5
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>island_reconciliation <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residual <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Class =</span> livestock_class,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">North Island</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a10),</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">South Island</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a19),</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sum</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a10 <span class="sc">+</span> a19),</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Published NZ</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a20),</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Difference</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(residual)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"rlrrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>island_reconciliation <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residual <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Class =</span> livestock_class,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">North Island</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a10),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">South Island</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a19),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Sum</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a10 <span class="sc">+</span> a19),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Published NZ</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(a20),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Difference</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(residual)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"rlrrrrr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-island" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-island-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;6
+Table&nbsp;7
 </figcaption>
 <div aria-describedby="tbl-island-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1040,30 +1202,30 @@ Table&nbsp;6
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(supp_by_code, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> label), <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"C - confidentiality (pre-2017 method)"</span> <span class="ot">=</span> <span class="st">"#e07a5f"</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"S - quality suppression"</span> <span class="ot">=</span> <span class="st">"#6c8ea4"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2002</span>, <span class="dv">2025</span>, <span class="dv">3</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2001</span>, <span class="dv">2026</span>)) <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>(<span class="at">scale =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Two different flags, two different stories"</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Percentage of region-by-livestock-class cells withheld: sheep, dairy and beef cattle"</span>,</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Cells suppressed"</span>,</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/03-suppression-rate.png"</span>, p3,</span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>p3 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(supp_by_code, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> rate)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="fu">aes</span>(<span class="at">fill =</span> label), <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"C - confidentiality (pre-2017 method)"</span> <span class="ot">=</span> <span class="st">"#e07a5f"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"S - quality suppression"</span> <span class="ot">=</span> <span class="st">"#6c8ea4"</span>), <span class="at">name =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">2002</span>, <span class="dv">2025</span>, <span class="dv">3</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">2001</span>, <span class="dv">2026</span>)) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>(<span class="at">scale =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">nrow =</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Two different flags, two different stories"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Percentage of region-by-livestock-class cells withheld: sheep, dairy and beef cattle"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">"Cells suppressed"</span>,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Stats NZ, Agricultural production statistics.</span><span class="sc">\n</span><span class="st">Licensed by Stats NZ for re-use under CC BY 4.0."</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor   =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position    =</span> <span class="st">"top"</span>,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title.position =</span> <span class="st">"plot"</span>,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title   =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">colour =</span> <span class="st">"grey45"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">8</span>))</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"outputs/figures/03-suppression-rate.png"</span>, p3,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">width =</span> <span class="dv">9</span>, <span class="at">height =</span> <span class="dv">5</span>, <span class="at">dpi =</span> <span class="dv">200</span>, <span class="at">bg =</span> <span class="st">"white"</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>p3</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-suppression" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Bar chart of the percentage of regional cells withheld each year from 2002 to 2025, coloured by flag. Nothing is withheld from 2002 to 2011. A single orange bar in 2012 marks the C confidentiality flag at about 8 percent. Blue bars for the S quality-suppression flag begin in 2014 and run to 2025, peaking near 18 percent in 2021, with the census years 2017 and 2022 lower than the survey years around them.">
@@ -1093,18 +1255,18 @@ Figure&nbsp;3: Share of regional cells withheld, by year and by flag.
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>r24 <span class="ot">&lt;-</span> reconciliation <span class="sc">|&gt;</span> <span class="fu">filter</span>(livestock_class <span class="sc">==</span> <span class="st">"Sheep"</span>, year <span class="sc">==</span> <span class="dv">2024</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">"Published, Total New Zealand, June 2024"</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Recomputed as the sum of published regions"</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Difference"</span>),</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Head =</span> <span class="fu">c</span>(<span class="fu">fmt</span>(r24<span class="sc">$</span>published), <span class="fu">fmt</span>(r24<span class="sc">$</span>region_sum), <span class="fu">fmt</span>(r24<span class="sc">$</span>residual))</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>r24 <span class="ot">&lt;-</span> reconciliation <span class="sc">|&gt;</span> <span class="fu">filter</span>(livestock_class <span class="sc">==</span> <span class="st">"Sheep"</span>, year <span class="sc">==</span> <span class="dv">2024</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quantity =</span> <span class="fu">c</span>(<span class="st">"Published, Total New Zealand, June 2024"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Recomputed as the sum of published regions"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">"Difference"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Head =</span> <span class="fu">c</span>(<span class="fu">fmt</span>(r24<span class="sc">$</span>published), <span class="fu">fmt</span>(r24<span class="sc">$</span>region_sum), <span class="fu">fmt</span>(r24<span class="sc">$</span>residual))</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lr"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-recompute" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-recompute-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;7
+Table&nbsp;8
 </figcaption>
 <div aria-describedby="tbl-recompute-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1164,25 +1326,25 @@ Table&nbsp;7
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2025, census to sample survey (headline)"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> sensitivity<span class="sc">$</span>regions[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(sensitivity<span class="sc">$</span>fall[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, sensitivity<span class="sc">$</span>share[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> sensitivity<span class="sc">$</span>top3[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2022, census to census (design-matched)"</span>,</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> matched<span class="sc">$</span>regions,</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(matched<span class="sc">$</span>fall),</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, matched<span class="sc">$</span>share),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> matched<span class="sc">$</span>top3,</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2025, census to sample survey (headline)"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> sensitivity<span class="sc">$</span>regions[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(sensitivity<span class="sc">$</span>fall[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, sensitivity<span class="sc">$</span>share[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>]),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> sensitivity<span class="sc">$</span>top3[sensitivity<span class="sc">$</span>start <span class="sc">==</span> <span class="dv">2002</span>],</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Window =</span> <span class="st">"2002–2022, census to census (design-matched)"</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">Regions =</span> matched<span class="sc">$</span>regions,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">Fall =</span> <span class="fu">fmt</span>(matched<span class="sc">$</span>fall),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, matched<span class="sc">$</span>share),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>             <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> matched<span class="sc">$</span>top3,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>             <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-matched" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-matched-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;8
+Table&nbsp;9
 </figcaption>
 <div aria-describedby="tbl-matched-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1298,21 +1460,21 @@ Table&nbsp;8
 <div class="cell">
 <details class="code-fold">
 <summary>Show the code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Start year</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">ifelse</span>(start <span class="sc">%in%</span> CENSUS_YEARS,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">paste0</span>(start, <span class="st">" (census)"</span>), <span class="fu">as.character</span>(start)),</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions measurable</span><span class="st">`</span> <span class="ot">=</span> regions,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Fall (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(fall),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, share),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> top3</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>sensitivity <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Start year</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">ifelse</span>(start <span class="sc">%in%</span> CENSUS_YEARS,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">paste0</span>(start, <span class="st">" (census)"</span>), <span class="fu">as.character</span>(start)),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Regions measurable</span><span class="st">`</span> <span class="ot">=</span> regions,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Fall (head)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">fmt</span>(fall),</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Top three share</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sprintf</span>(<span class="st">"%.1f%%"</span>, share),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">The three regions</span><span class="st">`</span> <span class="ot">=</span> top3</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"lrrrl"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div id="tbl-sensitivity" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl quarto-uncaptioned" id="tbl-sensitivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;9
+Table&nbsp;10
 </figcaption>
 <div aria-describedby="tbl-sensitivity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
@@ -1488,15 +1650,15 @@ Table&nbsp;9
 <section id="reproduce" class="level2">
 <h2 class="anchored" data-anchor-id="reproduce">Reproduce</h2>
 <p>Two steps, because they write different things.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/checks.R    <span class="co"># regenerates outputs/*.csv: validation, coverage, reconciliation</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render         <span class="co"># regenerates this page and outputs/figures/*.png</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> R/checks.R    <span class="co"># regenerates outputs/*.csv: validation, coverage, reconciliation</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render         <span class="co"># regenerates this page and outputs/figures/*.png</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>R/load.R</code> verifies the extract against the SHA-256 recorded in <code>data-raw/SOURCE.md</code> before reading it, then tidies it; <code>R/checks.R</code> runs the rules and both reconciliations; <code>index.qmd</code> produces this page and the figures.</p>
 <p>Both sets of outputs are committed. A clean checkout that runs the two commands above must reproduce the CSVs byte for byte. The figures are regenerated as well, but their bytes can differ with the platform’s fonts and graphics device, so they are not compared. If the extract were ever replaced without <code>SOURCE.md</code> being updated, <code>R/load.R</code> stops rather than analysing it.</p>
 <p>That claim is checked rather than asserted. A GitHub Actions job runs both commands on a clean Ubuntu runner on every push, fails if any committed CSV differs, and publishes this page from the same run — so what you are reading is the output of a build that passed.</p>
 <p>It earned its place on the first run, by failing. The extract arrives from the SDMX endpoint with CRLF line endings and the recorded SHA-256 is the hash of those bytes, but Git had normalised them to LF on commit. The hash gate therefore passed on the Windows machine this was written on, where checkout restores the CRLFs, and would have stopped every clone on Linux or macOS at the first line of <code>R/load.R</code>. <code>data-raw</code> is now marked <code>-text</code> so Git leaves those bytes alone.</p>
 <p>The general point is worth more than the fix: a single machine cannot see a whole class of defect, because the thing that hides the defect is the same thing that makes the analysis run. Only a second platform could find that one.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.6.1 (2026-06-24)
 Platform: x86_64-pc-linux-gnu
