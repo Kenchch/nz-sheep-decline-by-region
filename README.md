@@ -9,8 +9,8 @@ New Zealand's sheep flock fell by 16.32 million head between June 2002 and June 
 ## Key findings
 
 - Canterbury, Southland and Otago together account for **54 percent** of the fall measured across the 15 regions with both endpoints published. Against the published national fall the same three regions are 53.6 percent; the published fall is 0.77 percent larger than the measurable regional one, because Auckland and Nelson are withheld in 2025.
-- Over the same 23 years the national dairy herd grew by only **588 thousand** cattle against a fall of 16.3 million sheep — two different orders of magnitude, which is the arithmetic the "sheep became dairy" story has to survive.
-- In **7 of the 13** regions where both series are published, dairy cattle fell *alongside* sheep rather than in place of them. Canterbury has the largest absolute dairy increase by far (795 thousand head, 22 per 100 sheep lost); West Coast has the higher ratio at 39 per 100, but on a base under 40 thousand sheep.
+- Over the same 23 years the national dairy herd rose by **588 thousand** cattle net. That net hides the shape of the series: it rose by 1.54 million (29.8 percent) to a 2014 peak and has fallen by 0.95 million since.
+- Dairy fell *alongside* sheep in **7 of the 13** regions with both endpoints published for 2002–2025; over 2002–2014, the years of the steepest sheep decline, it fell in only **4 of 15**, and over 2014–2025 in **12 of 14**. The direction depends on the window, so all three are reported in [Three endpoint windows](https://kenchch.github.io/nz-sheep-decline-by-region/#three-endpoint-windows). Whether the earlier dairy growth replaced the sheep in feed terms cannot be settled from head counts.
 
 ## Data quality checks
 
