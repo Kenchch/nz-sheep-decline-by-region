@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: >-
+  If you cite this analysis, please cite it as below, and cite Stats NZ
+  separately as the source of the underlying data.
+title: "Where New Zealand's sheep went: a regional breakdown of the flock decline, 2002-2025"
+abstract: >-
+  A regional reconciliation of the New Zealand sheep flock decline using Stats
+  NZ table AGR_AGR_003, with suppression-aware handling, validation rules
+  exercised against a deliberately corrupted copy, and a published Quarto
+  report rebuilt by CI. The code is MIT; the extract in data-raw/ remains
+  under CC BY 4.0 from Stats NZ. See DATA-LICENCE.md.
+authors:
+  - family-names: Jiang
+    given-names: Feng
+repository-code: https://github.com/Kenchch/nz-sheep-decline-by-region
+url: https://kenchch.github.io/nz-sheep-decline-by-region/
+license: MIT
