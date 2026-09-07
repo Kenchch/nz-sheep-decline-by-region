@@ -35,9 +35,10 @@ jobs:
 
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
 
-      # Dependencies are declared once, in DESCRIPTION. If that file goes
-      # missing this step fails rather than silently installing nothing.
-      - uses: r-lib/actions/setup-r-dependencies@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+      # DESCRIPTION still declares what the analysis uses; renv.lock pins the
+      # exact versions those resolve to. The snapshot is 'explicit', so the two
+      # cannot drift apart: adding an Import without re-snapshotting fails here.
+      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
 
       - name: Verify the pinned extract against its recorded hash
         run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'

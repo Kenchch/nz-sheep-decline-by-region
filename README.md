@@ -86,11 +86,12 @@ Every methodological statement in the report was read on its source page before 
 
 ## Reproduce
 
-Requirements: R >= 4.1 (for the native pipe), the Quarto CLI, and the R packages `readr`, `dplyr`, `tidyr`, `janitor`, `validate`, `digest`, `ggplot2`, `scales`, `knitr` and `rmarkdown`.
+Requirements: R >= 4.1 (for the native pipe) and the Quarto CLI. The R packages are declared in [`DESCRIPTION`](DESCRIPTION) and pinned to exact versions in [`renv.lock`](renv.lock), so `renv::restore()` installs the set these outputs were produced with rather than whatever CRAN serves today.
 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
 cd nz-sheep-decline-by-region
+Rscript -e 'renv::restore()'   # installs the pinned package versions
 Rscript R/checks.R    # regenerates outputs/*.csv
 quarto render         # regenerates the report and outputs/figures/*.png
 ```
@@ -114,7 +115,7 @@ The check paid for itself on its first run, by failing: the pinned extract
 arrives with CRLF line endings and the recorded SHA-256 is the hash of those
 bytes, but Git had normalised them to LF on commit, so the hash gate passed on
 Windows and would have stopped every clone on Linux or macOS. Dependencies are
-declared once in [`DESCRIPTION`](DESCRIPTION), which the workflow reads.
+declared once in [`DESCRIPTION`](DESCRIPTION), which the workflow reads, and pinned in [`renv.lock`](renv.lock). The snapshot is `explicit`, so an Import added without re-snapshotting fails CI rather than drifting.
 
 ```
 index.qmd                 the published report
