@@ -5,7 +5,7 @@ author: "Feng Jiang"
 # Pinned rather than `today`: a render-time date would make every render
 # produce a diff, which the reproducibility check would then report as a
 # failure. Bump this when the analysis is materially revised.
-date: 2026-09-06
+date: 2026-09-07
 ---
 
 ```{r setup}
@@ -64,6 +64,39 @@ top5_regions <- head(sheep_change$region, 5)
 dairy_both    <- substitution |> filter(!is.na(Sheep), !is.na(`Dairy cattle`))
 n_dairy_falls <- sum(dairy_both$`Dairy cattle` < 0)
 n_dairy_both  <- nrow(dairy_both)
+
+# The 2002-2025 substitution count above hides the shape of the series: dairy
+# and sheep moved in OPPOSITE directions to the 2014 dairy peak and in the SAME
+# direction after it. Counting per window is what makes that visible, so the
+# same calculation runs for each of the three comparison windows.
+dairy_window_counts <- function(y0, y1) {
+  w <- regions |>
+    filter(year %in% c(y0, y1), livestock_class %in% c("Sheep", "Dairy cattle")) |>
+    select(region, livestock_class, year, head) |>
+    pivot_wider(names_from = year, values_from = head, names_prefix = "y")
+  names(w)[3:4] <- c("start", "end")
+  w <- w |>
+    filter(!is.na(start), !is.na(end)) |>
+    mutate(change = end - start)
+  both <- inner_join(
+    w |> filter(livestock_class == "Sheep") |> select(region, sheep = change),
+    w |> filter(livestock_class == "Dairy cattle") |> select(region, dairy = change),
+    by = "region"
+  )
+  list(n = nrow(both), fell = sum(both$dairy < 0))
+}
+win_early <- dairy_window_counts(2002, 2014)
+win_late  <- dairy_window_counts(2014, 2025)
+
+# National dairy against its 2014 peak, for the same reason.
+nat_dairy  <- national(d) |> filter(livestock_class == "Dairy cattle")
+dairy_2002 <- nat_dairy$head[nat_dairy$year == 2002]
+dairy_2014 <- nat_dairy$head[nat_dairy$year == 2014]
+dairy_2025 <- nat_dairy$head[nat_dairy$year == 2025]
+dairy_rise <- dairy_2014 - dairy_2002
+dairy_fall <- dairy_2014 - dairy_2025
+sheep_2014 <- nat_sheep$head[nat_sheep$year == 2014]
+sheep_early_drop <- nat_2002 - sheep_2014
 
 # Regions among the top five that lost cattle as well as sheep, named from the
 # data rather than typed into the prose.
@@ -158,18 +191,35 @@ Three points, each with one number.
 - Three regions — `r paste(top3$region, collapse = ", ")` — account for
   **`r fmt(top3_share, 0)` percent** of the total fall, across the
   `r measurable` regions where both endpoints are published.
-- Over the same 23 years the national dairy herd grew by only
-  **`r fmt(dairy_gain/1e3, 0)` thousand** cattle, while beef cattle *fell* by
-  `r fmt(-beef_gain/1e3, 0)` thousand.
-- In `r n_dairy_falls` of the `r n_dairy_both` regions where both series are
-  published, dairy cattle fell **alongside** sheep rather than in place of them.
+- Over the same 23 years the national dairy herd rose by
+  **`r fmt(dairy_gain/1e3, 0)` thousand** cattle net, while beef cattle *fell* by
+  `r fmt(-beef_gain/1e3, 0)` thousand. The dairy net hides a
+  `r fmt(dairy_rise/1e6, 2)` million rise to 2014 and a
+  `r fmt(dairy_fall/1e6, 2)` million fall since.
+- Dairy fell **alongside** sheep in `r n_dairy_falls` of the `r n_dairy_both`
+  regions with both endpoints published for 2002–2025; over 2002–2014 it fell in
+  only `r win_early$fell` of `r win_early$n`, and over 2014–2025 in
+  `r win_late$fell` of `r win_late$n`. The direction depends on the window, which
+  is why all three are reported below.
 
 ### What this means
 
-The common story is that sheep farms became dairy farms. At a national level the
-arithmetic does not support that story. Sheep numbers fell by roughly 16 million
-head. Dairy cattle rose by roughly six hundred thousand. Those are different
-orders of magnitude.
+The common story is that sheep farms became dairy farms. In head counts, in this
+table, over the 2002–2025 endpoints, dairy cattle rose by
+**`r fmt(dairy_gain/1e3, 0)` thousand** while sheep fell by
+**`r fmt(nat_drop/1e6, 1)` million**.
+
+That net figure hides the shape of the series. The national dairy herd rose by
+`r fmt(dairy_rise/1e6, 2)` million (`r fmt(100*dairy_rise/dairy_2002, 1)` percent)
+to its 2014 peak and has fallen by `r fmt(dairy_fall/1e6, 2)` million since. Over
+2002–2014, the years of the steepest sheep decline
+(−`r fmt(sheep_early_drop/1e6, 1)` million), the two moved in opposite directions:
+dairy fell in only `r win_early$fell` of the `r win_early$n` regions with both
+endpoints published. Over 2014–2025 both fell, and dairy fell in
+`r win_late$fell` of `r win_late$n`.
+
+Whether the earlier dairy growth *replaced* the sheep in feed terms cannot be
+settled from head counts — see the stock-unit note below.
 
 The picture changes region by region. Canterbury and Southland did add dairy
 cattle on a scale worth noticing. Most other regions that lost sheep did not, and
@@ -252,14 +302,20 @@ with zero. Splitting at 2014 separates the earlier dairy expansion from the
 later period; the 2002–2022 window compares two censuses. The other windows
 include sample-survey estimates, so their differences also carry sampling error.
 
-A head of dairy cattle and a sheep do not require the same feed. This table does
-not estimate land conversion or replacement in stock units (SU). The extract
-contains **total dairy cattle** (lc7193) and **total sheep** (lc6731), whereas
-Stats NZ separately identifies cows/heifers in milk or calf and breeding ewes.
-Applying one adult-cow/ewe coefficient to these mixed-age totals would require
-unsupported assumptions about herd composition. Stats NZ directs SU conversions
-to class-specific Beef + Lamb NZ ratios; a defensible SU analysis needs those
-classes and their matching coefficients first. [Source: Stats NZ 2025 methodology](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029).
+A head of dairy cattle and a sheep do not require the same feed, so a head-count
+comparison is not a feed-equivalent one. This analysis uses total-head codes
+only: total sheep (lc6731), total dairy cattle (lc7193) and total beef cattle
+(lc7077). The conclusion above holds in head counts. In feed terms — stock units
+— the dairy growth to 2014 was of the same order as the sheep decline over the
+same years, and a class-specific stock-unit comparison was not attempted here.
+
+Doing one properly needs two things this analysis does not have. It needs the
+class-specific codes rather than the totals, because applying one adult-cow or
+adult-ewe coefficient to a mixed-age total assumes a herd composition the
+extract does not state. And it needs stock-unit coefficients from a citable
+source, matched to those classes. The extract carries numeric codes and no
+labels, so identifying the class-specific codes is itself a verification step,
+not a lookup.
 
 ```{r}
 #| label: fig-substitution
