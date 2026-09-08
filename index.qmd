@@ -5,7 +5,7 @@ author: "Feng Jiang"
 # Pinned rather than `today`: a render-time date would make every render
 # produce a diff, which the reproducibility check would then report as a
 # failure. Bump this when the analysis is materially revised.
-date: 2026-09-07
+date: 2026-09-08
 ---
 
 ```{r setup}

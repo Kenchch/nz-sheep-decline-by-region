@@ -12,8 +12,8 @@ abstract: >-
 authors:
   - family-names: Jiang
     given-names: Feng
-version: 0.1.0
-date-released: 2026-09-07
+version: 0.2.0
+date-released: 2026-09-08
 repository-code: https://github.com/Kenchch/nz-sheep-decline-by-region
 url: https://kenchch.github.io/nz-sheep-decline-by-region/
 license: MIT
