@@ -2,14 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://Kenchch.github.io/nz-sheep-decline-by-region/data-raw/SOURCE.html</loc>
-    <lastmod>2026-09-08T10:51:51.847Z</lastmod>
-  </url>
-  <url>
-    <loc>https://Kenchch.github.io/nz-sheep-decline-by-region/DATA-LICENCE.html</loc>
-    <lastmod>2026-09-08T10:51:51.846Z</lastmod>
+    <lastmod>2026-09-08T11:18:54.920Z</lastmod>
   </url>
   <url>
     <loc>https://Kenchch.github.io/nz-sheep-decline-by-region/index.html</loc>
-    <lastmod>2026-09-08T10:51:51.852Z</lastmod>
+    <lastmod>2026-09-08T11:18:54.924Z</lastmod>
+  </url>
+  <url>
+    <loc>https://Kenchch.github.io/nz-sheep-decline-by-region/DATA-LICENCE.html</loc>
+    <lastmod>2026-09-08T11:18:54.919Z</lastmod>
+  </url>
+  <url>
+    <loc>https://Kenchch.github.io/nz-sheep-decline-by-region/CHANGELOG.html</loc>
+    <lastmod>2026-09-08T11:18:54.919Z</lastmod>
   </url>
 </urlset>
