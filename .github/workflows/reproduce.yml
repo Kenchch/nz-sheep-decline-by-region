@@ -17,8 +17,17 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Read-only by default. Only the publish job below is granted write, and only
+# it needs it: every pull request run, and every push that does not reach
+# publishing, now carries a token that cannot alter the repository.
 permissions:
-  contents: write   # the publish step pushes the rendered site to gh-pages
+  contents: read
+
+# One run per ref. A second push while the first is still rendering used to
+# leave two jobs racing for gh-pages, and the slower one won.
+concurrency:
+  group: reproduce-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   reproduce:
@@ -52,11 +61,42 @@ jobs:
       - name: Committed CSV outputs must match a fresh run
         run: git diff --exit-code -- 'outputs/*.csv'
 
-      # Publishing is gated on every step above, so the live page can only ever
-      # be a version that reproduced its own outputs. Pull requests render but
-      # do not publish.
+  # Publishing is gated on the whole job above via `needs`, so the live page can
+  # only ever be a version that reproduced its own outputs -- the same guarantee
+  # as before, now expressed as a dependency rather than as step ordering.
+  #
+  # A separate job because permissions are granted per job. As one job, every
+  # pull request run held a write token it never used; the gate does not need
+  # one and the publisher does.
+  #
+  # `quarto publish gh-pages` renders the project itself, so this repeats the
+  # render rather than passing an artifact between jobs. That costs a few
+  # minutes on pushes to main and keeps the publisher a single documented
+  # command instead of a hand-assembled directory.
+  publish:
+    needs: reproduce
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write   # pushes the rendered site to the gh-pages branch
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0   # quarto publish needs the gh-pages history
+
+      - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+        with:
+          use-public-rspm: true
+
+      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
+
+      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+
+      - name: Regenerate the validation outputs
+        run: Rscript R/checks.R
+
       - name: Publish to GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: quarto-dev/quarto-actions/publish@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
         with:
           target: gh-pages
