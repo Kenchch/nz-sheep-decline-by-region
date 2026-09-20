@@ -3,6 +3,7 @@
 # reproducibility check would fail on line endings alone.
 *.R        text eol=lf
 *.qmd      text eol=lf
+*.py       text eol=lf
 *.md       text eol=lf
 *.yml      text eol=lf
 *.csv      text eol=lf

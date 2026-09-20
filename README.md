@@ -123,7 +123,15 @@ R/load.R                  hash gate, read, label, isolate withheld cells
 R/checks.R                five rules, the corrupted-copy demo, both reconciliations
 data-raw/                 the pinned extract and its provenance
 outputs/                  analysis table, validation summaries, reconciliations, figures
+databricks/               the same analysis as three PySpark notebooks, see databricks/README.md
 ```
+
+The PySpark port in [`databricks/`](databricks/README.md) is a port, not a
+re-run: it rebuilds the pipeline on Databricks serverless with the same hash
+gate, the same five rules and the same reconciliation tiers.
+[`databricks/run_local.py`](databricks/run_local.py) runs the three notebooks on
+a local Spark session and asserts that every gold table agrees with the
+committed `outputs/*.csv`; CI runs it on every push and pull request.
 
 Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
 

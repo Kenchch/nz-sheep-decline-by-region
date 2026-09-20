@@ -305,9 +305,9 @@ include sample-survey estimates, so their differences also carry sampling error.
 A head of dairy cattle and a sheep do not require the same feed, so a head-count
 comparison is not a feed-equivalent one. This analysis uses total-head codes
 only: total sheep (lc6731), total dairy cattle (lc7193) and total beef cattle
-(lc7077). The conclusion above holds in head counts. In feed terms — stock units
-— the dairy growth to 2014 was of the same order as the sheep decline over the
-same years, and a class-specific stock-unit comparison was not attempted here.
+(lc7077). The conclusion above holds in head counts. Whether it also holds in
+feed terms — stock units — is not asserted here either way: a class-specific
+stock-unit comparison was not attempted.
 
 Doing one properly needs two things this analysis does not have. It needs the
 class-specific codes rather than the totals, because applying one adult-cow or

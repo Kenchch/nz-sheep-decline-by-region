@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+- **The Databricks quality gate now fires.** `array_remove(..., None)` returns
+  a null array in Spark rather than an array with the nulls removed, so every
+  row's `broken_rules` was null, the rule summary was empty and the quarantine
+  could never receive a row. The nulls are now dropped with `filter`, and the
+  summary shows the same nine `census_year_reported` failures as the R
+  validation table.
+- **`suppressed` is a two-valued flag in silver.** `OBS_STATUS IN ('s', 'c')`
+  is null when `OBS_STATUS` is null, which it is on every published cell, so
+  the flag was `true` or `null` and every rule and assertion that read it
+  passed by evaluating to null. It is now coalesced to `false`, and
+  `gold_coverage` counts zero suppressed regions for 2002–2016 instead of null.
+- Silver is the complement of the rejected rows under the same predicate, not
+  `subtract`, which is `EXCEPT DISTINCT` and would also collapse duplicates.
+- `databricks/run_local.py` runs the three notebooks on a local Spark session
+  and asserts that silver and every gold table agree with the committed
+  `outputs/*.csv`. CI runs it alongside the R reproduction.
+- The stock-unit paragraph no longer asserts that the dairy growth to 2014 was
+  "of the same order" as the sheep decline in feed terms; 0.2.0 removed the
+  coefficients that sentence would have needed, and the sentence should have
+  gone with them.
+- The Databricks port is named in `DATA-LICENCE.md` as code under MIT.
+
 ## 0.2.0 — 2026-09-08
 
 - **The dairy comparison is reported per window, not at the endpoints alone.**
