@@ -81,15 +81,18 @@ jobs:
           distribution: temurin
           java-version: "17"
 
+      # Pinned, like everything else that produces a number here. pandas 3 is
+      # not yet fully supported by PySpark and says so on every toPandas().
       - name: Install PySpark
-        run: python -m pip install --quiet "pyspark>=3.5" pandas
+        run: python -m pip install --quiet pyspark==4.2.0 pandas==2.3.3
 
       - name: Run the notebooks locally and compare every gold table with outputs/*.csv
         run: python databricks/run_local.py
 
-  # Publishing is gated on the whole job above via `needs`, so the live page can
-  # only ever be a version that reproduced its own outputs -- the same guarantee
-  # as before, now expressed as a dependency rather than as step ordering.
+  # Publishing is gated on both jobs above via `needs`, so the live page can
+  # only ever be a version that reproduced its own outputs and whose port
+  # agrees with them -- the same guarantee as before, now expressed as a
+  # dependency rather than as step ordering.
   #
   # A separate job because permissions are granted per job. As one job, every
   # pull request run held a write token it never used; the gate does not need
@@ -100,7 +103,7 @@ jobs:
   # minutes on pushes to main and keeps the publisher a single documented
   # command instead of a hand-assembled directory.
   publish:
-    needs: reproduce
+    needs: [reproduce, port]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30

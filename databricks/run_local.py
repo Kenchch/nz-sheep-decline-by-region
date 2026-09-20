@@ -34,6 +34,12 @@ import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
+
+def check(condition, message):
+    """A check that survives `python -O`, which strips assert statements."""
+    if not condition:
+        raise SystemExit(f"port check: FAIL -- {message}")
+
 REPO = pathlib.Path(__file__).resolve().parents[1]
 NOTEBOOKS = ["01_ingest_and_pin.py", "02_quality_gate.py", "03_analysis.py"]
 CATALOG, SCHEMA = "spark_catalog", "nz_livestock"
@@ -56,6 +62,9 @@ class Widgets:
 
 
 class Notebook:
+    # dbutils.notebook.exit ends the notebook. Here it only reports, which is
+    # equivalent as long as the notebooks call it as their last statement,
+    # as 01 does.
     def exit(self, message):
         print("notebook exit:", message)
 
@@ -83,8 +92,8 @@ def run_notebooks(spark):
         # The one substitution: read the pinned extract from the repository
         # instead of a Unity Catalog volume.
         volume_path = 'f"/Volumes/{CATALOG}/{SCHEMA}/raw/{SRC}"'
-        assert name != NOTEBOOKS[0] or volume_path in source, \
-            f"{name} no longer builds the Volumes path this runner redirects"
+        check(name != NOTEBOOKS[0] or volume_path in source,
+              f"{name} no longer builds the Volumes path this runner redirects")
         source = source.replace(volume_path,
                                 repr(str(REPO / "data-raw")) + ' + "/" + SRC')
         print(f"\n===== {name}")
@@ -100,65 +109,85 @@ def table(spark, name):
 def check_against_r_outputs(spark):
     print("\n===== gold tables against outputs/*.csv")
 
+    # Spark rounds its percentages to one decimal; the R columns are exact
+    # fractions. Compare at the same precision instead of with a tolerance
+    # that sits on the rounding boundary.
+    def same_rounded_pct(spark_col, r_fraction):
+        return (spark_col == (100 * r_fraction).round(1)).all()
+
     silver = table(spark, "silver_livestock_regional")
     r_table = pd.read_csv(REPO / "outputs/livestock_regional.csv",
                           dtype={"area_code": str})
     keys = ["year", "area_code", "livestock_class"]
     m = silver.merge(r_table, on=keys, suffixes=("", "_r"))
-    assert len(silver) == len(r_table) == len(m) == 1397, \
-        (len(silver), len(r_table), len(m))
+    check(len(silver) == len(r_table) == len(m) == 1397,
+          f"silver has {len(silver)} rows, R has {len(r_table)}, {len(m)} match")
     # Two-valued, never null: this is the flag every rule reads.
-    assert set(silver["suppressed"].dropna().unique()) == {False, True}
-    assert silver["suppressed"].notna().all()
-    assert (m["suppressed"] == m["suppressed_r"]).all()
-    same_head = (m["head"] == m["head_r"]) | (m["head"].isna() & m["head_r"].isna())
-    assert same_head.all()
-    print("silver matches the R analysis table, cell for cell")
+    check(silver["suppressed"].notna().all(), "suppressed is null on some rows")
+    check(set(silver["suppressed"].unique()) == {False, True},
+          "suppressed is not two-valued")
+    for col in ["region", "island", "is_aggregate", "suppressed",
+                "suppression_code", "is_census_year", "head"]:
+        same = (m[col] == m[f"{col}_r"]) | (m[col].isna() & m[f"{col}_r"].isna())
+        check(same.all(), f"silver.{col} differs from the R table")
+    print("silver matches the R analysis table, every column, cell for cell")
 
     quarantine = table(spark, "quarantine_livestock")
-    assert len(quarantine) == 0, quarantine
+    check(len(quarantine) == 0, f"{len(quarantine)} rows in quarantine")
     print("quarantine is empty on the pinned extract")
 
     recon = table(spark, "gold_reconciliation")
     r_tiers = pd.read_csv(REPO / "outputs/residual-tiers.csv")
     m = recon.merge(r_tiers, on=["year", "livestock_class"], suffixes=("", "_r"))
-    assert len(m) == 72
+    check(len(m) == 72, f"{len(m)} class-years matched, expected 72")
     for col in ["regions_present", "regions_suppressed", "region_sum",
                 "published", "residual", "fully_published", "tier"]:
-        assert (m[col] == m[f"{col}_r"]).all(), col
+        check((m[col] == m[f"{col}_r"]).all(),
+              f"gold_reconciliation.{col} differs from residual-tiers.csv")
     print("gold_reconciliation matches residual-tiers.csv")
 
     coverage = table(spark, "gold_coverage")
     r_cov = pd.read_csv(REPO / "outputs/coverage-and-suppression.csv")
     m = coverage.merge(r_cov, on="year", suffixes=("", "_r"))
-    assert len(m) == 24
+    check(len(m) == 24, f"{len(m)} years matched, expected 24")
     for col in ["regions_present", "regions_suppressed", "regions_expected",
                 "regions_absent"]:
-        assert (m[col] == m[f"{col}_r"]).all(), col
-    # The gold rate is over the 17 expected regions, rounded to one decimal.
-    assert ((m["suppression_rate"] -
-             100 * m["suppression_rate_all_regions"]).abs() <= 0.05).all()
+        check((m[col] == m[f"{col}_r"]).all(),
+              f"gold_coverage.{col} differs from coverage-and-suppression.csv")
+    # The gold rate is over the 17 expected regions.
+    check(same_rounded_pct(m["suppression_rate"], m["suppression_rate_all_regions"]),
+          "gold_coverage.suppression_rate differs from the R rate over 17 regions")
     print("gold_coverage matches coverage-and-suppression.csv")
 
     windows = table(spark, "gold_dairy_windows")
     r_win = pd.read_csv(REPO / "outputs/dairy-comparison-windows.csv")
     m = windows.merge(r_win, on=["start_year", "end_year", "livestock_class"],
                       suffixes=("", "_r"))
-    assert len(m) == 9
-    assert (m["change_head"] == m["change_head_r"]).all()
-    assert ((m["change_pct"] - m["change_pct_r"]).abs() <= 0.05).all()
+    check(len(m) == 9, f"{len(m)} windows matched, expected 9")
+    check((m["change_head"] == m["change_head_r"]).all(),
+          "gold_dairy_windows.change_head differs")
+    check((m["change_pct"] == m["change_pct_r"].round(1)).all(),
+          "gold_dairy_windows.change_pct differs")
     print("gold_dairy_windows matches dairy-comparison-windows.csv")
 
-    change = table(spark, "gold_regional_change")
+    # No committed CSV holds the regional change, so it is recomputed here
+    # from the analysis table the R pipeline committed, the same way the
+    # report computes it: both endpoints published, else excluded.
+    change = table(spark, "gold_regional_change").set_index("region")
     r_sheep = r_table[(r_table["livestock_class"] == "Sheep") &
                       (~r_table["is_aggregate"]) &
                       (r_table["year"].isin([2002, 2025]))]
-    r_change = (r_sheep.pivot(index="region", columns="year", values="head")
-                .dropna().eval("`2025` - `2002`"))
-    assert len(change) == len(r_change) == 15
-    m = change.set_index("region")["change"]
-    assert (m.sort_index() == r_change.sort_index()).all()
-    print("gold_regional_change matches the R sheep change for 15 regions")
+    wide = r_sheep.pivot(index="region", columns="year", values="head").dropna()
+    r_change = wide[2025] - wide[2002]
+    r_share = (100 * r_change / r_change[r_change < 0].sum()).round(1)
+    check(len(change) == len(r_change) == 15,
+          f"{len(change)} regions in gold, {len(r_change)} measurable in R")
+    check((change["change"].sort_index() == r_change.sort_index()).all(),
+          "gold_regional_change.change differs from the R analysis table")
+    check((change["share_of_fall"].sort_index() == r_share.sort_index()).all(),
+          "gold_regional_change.share_of_fall differs")
+    print("gold_regional_change matches the sheep change recomputed from the "
+          "R analysis table, 15 regions")
 
 
 def main():

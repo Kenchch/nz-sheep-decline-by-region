@@ -102,8 +102,8 @@ bytes can differ with the platform's fonts and graphics device. `R/load.R`
 verifies the extract against the SHA-256 in `SOURCE.md` before reading it and
 stops if they disagree.
 
-GitHub Actions runs the same regeneration on every push and pull request, fails
-if any committed CSV differs, and publishes the report to GitHub Pages from that
+GitHub Actions runs the same regeneration on every pull request and every push
+to `main`, fails if any committed CSV differs, and publishes the report to GitHub Pages from that
 same green run — so the live page is always the output of a build that
 reproduced its own outputs. It renders the figures too, but does not compare
 their bytes, because graphics differ across platforms. Ingestion stops on schema
@@ -130,8 +130,11 @@ The PySpark port in [`databricks/`](databricks/README.md) is a port, not a
 re-run: it rebuilds the pipeline on Databricks serverless with the same hash
 gate, the same five rules and the same reconciliation tiers.
 [`databricks/run_local.py`](databricks/run_local.py) runs the three notebooks on
-a local Spark session and asserts that every gold table agrees with the
-committed `outputs/*.csv`; CI runs it on every push and pull request.
+a local Spark session and asserts that silver and every gold table agree with
+the committed `outputs/*.csv`, or, for the regional change table that has no
+committed CSV, with the same change recomputed from the analysis table. CI
+runs it on every pull request and every push to `main`, and the page is
+published only if it passes too.
 
 Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
 
