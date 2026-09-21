@@ -5,8 +5,9 @@ different kinds of thing.
 
 ## Code
 
-Everything in `R/`, `index.qmd`, `_quarto.yml`, `DESCRIPTION` and the workflow
-under `.github/` is licensed under the MIT Licence. See [`LICENSE`](LICENSE).
+Everything in `R/`, `databricks/`, `index.qmd`, `_quarto.yml`, `DESCRIPTION`
+and the workflow under `.github/` is licensed under the MIT Licence. See
+[`LICENSE`](LICENSE).
 
 ## Data
 

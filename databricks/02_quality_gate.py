@@ -51,7 +51,15 @@ cand = (bronze
     # A suppressed cell is a cell we are not allowed to see. That is a
     # different thing from a cell containing no animals, so it becomes null
     # and is flagged - never zero, never dropped.
-    .withColumn("suppressed", F.col("OBS_STATUS").isin("s", "c"))
+    #
+    # OBS_STATUS is null on every published cell, and in Spark `null IN (...)`
+    # is null, not false. Without the coalesce this flag is three-valued:
+    # true, or null. Every rule and assertion below that reads it would then
+    # evaluate to null on the published rows and silently pass, and the
+    # coverage table would carry null where it should count zero suppressed
+    # regions.
+    .withColumn("suppressed",
+        F.coalesce(F.col("OBS_STATUS").isin("s", "c"), F.lit(False)))
     .withColumn("suppression_code",
         F.when(F.col("suppressed"), F.col("OBS_STATUS")))
     .withColumn("head",
@@ -79,8 +87,14 @@ RULES = {
     "census_year_reported": ~F.col("is_census_year") | ~F.col("suppressed"),
 }
 
-broken = F.array_remove(F.array(*[
-    F.when(~cond, F.lit(name)) for name, cond in RULES.items()]), None)
+# Each rule contributes its name when it fails and null when it holds; the
+# nulls are then dropped. Not array_remove(..., None): array_remove is
+# null-intolerant, so removing a null element returns a null array, which
+# made every row's broken_rules null, the rule summary empty, and the
+# quarantine unreachable.
+broken = F.filter(F.array(*[
+    F.when(~cond, F.lit(name)) for name, cond in RULES.items()]),
+    lambda v: v.isNotNull())
 
 # Duplicates need a window, not a row predicate.
 from pyspark.sql import Window
@@ -107,8 +121,11 @@ BLOCKING = ["head_non_negative", "value_iff_suppressed",
             "region_label_present", "no_duplicate_cells"]
 MAX_REJECT_RATE = 0.01
 
-rejected = checked.filter(F.arrays_overlap("broken_rules", F.array(*[F.lit(b) for b in BLOCKING])))
-clean = checked.subtract(rejected).drop("broken_rules", "n_broken")
+is_rejected = F.arrays_overlap("broken_rules", F.array(*[F.lit(b) for b in BLOCKING]))
+rejected = checked.filter(is_rejected)
+# The complement of the same predicate, not `subtract`: subtract is EXCEPT
+# DISTINCT, so it would also collapse any duplicate rows it did not reject.
+clean = checked.filter(~is_rejected).drop("broken_rules", "n_broken")
 
 n_all, n_bad = checked.count(), rejected.count()
 rate = (n_bad / n_all) if n_all else 0.0

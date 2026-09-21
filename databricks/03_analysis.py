@@ -109,6 +109,11 @@ cov = (s.filter(~F.col("is_aggregate") & (F.col("livestock_class") == "Sheep"))
          F.sum(F.col("suppressed").cast("int")).alias("regions_suppressed"))
     .withColumn("regions_expected", F.lit(EXPECTED_REGIONS))
     .withColumn("regions_absent", F.lit(EXPECTED_REGIONS) - F.col("regions_present"))
+    # Over the 17 expected regions, so this corresponds to the R output's
+    # suppression_rate_all_regions, not to its suppression_rate, which
+    # divides by the regions present. The R columns are fractions; this one
+    # is a percentage rounded to one decimal. The name is kept for the
+    # dashboard.
     .withColumn("suppression_rate",
         F.round(100 * F.col("regions_suppressed") / F.lit(EXPECTED_REGIONS), 1))
     .orderBy("year"))

@@ -61,9 +61,38 @@ jobs:
       - name: Committed CSV outputs must match a fresh run
         run: git diff --exit-code -- 'outputs/*.csv'
 
-  # Publishing is gated on the whole job above via `needs`, so the live page can
-  # only ever be a version that reproduced its own outputs -- the same guarantee
-  # as before, now expressed as a dependency rather than as step ordering.
+  # The Databricks notebooks cannot run here as notebooks, but they can run as
+  # Python against a local Spark session, and the claim that they are a port
+  # of the same analysis can be checked: every gold table is compared against
+  # the CSVs the R job above reproduces. Separate from that job because it
+  # needs a JVM and PySpark and nothing else here does.
+  port:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # Pinned, like everything else that produces a number here. pandas 3 is
+      # not yet fully supported by PySpark and says so on every toPandas().
+      - name: Install PySpark
+        run: python -m pip install --quiet pyspark==4.2.0 pandas==2.3.3
+
+      - name: Run the notebooks locally and compare every gold table with outputs/*.csv
+        run: python databricks/run_local.py
+
+  # Publishing is gated on both jobs above via `needs`, so the live page can
+  # only ever be a version that reproduced its own outputs and whose port
+  # agrees with them -- the same guarantee as before, now expressed as a
+  # dependency rather than as step ordering.
   #
   # A separate job because permissions are granted per job. As one job, every
   # pull request run held a write token it never used; the gate does not need
@@ -74,7 +103,7 @@ jobs:
   # minutes on pushes to main and keeps the publisher a single documented
   # command instead of a hand-assembled directory.
   publish:
-    needs: reproduce
+    needs: [reproduce, port]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
