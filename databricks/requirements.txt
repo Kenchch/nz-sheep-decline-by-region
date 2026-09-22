@@ -4,4 +4,4 @@
 #
 # pandas 3 is not yet fully supported by PySpark and says so on every toPandas().
 pyspark==4.2.0
-pandas==2.3.3
+pandas==3.0.6
