@@ -16,8 +16,7 @@
 # COMMAND ----------
 
 # DBTITLE 1,Parameters
-dbutils.widgets.removeAll()
-
+# Keep existing values: Lakeflow task parameters override these defaults.
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
 
@@ -103,19 +102,19 @@ display(recon.groupBy("tier")
 
 # DBTITLE 1,Coverage
 # coverage: SHEEP ONLY, over 17 regional council areas
+# Match the R table's two denominators and units: unrounded fractions over
+# observed rows and all expected regions. Absent regions are not suppression.
 cov = (s.filter(~F.col("is_aggregate") & (F.col("livestock_class") == "Sheep"))
     .groupBy("year")
     .agg(F.count("*").alias("regions_present"),
+         F.count("head").alias("regions_with_value"),
          F.sum(F.col("suppressed").cast("int")).alias("regions_suppressed"))
     .withColumn("regions_expected", F.lit(EXPECTED_REGIONS))
     .withColumn("regions_absent", F.lit(EXPECTED_REGIONS) - F.col("regions_present"))
-    # Over the 17 expected regions, so this corresponds to the R output's
-    # suppression_rate_all_regions, not to its suppression_rate, which
-    # divides by the regions present. The R columns are fractions; this one
-    # is a percentage rounded to one decimal. The name is kept for the
-    # dashboard.
     .withColumn("suppression_rate",
-        F.round(100 * F.col("regions_suppressed") / F.lit(EXPECTED_REGIONS), 1))
+        F.col("regions_suppressed") / F.col("regions_present"))
+    .withColumn("suppression_rate_all_regions",
+        F.col("regions_suppressed") / F.lit(EXPECTED_REGIONS))
     .orderBy("year"))
 cov.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{FQ}.gold_coverage")
 display(cov)
