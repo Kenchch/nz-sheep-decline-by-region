@@ -98,8 +98,11 @@ assert_extract_shape <- function(raw) {
 
 read_raw <- function(path = RAW_CSV) {
   check_extract_hash(path)
-  raw <- read_csv(path, col_types = cols(.default = col_character())) |>
+  # Only an empty source cell is missing. The default na = c("", "NA")
+  # would hide a malformed literal "NA" value or suppression flag.
+  raw <- read_csv(path, col_types = cols(.default = col_character()), na = "") |>
     clean_names()
+  stop_for_problems(raw)
   assert_extract_shape(raw)
   raw
 }
@@ -109,17 +112,36 @@ load_livestock <- function(path = RAW_CSV) {
 
   stopifnot(nrow(raw) > 0)
 
-  out <- raw |>
+  selected <- raw |>
     rename(
       livestock_code = livestock_agr_agr_003,
       area_code      = area_agr_agr_003,
       year           = year_agr_agr_003
     ) |>
-    filter(livestock_code %in% names(LIVESTOCK)) |>
+    filter(livestock_code %in% names(LIVESTOCK))
+
+  # as.integer() truncates fractional years and filter() drops missing years.
+  # Check the original strings first so neither can silently change a cell key.
+  if (any(is.na(selected$year) | !grepl("^[0-9]{4}$", selected$year))) {
+    stop("Selected series contains a missing or invalid YEAR value.",
+         call. = FALSE)
+  }
+
+  selected <- selected |>
     mutate(year = as.integer(year)) |>
     # 1994 sits before the 2002 population change and is dropped explicitly
     # here rather than silently, so the exclusion is visible in the code.
     filter(year >= 2002) |>
+    mutate(head = suppressWarnings(as.numeric(obs_value)))
+
+  # A flagged blank is valid, but a non-numeric token must not become a blank
+  # through coercion. Infinite values also pass a simple non-negative rule.
+  if (any(!is.na(selected$obs_value) & !is.finite(selected$head))) {
+    stop("Selected series contains a non-numeric or non-finite OBS_VALUE.",
+         call. = FALSE)
+  }
+
+  out <- selected |>
     transmute(
       year,
       area_code,
@@ -130,7 +152,7 @@ load_livestock <- function(path = RAW_CSV) {
       # Suppressed cells become NA and are flagged. They are never filled with
       # zero and never dropped: a suppressed cell is a cell we are not allowed
       # to see, which is a different thing from a cell containing no animals.
-      head             = suppressWarnings(as.numeric(obs_value)),
+      head,
       suppressed       = !is.na(obs_status) & obs_status %in% c("s", "c"),
       suppression_code = ifelse(suppressed, obs_status, NA_character_),
       is_census_year   = year %in% CENSUS_YEARS
@@ -164,6 +186,16 @@ load_livestock <- function(path = RAW_CSV) {
       nrow(out |> filter(area_code == "20")) !=
         length(EXPECTED_YEARS) * length(LIVESTOCK)) {
     stop("A published national total is required exactly once per class-year.",
+         call. = FALSE)
+  }
+
+  # The island reconciliation compares three published aggregates. Missing an
+  # island total must fail here instead of producing an NA residual downstream.
+  island_totals <- out |> filter(area_code %in% c("10", "19"))
+  if (anyNA(island_totals$head) ||
+      nrow(island_totals) !=
+        2L * length(EXPECTED_YEARS) * length(LIVESTOCK)) {
+    stop("A published island total is required exactly once per island-class-year.",
          call. = FALSE)
   }
 

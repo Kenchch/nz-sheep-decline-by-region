@@ -16,15 +16,8 @@
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC CREATE SCHEMA IF NOT EXISTS workspace.nz_livestock;
-# MAGIC CREATE VOLUME IF NOT EXISTS workspace.nz_livestock.raw;
-
-# COMMAND ----------
-
 # DBTITLE 1,Parameters
-dbutils.widgets.removeAll()  # widget values persist across runs; start clean
-
+# Keep existing values: Lakeflow task parameters override these defaults.
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
 dbutils.widgets.text("source_file", "agr_agr_003_2026-09-04.csv")
@@ -71,10 +64,11 @@ from pyspark.sql import functions as F
 bronze = (spark.read
     .option("header", True)
     .option("inferSchema", False)  # everything as string; cast deliberately in 02
-    .option("mode", "PERMISSIVE")
+    .option("mode", "FAILFAST")
     .csv(SRC_PATH))
 
-print("rows:", bronze.count())  # expect 19626
+n_bronze = bronze.count()
+print("rows:", n_bronze)  # expect 19626; reuse the same count in the manifest
 display(bronze.limit(10))
 
 # COMMAND ----------
@@ -98,8 +92,7 @@ display(bronze.groupBy("OBS_STATUS").count().orderBy("OBS_STATUS"))
 # COMMAND ----------
 
 # DBTITLE 1,Write bronze and manifest
-# The schema already exists (section 3.2). Idempotent belt-and-braces so this
-# notebook also works against a fresh workspace.
+# The source volume must already exist and contain the pinned CSV (see README).
 spark.sql(f"CREATE SCHEMA IF NOT EXISTS {FQ}")
 
 (bronze
@@ -109,7 +102,7 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {FQ}")
     .write.mode("overwrite").option("overwriteSchema", "true")
     .saveAsTable(f"{FQ}.bronze_agr_agr_003"))
 
-(spark.createDataFrame([(SRC, got, bronze.count())],
+(spark.createDataFrame([(SRC, got, n_bronze)],
     "source_file string, sha256 string, row_count long")
     .withColumn("ingested_at", F.current_timestamp())
     .write.mode("append").saveAsTable(f"{FQ}.ingest_manifest"))

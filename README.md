@@ -4,7 +4,7 @@ New Zealand's sheep flock fell by 16.32 million head between June 2002 and June 
 
 **[Read the full release →](https://kenchch.github.io/nz-sheep-decline-by-region/)**
 
-![Contribution of each region to the national fall in sheep numbers, 2002 to 2025](outputs/figures/01-regional-contribution.png)
+![Sheep declines across the 15 regions with both endpoints published, 2002 to 2025](outputs/figures/01-regional-contribution.png)
 
 ## Key findings
 
@@ -77,11 +77,11 @@ Every methodological statement in the report was read on its source page before 
 ## Limitations
 
 - Non-census years are sample estimates. Sampling errors are not recomputed and no weighting is applied here; a movement in a single small region should not be read as real change.
-- Imputation is large: Stats NZ reports 30 percent of the 2025 total sheep estimate as imputed, against a 3 percent relative sampling error. Every survey-year regional figure carries that.
+- Imputation is large: Stats NZ reports 30 percent of the 2025 national sheep estimate as imputed, against a 3 percent relative sampling error. These national rates do not establish the rates for individual regions or other years, which are not supplied in this extract.
 - All comparisons are ratios of head counts. They say nothing about stocking rate, feed demand, land use or emissions.
 - The target population is GST-registered agricultural businesses, so coverage of the smallest farms is partial and not quantifiable from published data.
 - **The two endpoints are different collection designs**: 2002 is a census, 2025 a sample survey, so a full-coverage count is differenced against an estimate carrying sampling error and 30 percent imputation. The design-matched window — 2002 to 2022, census to census — gives a fall of 14.4 million head across 16 measurable regions with the top three at 55.6 percent: the same qualitative answer. The report says why the 2025 endpoint is used anyway.
-- **The start year changes *which* regions lead, not *how concentrated* they are.** Recomputed from the 19 start years that leave a window of at least five years — 2002 to 2020, against the same 2025 endpoint — the three largest decliners always account for 48–59 percent of the fall. 2021 onwards are start years in the extract too; they are excluded because a four-year window is not a decline window. Which three they are rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the window this report uses because its decline is concentrated in the early years — it is not a permanent feature of the data.
+- **The start year changes which regions lead and whether their share exceeds half.** Across the 19 start years from 2002 to 2020, against the same 2025 endpoint, the three largest decliners account for 48–59 percent of gross losses in measurable regions. This excludes gains elsewhere; the report also shows the net fall. The share is below half for 2008, 2009 and 2010 starts. The five-year minimum is an analysis choice, so this conclusion does not cover the shorter 2021–2024 windows. Which three regions lead also rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the headline window because its decline is concentrated in the early years.
 - No map is drawn, deliberately: a choropleth encodes land area rather than magnitude, and the three largest contributors are also among the largest regions by area.
 
 ## Reproduce
@@ -92,6 +92,8 @@ Requirements: R >= 4.1 (for the native pipe) and the Quarto CLI. The R packages 
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
 cd nz-sheep-decline-by-region
 Rscript -e 'renv::restore()'   # installs the pinned package versions
+Rscript -e 'stopifnot(isTRUE(renv::status()$synchronized))'
+Rscript tests/test-r-contracts.R  # rejects malformed extract fixtures
 Rscript R/checks.R    # regenerates outputs/*.csv
 quarto render         # regenerates the report and outputs/figures/*.png
 ```
@@ -121,6 +123,7 @@ declared once in [`DESCRIPTION`](DESCRIPTION), which the workflow reads, and pin
 index.qmd                 the published report
 R/load.R                  hash gate, read, label, isolate withheld cells
 R/checks.R                five rules, the corrupted-copy demo, both reconciliations
+tests/test-r-contracts.R  negative ingestion fixtures and unchanged-output check
 data-raw/                 the pinned extract and its provenance
 outputs/                  analysis table, validation summaries, reconciliations, figures
 databricks/               the same analysis as three PySpark notebooks, see databricks/README.md
@@ -156,4 +159,4 @@ use present rows and all 17 expected regions respectively.
 [Three comparison windows](outputs/dairy-comparison-windows.csv) report national
 headcounts for 2002–2014, 2014–2025 and census-to-census 2002–2022. These mixed-age
 animal totals do not support an adult-cow/ewe stock-unit conversion; the
-[report](index.qmd#three-endpoint-windows) explains the required data and source.
+[report](https://kenchch.github.io/nz-sheep-decline-by-region/#three-endpoint-windows) explains the required data and source.

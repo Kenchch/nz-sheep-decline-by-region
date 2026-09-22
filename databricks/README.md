@@ -24,6 +24,19 @@ ingest (01_ingest_and_pin)
 
 Three dependent tasks in a Lakeflow Job. A failure names the stage that broke.
 
+Before running, create a Unity Catalog schema and a managed volume named `raw`
+inside it, then upload the pinned CSV from `data-raw/` into that volume. Pass the
+same `catalog` and `schema` task parameters to all three notebooks (defaults:
+`workspace` and `nz_livestock`). The ingest task also accepts `source_file` and
+`expected_sha256`. Existing widget values and Lakeflow task parameters are kept;
+the notebooks' defaults apply only when no value was supplied.
+
+The quality gate quarantines malformed years, invalid/non-finite head counts,
+unknown suppression flags, duplicate cells and unmapped areas. The census-year
+suppression rule remains informational. Empty input, missing years, missing or
+suppressed national or island totals, and rejection rates above 1% fail **before** silver
+is overwritten, preserving the last successful table.
+
 ## Tables (Unity Catalog: workspace.nz_livestock)
 
 | Layer | Table | Rows | Description |
@@ -38,6 +51,21 @@ Three dependent tasks in a Lakeflow Job. A failure names the stage that broke.
 | Gold | gold_reconciliation | 72 | Regional vs national, per class-year, in tiers |
 | Gold | gold_coverage | 24 | Suppression coverage by year (sheep only) |
 | Gold | gold_dairy_windows | 9 | Three windows × three classes |
+
+`gold_coverage` matches the R CSV's units and column definitions:
+`suppression_rate` is the unrounded fraction of present regions suppressed;
+`suppression_rate_all_regions` uses all 17 expected regions. It also includes
+`regions_with_value`. Dashboards that previously used the rounded percentage
+must now format these fractions as percentages.
+
+## Local verification
+
+With Java 17+, Python, PySpark and pandas installed, run
+`python databricks/run_local.py` from the repository root. The runner checks
+every silver/gold result against the committed R outputs, then injects a bad
+hash, malformed rows, missing coverage and empty input to verify rejection and
+preservation of the last good silver table. See `.github/workflows/reproduce.yml`
+for the exact dependency versions used by CI.
 
 ## Key results
 

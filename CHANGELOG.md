@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Validate CSV parsing, year strings, finite head counts and published island
+  totals before the R analysis runs. Negative fixtures exercise the ingestion
+  contracts, and CI now fails when DESCRIPTION and renv.lock are out of sync.
+- Preserve Databricks task parameters and the last good silver table when a
+  quality gate fails. Quarantine malformed values and years under ANSI mode,
+  and test failure paths as well as the successful R/PySpark comparison.
+- Align both PySpark suppression rates and their units with the R coverage
+  table; dashboards must format the returned fractions as percentages.
+- Correct the report's sensitivity claim (three start years are below 50%),
+  distinguish gross regional losses from the net fall, and clarify regional
+  versus national denominators and the scope of the imputation statistics.
+  Correct the cattle-chart alternative text and select endpoints by year name.
+
 - **The Databricks quality gate now fires.** `array_remove(..., None)` returns
   a null array in Spark rather than an array with the nulls removed, so every
   row's `broken_rules` was null, the rule summary was empty and the quarantine

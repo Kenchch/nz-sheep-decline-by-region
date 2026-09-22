@@ -5,7 +5,7 @@ author: "Feng Jiang"
 # Pinned rather than `today`: a render-time date would make every render
 # produce a diff, which the reproducibility check would then report as a
 # failure. Bump this when the analysis is materially revised.
-date: 2026-09-08
+date: 2026-09-21
 ---
 
 ```{r setup}
@@ -40,6 +40,7 @@ nat_2002  <- nat_sheep$head[nat_sheep$year == 2002]
 nat_2025  <- nat_sheep$head[nat_sheep$year == 2025]
 nat_drop  <- nat_2002 - nat_2025
 nat_pct   <- 100 * nat_drop / nat_2002
+top3_national_share <- 100 * -sum(top3$change) / nat_drop
 
 nat_wide <- national(d) |>
   filter(year %in% c(2002, 2025)) |>
@@ -73,9 +74,10 @@ dairy_window_counts <- function(y0, y1) {
   w <- regions |>
     filter(year %in% c(y0, y1), livestock_class %in% c("Sheep", "Dairy cattle")) |>
     select(region, livestock_class, year, head) |>
-    pivot_wider(names_from = year, values_from = head, names_prefix = "y")
-  names(w)[3:4] <- c("start", "end")
-  w <- w |>
+    pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
+    transmute(region, livestock_class,
+              start = .data[[paste0("y", y0)]],
+              end = .data[[paste0("y", y1)]]) |>
     filter(!is.na(start), !is.na(end)) |>
     mutate(change = end - start)
   both <- inner_join(
@@ -98,9 +100,9 @@ dairy_fall <- dairy_2014 - dairy_2025
 sheep_2014 <- nat_sheep$head[nat_sheep$year == 2014]
 sheep_early_drop <- nat_2002 - sheep_2014
 
-# Regions among the top five that lost cattle as well as sheep, named from the
-# data rather than typed into the prose.
-lost_both <- substitution |>
+# Regions among the top five that lost at least one cattle class as well as
+# sheep, named from the data rather than typed into the prose.
+lost_cattle_class <- substitution |>
   filter(region %in% top5_regions, `Dairy cattle` < 0 | `Beef cattle` < 0) |>
   pull(region) |> sort() |> paste(collapse = " and ")
 
@@ -122,17 +124,16 @@ top3_for <- function(y0, y1 = 2025) {
     end     = y1,
     regions = nrow(ch),
     fall    = -dec,
+    net_fall = -sum(ch$change),
     share   = 100 * sum(head(ch$change, 3)) / dec,
     top3    = paste(head(ch$region, 3), collapse = ", ")
   )
 }
 
 # The extract runs to 2025, so 2021-2024 are also start years arithmetically.
-# They are excluded: against a 2025 endpoint a 2021 start spans four years, and
-# the share taken by the top three regions stops being a statement about a
-# decline once the decline itself is small. The rule is a named constant rather
-# than a literal 2020, so the cutoff is visible instead of being something a
-# reader has to infer from the range.
+# The five-year minimum is an analysis choice to focus on longer windows;
+# the sensitivity conclusions below therefore do not cover 2021-2024 starts.
+# The rule is a named constant so the cutoff is explicit.
 MIN_WINDOW <- 5
 LAST_START <- 2025 - MIN_WINDOW
 
@@ -202,6 +203,13 @@ Three points, each with one number.
   `r win_late$fell` of `r win_late$n`. The direction depends on the window, which
   is why all three are reported below.
 
+The three-region share uses the measurable regional fall as its denominator.
+Against the published national fall, the same three regions account for
+`r sprintf("%.1f", top3_national_share)` percent. The national fall is
+`r sprintf("%.2f", 100 * (nat_drop + decline_sum) / -decline_sum)` percent
+larger than the measurable regional fall; Auckland and Nelson have withheld
+2025 endpoints.
+
 ### What this means
 
 The common story is that sheep farms became dairy farms. In head counts, in this
@@ -223,8 +231,8 @@ settled from head counts — see the stock-unit note below.
 
 The picture changes region by region. Canterbury and Southland did add dairy
 cattle on a scale worth noticing. Most other regions that lost sheep did not, and
-several lost dairy cattle as well. Whatever replaced the sheep, in most of the
-country it was not another animal counted in this table.
+several lost dairy cattle as well. These totals cannot identify what replaced
+sheep farms or how land use changed.
 
 ### What these numbers do not tell you
 
@@ -236,11 +244,11 @@ sheep are not exchangeable units, and this page does not treat them as such.
 
 ```{r}
 #| label: fig-contribution
-#| fig-cap: "Contribution of each region to the national fall in sheep numbers, June 2002 to June 2025."
+#| fig-cap: "Sheep declines across the 15 regions with both endpoints published, June 2002 to June 2025."
 #| fig-alt: "Horizontal bar chart of 15 regions ordered by how many sheep they
 #|   lost between 2002 and 2025. Canterbury is largest at 3.57 million head
 #|   fewer, then Southland at 2.91 million and Otago at 2.27 million; together
-#|   these three make up just over half the national fall. The remaining
+#|   these three make up 54 percent of the measurable regional fall. The remaining
 #|   regions range from Manawatū-Whanganui at 2.25 million down to the Chatham
 #|   Islands at 0.01 million."
 plot_dat <- sheep_change |>
@@ -260,7 +268,7 @@ p1 <- ggplot(plot_dat, aes(x = millions, y = region)) +
   scale_x_continuous(labels = label_comma(accuracy = 0.1),
                      expand = expansion(mult = c(0, 0.14))) +
   labs(
-    title    = "Three South Island regions account for over half the national fall",
+    title    = sprintf("Three regions account for %.0f%% of the measurable regional fall", top3_share),
     subtitle = "Reduction in sheep numbers, millions of head, June 2002 to June 2025",
     x = "Million head fewer", y = NULL,
     caption  = "Source: Stats NZ, Agricultural production statistics.\nLicensed by Stats NZ for re-use under CC BY 4.0."
@@ -324,8 +332,8 @@ not a lookup.
 #|   In each region the sheep marker sits far to the left of zero, between 1.3
 #|   and 3.6 million head fewer, while the dairy and beef cattle markers sit
 #|   close to zero. Canterbury has the largest dairy gain at about 795 thousand
-#|   and Southland about 281 thousand; in Hawke's Bay and Manawatū-Whanganui
-#|   both cattle markers fall below zero, meaning cattle declined as well."
+#|   and Southland about 281 thousand. Both cattle classes decline in Hawke's
+#|   Bay; Manawatū-Whanganui loses beef cattle but gains about 19 thousand dairy cattle."
 dumb <- substitution |>
   filter(region %in% top5_regions) |>
   pivot_longer(-region, names_to = "livestock_class", values_to = "change") |>
@@ -390,7 +398,7 @@ thousand head. It is not, however, the highest *ratio*: West Coast gained
 dairy cattle per 100 sheep lost, on a base so small — under
 `r fmt(-substitution$Sheep[substitution$region == "West Coast"]/1e3)` thousand
 sheep — that the ratio says more about the denominator than about land use.
-`r lost_both` lost sheep *and* cattle. A negative figure in
+`r lost_cattle_class` lost sheep and at least one cattle class. A negative figure in
 this table means that class of animal declined as well.
 
 ## Data quality checks
@@ -842,9 +850,10 @@ report. Pages read 4 September 2026.
 - The frame is Stats NZ's Business Register, which is built on GST registration.
   The compulsory registration level is \$60,000, and Stats NZ describes coverage
   of units below that level as "partial and unquantifiable".
-- **Imputation is large.** Stats NZ reports 30 percent of the 2025 total sheep
-  estimate as imputed. Every regional figure in a survey year carries that, and
-  this analysis does nothing to correct for it.
+- **Imputation is large.** Stats NZ reports 30 percent of the 2025 national sheep
+  estimate as imputed. That national rate does not establish the imputation rate
+  for any individual region or another year; this extract does not provide those
+  rates, and this analysis does not adjust the published estimates.
 - Since 2017, confidentiality has been implemented by input perturbation, which
   adds noise at individual farm level. It is small relative to the effects
   discussed here, but it is present in every year from 2017 on.
@@ -859,9 +868,9 @@ report. Pages read 4 September 2026.
 
 Recomputing the headline statistic from every start year that leaves a window
 of at least `r MIN_WINDOW` years — 2002 to `r LAST_START` — against the same
-2025 endpoint. The extract reaches 2025, so 2021 onwards are start years too;
-they are left out because a four-year window is not a decline window, and the
-top-three share stops meaning much once the fall it divides is small:
+2025 endpoint. The five-year minimum is an analysis choice to focus on longer
+windows. Starts in 2021–2024 are excluded, so the sensitivity conclusions apply
+only to the windows shown:
 
 ```{r}
 #| label: tbl-sensitivity
@@ -870,26 +879,31 @@ sensitivity |>
     `Start year` = ifelse(start %in% CENSUS_YEARS,
                           paste0(start, " (census)"), as.character(start)),
     `Regions measurable` = regions,
-    `Fall (head)` = fmt(fall),
+    `Gross fall (head)` = fmt(fall),
+    `Net fall (head)` = fmt(net_fall),
     `Top three share` = sprintf("%.1f%%", share),
     `The three regions` = top3
   ) |>
-  kable(align = "lrrrl")
+  kable(align = "lrrrrl")
 ```
 
-`Fall` here is measured across the regions listed as measurable in each window,
-not against the published national total. The two differ by the withheld
-regions: for 2002–2025 the regional figure is
+`Gross fall` sums losses only in the declining regions with both endpoints
+published; it is the denominator for `Top three share`. `Net fall` subtracts
+gains in other measurable regions. Neither is the published national fall,
+because some regional endpoints are withheld or absent. For 2002–2025 all
+measurable regions declined, so the gross and net regional falls are both
 `r fmt(sensitivity$fall[sensitivity$start == 2002])` head against a published
 national fall of `r fmt(nat_drop)`, a gap of
 `r sprintf("%.2f", 100 * (nat_drop - sensitivity$fall[sensitivity$start == 2002]) / sensitivity$fall[sensitivity$start == 2002])`
 percent, as set out at the top of this page.
 
-The concentration is robust. Across all
+The three largest declines account for roughly half of the gross regional fall.
+Across the
 `r nrow(sensitivity)` start years the three largest-declining regions account
 for between `r sprintf("%.0f", min(sensitivity$share))` and
-`r sprintf("%.0f", max(sensitivity$share))` percent of the fall, and the range
-is narrow enough that no start year would change the headline claim.
+`r sprintf("%.0f", max(sensitivity$share))` percent. The narrower claim
+"over half" does not hold for every start year: the share is below 50 percent
+for `r paste(sensitivity$start[sensitivity$share < 50], collapse = ", ")`.
 
 Which three regions they are is not robust. Manawatū-Whanganui is in the top
 three in `r in_top3("Manawatū-Whanganui")` of the `r nrow(sensitivity)`

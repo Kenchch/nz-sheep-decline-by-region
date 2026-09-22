@@ -40,6 +40,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
         with:
+          r-version: renv
           use-public-rspm: true
 
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
@@ -49,8 +50,14 @@ jobs:
       # cannot drift apart: adding an Import without re-snapshotting fails here.
       - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
 
+      - name: Dependencies and lockfile must stay synchronized
+        run: Rscript -e 'stopifnot(isTRUE(renv::status()$synchronized))'
+
       - name: Verify the pinned extract against its recorded hash
         run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
+
+      - name: Reject malformed extract fixtures
+        run: Rscript tests/test-r-contracts.R
 
       - name: Regenerate the validation outputs
         run: Rscript R/checks.R
@@ -116,6 +123,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
         with:
+          r-version: renv
           use-public-rspm: true
 
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
