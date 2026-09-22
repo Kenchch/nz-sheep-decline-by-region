@@ -64,9 +64,11 @@ AREA <- c(
 AREA_AGGREGATES <- c("10", "19", "20")
 
 # Chatham Islands (18) is placed under the South Island here because that is
-# where it sits in the AREA hierarchy: codes 11-18 sum exactly to code 19. This
-# follows the aggregation structure of the table, not geography. The Chatham
-# Islands are not part of the South Island.
+# where it sits in the AREA hierarchy: codes 11-18 sum to code 19, to within the
+# source table's own rounding of a head or two in complete years, and further
+# apart in years where a region is withheld. This follows the aggregation
+# structure of the table, not geography. The Chatham Islands are not part of the
+# South Island.
 ISLAND_OF <- c(rep("North Island", 9), NA,
                rep("South Island", 8), NA, NA)
 names(ISLAND_OF) <- names(AREA)

@@ -24,4 +24,9 @@ LICENSE    text eol=lf
 # bytes, so normalising them to LF on commit silently invalidates the hash on
 # every platform that does not convert them back on checkout — which is exactly
 # what happened, and what the CI check caught.
-data-raw/** -text
+#
+# Scoped to the extract itself rather than the whole directory. `data-raw/**`
+# also covered SOURCE.md, which needs no such protection and was already drifting
+# because of it: LF in the index, CRLF in the working tree. The prose record of
+# the hash should normalise like every other .md in the repository.
+data-raw/*.csv -text

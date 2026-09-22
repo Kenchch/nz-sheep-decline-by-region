@@ -2,6 +2,53 @@
 
 ## Unreleased
 
+- **The report claimed 10 class-years where all seventeen regions are published;
+  there are 22.** Ten of those reconcile to the head, which is what the Exact
+  tier counts. Both the report and the README said "the 10 class-years where all
+  seventeen regions are published and nothing is withheld" and then, two
+  sentences later, "12 further fully-published class-years" — a contradiction
+  within the same paragraph. Completeness is checked *before* the residual; it is
+  not what distinguishes Exact from the tier below it.
+- **`data-raw/SOURCE.md` recorded the island reconciliation as "exact" for the
+  one year it is not.** The pre-analysis check used sheep in 2017, the year
+  Nelson's cell is withheld, leaving the South Island's eight regional codes
+  19,568 head short of the published island total — a figure the report itself
+  publishes in its Incomplete tier. The check now uses 2012, a year in which no
+  region is withheld, and the 2017 behaviour is described rather than asserted
+  away.
+- Nelson and the Chathams hold the two smallest *livestock* populations, not the
+  two smallest sheep populations: by sheep alone the second smallest is West
+  Coast, which is published in 21 of the 24 years.
+- The suppression figure's alt text described the `S` flag as running unbroken
+  from 2014; there are no `S` cells in 2015 or 2016. The census-year comparison
+  was overstated in the same way: 2022 sits below the survey years on either
+  side of it, but 2017 sits above 2016, which is itself at zero.
+- Three smaller corrections: the top-three share is of the measurable regional
+  fall, not "the total fall"; only one fully-published class-year falls strictly
+  after 2017, so the sentence now says "in 2017 or later"; and codes 11-18 sum
+  to code 19 within the source table's own rounding, not "exactly".
+- **The coverage assertion could not fail.** Its identity reduces to
+  `17 == 17` for any table `load_livestock()` can return. The check that can
+  fail — that the coverage table has a row for every expected year — was
+  missing, so a year with no regional cells at all would have been dropped from
+  the table that exists to report incompleteness.
+- `published` is no longer summed with `na.rm = TRUE`. It is contractually a
+  single non-missing cell; with `na.rm` a suppressed national total would have
+  become `0` and the class-year would have been reported as a rounding
+  discrepancy rather than as a missing total.
+- **The reproducibility check could be satisfied by doing nothing.**
+  `git diff --exit-code` compares the worktree to the index, so a `checks.R`
+  that silently stopped writing left the committed CSVs untouched and passed.
+  They are now deleted before the run, and an uncommitted new output fails too.
+- `data-raw/** -text` also covered `SOURCE.md`, which needs no such protection
+  and was already LF in the index and CRLF in the working tree. Narrowed to
+  `data-raw/*.csv`, which is the file the hash gate protects.
+- The port's `pyspark`/`pandas` pins move to `databricks/requirements.txt` and
+  are watched by Dependabot; they were the only dependencies in the repository
+  nothing was watching. `_quarto.yml` names what to render, instead of
+  publishing every `.md` in the tree as an orphan page. Pushes to `main` are no
+  longer cancelled mid-publish by the next push.
+
 - Validate CSV parsing, year strings, finite head counts and published island
   totals before the R analysis runs. Negative fixtures exercise the ingestion
   contracts, and CI now fails when DESCRIPTION and renv.lock are out of sync.

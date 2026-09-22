@@ -35,8 +35,14 @@ and makes any change of vintage a visible commit rather than an invisible drift.
 | Total dairy cattle, Total New Zealand, June 2024 | 5,836,845 | matched |
 | Total beef cattle, Total New Zealand, June 2024 | 3,679,443 | matched |
 | AREA aggregate codes | 10 = North Island, 19 = South Island, 20 = New Zealand | confirmed |
-| AREA regional codes sum to their island total (sheep, 2017) | exact | confirmed |
+| AREA regional codes sum to their island total (sheep, 2012) | exact | confirmed |
 | YEAR coverage | 1994, then 2002–2025 continuous | confirmed |
+
+The island check uses 2012 because it is a year in which no region is withheld.
+In 2017 the South Island does **not** reconcile — Nelson's sheep cell is
+suppressed, leaving the eight regional codes 19,568 head short of the published
+South Island total — which is the behaviour the report's reconciliation tiers
+exist to report rather than a defect in the extract.
 
 `OBS_STATUS` takes two non-empty values in this extract: `s` (suppressed) and
 `c` (confidential). Every cell with an empty `OBS_VALUE` carries one of the two;

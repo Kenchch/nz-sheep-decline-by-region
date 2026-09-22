@@ -74,9 +74,9 @@ stopifnot(
 )
 
 # Coverage is deliberately reported rather than asserted, because it is
-# genuinely incomplete: 2003-2009 carry fewer region codes than the rest of the
-# series, and a test that failed every year from 2003 to 2009 would be noise,
-# not information.
+# genuinely incomplete: for sheep, 2003-2006, 2008 and 2009 carry fewer region
+# codes than the rest of the series (2007 is complete), and a test that failed
+# in each of those years would be noise, not information.
 coverage <- livestock |>
   regions_only() |>
   filter(livestock_class == "Sheep") |>
@@ -94,7 +94,15 @@ coverage <- livestock |>
     suppression_rate_all_regions = regions_suppressed / regions_expected
   )
 
-stopifnot(all(coverage$regions_absent >= 0),
+# The identity below cannot fail: load.R already guarantees
+# is.na(head) == suppressed rowwise, so regions_with_value + regions_suppressed
+# is regions_present by construction, and regions_absent is 17 - regions_present.
+# It is kept as documentation of the decomposition, but the check that can
+# actually fail is the one on the grid: group_by(year) emits no row for a year
+# with no regional cells at all, which would drop that year from the coverage
+# table silently rather than reporting it as wholly absent.
+stopifnot(identical(sort(coverage$year), EXPECTED_YEARS),
+          all(coverage$regions_absent >= 0),
           all(coverage$regions_with_value + coverage$regions_suppressed +
                 coverage$regions_absent == coverage$regions_expected))
 
@@ -123,13 +131,19 @@ stopifnot(nrow(dairy_windows) == 9L, !anyNA(dairy_windows),
 reconciliation <- livestock |>
   group_by(year, livestock_class) |>
   summarise(
+    # na.rm on the regional sum is load-bearing: suppressed cells are meant to
+    # drop out and surface as residual. It is deliberately NOT used on the
+    # published total, which is contractually a single non-missing cell
+    # (load.R enforces that). With na.rm there, a suppressed national total
+    # would silently become 0 and the class-year would be reported as a
+    # rounding discrepancy rather than as a missing total.
     region_sum = sum(head[!is_aggregate], na.rm = TRUE),
-    published  = sum(head[area_code == "20"], na.rm = TRUE),
+    published  = sum(head[area_code == "20"]),
     .groups    = "drop"
   ) |>
   mutate(
     residual     = published - region_sum,
-    residual_pct = 100 * residual / published
+    residual_pct = if_else(published > 0, 100 * residual / published, NA_real_)
   )
 
 # A second reconciliation that this analysis does no summing for: the two
@@ -152,7 +166,11 @@ residual_tiers <- livestock |>
             .groups = "drop") |>
   left_join(reconciliation, by = c("year", "livestock_class")) |>
   mutate(
-    fully_published = regions_present == 17 & regions_suppressed == 0,
+    # Derived, not a literal 17: coverage above computes the same expression,
+    # and a hardcoded copy here would silently mis-tier every class-year if
+    # AREA ever gained or lost a region code.
+    fully_published = regions_present ==
+      length(setdiff(names(AREA), AREA_AGGREGATES)) & regions_suppressed == 0,
     tier = case_when(
       fully_published & residual == 0 ~ "Exact",
       fully_published                 ~ "Fully published, off by a few head",
@@ -179,6 +197,9 @@ if (sys.nframe() == 0) {
     count(tier) |>
     as.data.frame() |>
     print(row.names = FALSE)
+  # max() of an empty selection is -Inf with a warning, so the empty case is
+  # named rather than printed as a number.
+  fp_residual <- abs(residual_tiers$residual[residual_tiers$fully_published])
   cat("\nLargest absolute residual among fully published class-years:",
-      max(abs(residual_tiers$residual[residual_tiers$fully_published])), "head\n")
+      if (length(fp_residual)) paste(max(fp_residual), "head") else "none", "\n")
 }
