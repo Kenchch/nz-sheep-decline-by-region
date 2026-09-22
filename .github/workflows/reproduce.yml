@@ -25,9 +25,13 @@ permissions:
 
 # One run per ref. A second push while the first is still rendering used to
 # leave two jobs racing for gh-pages, and the slower one won.
+# Pull request runs are superseded by the next push to the same branch, so
+# cancelling them is free. Pushes to main are not cancelled: that job publishes,
+# and cancelling a publisher mid-`quarto publish gh-pages` is both a worse
+# outcome than queueing and easier to overlook than a failure.
 concurrency:
   group: reproduce-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   reproduce:
@@ -59,14 +63,29 @@ jobs:
       - name: Reject malformed extract fixtures
         run: Rscript tests/test-r-contracts.R
 
+      # Deleted first so the comparison below cannot be satisfied by doing
+      # nothing. `git diff --exit-code` compares the worktree against the
+      # index, so a checks.R that silently stopped writing — an early exit, a
+      # dropped write_csv, a guard that no longer fires — left the committed
+      # files untouched and passed. Removing them turns "nothing changed" into
+      # "every one of them was rewritten, and matches".
       - name: Regenerate the validation outputs
-        run: Rscript R/checks.R
+        run: |
+          rm -f outputs/*.csv
+          Rscript R/checks.R
 
       - name: Render the report and the figures
         run: quarto render
 
+      # Scoped to the CSVs, like the diff: `quarto render` also rewrites
+      # outputs/figures/*.png, which are deliberately not byte-reproducible
+      # across platforms, so a tree-wide check here would be permanently red.
+      # --untracked-files so a newly produced CSV that nobody committed is a
+      # failure rather than an invisible extra file.
       - name: Committed CSV outputs must match a fresh run
-        run: git diff --exit-code -- 'outputs/*.csv'
+        run: |
+          git diff --exit-code -- 'outputs/*.csv'
+          test -z "$(git status --porcelain --untracked-files=all -- 'outputs/*.csv')"
 
   # The Databricks notebooks cannot run here as notebooks, but they can run as
   # Python against a local Spark session, and the claim that they are a port
@@ -88,10 +107,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # Pinned, like everything else that produces a number here. pandas 3 is
-      # not yet fully supported by PySpark and says so on every toPandas().
+      # Pins live in databricks/requirements.txt so Dependabot can see them.
       - name: Install PySpark
-        run: python -m pip install --quiet pyspark==4.2.0 pandas==2.3.3
+        run: python -m pip install --quiet -r databricks/requirements.txt
 
       - name: Run the notebooks locally and compare every gold table with outputs/*.csv
         run: python databricks/run_local.py

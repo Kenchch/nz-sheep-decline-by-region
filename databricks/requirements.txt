@@ -1,0 +1,7 @@
+# Pinned, like everything else that produces a number here, and kept in a file
+# Dependabot can parse: as inline `pip install` arguments in the workflow these
+# were the only dependencies in the repository nothing was watching.
+#
+# pandas 3 is not yet fully supported by PySpark and says so on every toPandas().
+pyspark==4.2.0
+pandas==2.3.3

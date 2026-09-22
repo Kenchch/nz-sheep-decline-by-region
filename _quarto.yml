@@ -1,6 +1,12 @@
 project:
   type: website
   output-dir: _site
+  # Listed explicitly. Without this Quarto renders every .md in the tree, which
+  # published CHANGELOG.html, DATA-LICENCE.html and data-raw/SOURCE.html to the
+  # site as orphan pages nothing links to, and would turn the reproducibility
+  # gate red over a YAML or link error in an unrelated notes file.
+  render:
+    - index.qmd
 
 website:
   title: "Where New Zealand's sheep went"

@@ -32,13 +32,13 @@ The reconciliation separates into three tiers across the 72 class-years:
 
 | Tier | Class-years | Largest absolute residual |
 |---|---:|---:|
-| Exact — all 17 regions published, nothing withheld | 10 | 0 head |
+| Exact — fully published and reconciling to zero | 10 | 0 head |
 | Fully published, off by a few head | 12 | 2 head |
 | Incomplete region row | 50 | 701,526 head |
 
-Completeness is the criterion for these tiers, not the residual: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
+Completeness is checked before the residual, so a class-year with an incomplete region row is never Exact however well it reconciles: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
 
-In the 10 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual never exceeds two head, on bases of 3.5–31.1 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
+In 10 of the 22 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual never exceeds two head, on bases of 3.5–31.1 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
 
 Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
 

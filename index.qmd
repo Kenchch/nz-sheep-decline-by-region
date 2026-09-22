@@ -190,7 +190,7 @@ New Zealand's sheep flock fell by **`r fmt(nat_drop/1e6, 2)` million** between J
 Three points, each with one number.
 
 - Three regions — `r paste(top3$region, collapse = ", ")` — account for
-  **`r fmt(top3_share, 0)` percent** of the total fall, across the
+  **`r fmt(top3_share, 0)` percent** of the fall measured across the
   `r measurable` regions where both endpoints are published.
 - Over the same 23 years the national dairy herd rose by
   **`r fmt(dairy_gain/1e3, 0)` thousand** cattle net, while beef cattle *fell* by
@@ -495,11 +495,13 @@ residual_tiers |>
   kable(align = "lrr")
 ```
 
-In the `r sum(residual_tiers$tier == "Exact")` class-years where all seventeen
-regions are published and nothing is withheld, the regions sum to the published
-national total **exactly, to the head**.
+In `r sum(residual_tiers$tier == "Exact")` of the
+`r sum(residual_tiers$fully_published)` class-years where all seventeen regions
+are published and nothing is withheld, the regions sum to the published national
+total **exactly, to the head**.
 
-Completeness is the criterion for these tiers, not the residual. That matters
+Completeness is checked before the residual, so a class-year with an incomplete
+region row is never Exact however well it reconciles. That matters
 here: `r sum(residual_tiers$residual == 0)` class-years reconcile to zero, one
 more than the Exact tier contains, because one class-year with an incomplete
 region row happens to reconcile exactly anyway.
@@ -515,8 +517,8 @@ million. I cannot attribute that from published data. It
 is consistent with the national aggregate being rounded independently of the
 regional cells, but I have not been able to source that and do not assert it.
 Nor can I rule out input perturbation: only two fully-published class-years fall
-after 2017, when perturbation was introduced, which is far too few to say
-anything either way.
+in 2017 or later, from when perturbation was introduced, which is far too few to
+say anything either way.
 
 Every residual larger than that — and the next smallest is
 `r fmt(min(abs(residual_tiers$residual[residual_tiers$tier == "Incomplete region row" & residual_tiers$residual != 0])))`
@@ -559,9 +561,10 @@ join. That does not explain them, but it does locate them.
 #| fig-alt: "Bar chart of the percentage of regional cells withheld each year
 #|   from 2002 to 2025, coloured by flag. Nothing is withheld from 2002 to
 #|   2011. A single orange bar in 2012 marks the C confidentiality flag at
-#|   about 8 percent. Blue bars for the S quality-suppression flag begin in
-#|   2014 and run to 2025, peaking near 18 percent in 2021, with the census
-#|   years 2017 and 2022 lower than the survey years around them."
+#|   about 8 percent. A single blue bar for the S quality-suppression flag
+#|   appears in 2014, none in 2015 or 2016, then a blue bar every year from
+#|   2017 to 2025, peaking near 18 percent in 2021. The census year 2022 is
+#|   lower than the survey years on either side of it."
 p3 <- ggplot(supp_by_code, aes(x = year, y = rate)) +
   geom_col(aes(fill = label), width = 0.7) +
   scale_fill_manual(values = c("C - confidentiality (pre-2017 method)" = "#e07a5f",
@@ -608,9 +611,11 @@ year the method changed.
 The `S` flag is quality suppression, applied where sampling errors or imputation
 levels are high. It runs from `r min(s_years)` to `r max(s_years)`, peaking at
 `r sprintf("%.1f", max(supp$rate))` percent of cells in
-`r supp$year[which.max(supp$rate)]`. The census years 2017 and 2022 sit below the
-survey years around them — but not at zero, and the difference between those two
-statements is the mechanism.
+`r supp$year[which.max(supp$rate)]`. The census year 2022 sits below the survey
+years on either side of it, and 2017 below every survey year that follows it —
+but neither at zero, and the difference between those two statements is the
+mechanism. (2016, a survey year, is itself at zero: the `S` flag is not yet
+continuous that early, so the comparison only becomes meaningful from 2017 on.)
 
 The published rule withholds data with high sample errors **or** high imputation
 levels. A census removes the first branch, which is why census years sit lower.
@@ -803,8 +808,10 @@ percent, and
 other regions for the rest.
 
 Two different grounds are at work, and it is worth separating them. Nelson and
-the Chathams are withheld persistently — they hold the two smallest sheep
-populations in the table — which makes their *trends* unusable. Auckland is
+the Chathams are withheld persistently — they hold the two smallest livestock
+populations in the table — which makes their *trends* unusable. (By sheep alone
+the second smallest is West Coast, published in 21 of the 24 years: being small
+and being withheld are not the same thing.) Auckland is
 withheld only at scattered points including the 2025 endpoint, which is what
 removes it from this analysis' *change* calculation while leaving most of its
 series intact. Auckland is not a small region, and by sheep it is not even among
