@@ -1,6 +1,9 @@
-# Generated text is normalised to LF so that outputs regenerated on Linux are
-# byte-identical to outputs regenerated on Windows. Without this the
-# reproducibility check would fail on line endings alone.
+# Everything Git considers text is normalised to LF, so that outputs
+# regenerated on Linux are byte-identical to outputs regenerated on Windows and
+# files not named below (renv.lock, DESCRIPTION, CITATION.cff) do not check out
+# as CRLF under core.autocrlf=true. Without this the reproducibility check
+# would fail on line endings alone.
+*          text=auto eol=lf
 *.R        text eol=lf
 *.qmd      text eol=lf
 *.py       text eol=lf
@@ -14,6 +17,7 @@ LICENSE    text eol=lf
 # are present, so they are not byte-reproducible across platforms. Tracked as
 # binary and excluded from the CI comparison.
 *.png      binary
+*.pdf      binary
 
 # Last rule wins, so this override must stay at the bottom of the file.
 #
@@ -25,8 +29,11 @@ LICENSE    text eol=lf
 # every platform that does not convert them back on checkout — which is exactly
 # what happened, and what the CI check caught.
 #
+# -text alone leaves the eol=lf set by the *.csv rule above in place; -eol
+# clears it too, so no attribute on this file asks for any conversion.
+#
 # Scoped to the extract itself rather than the whole directory. `data-raw/**`
 # also covered SOURCE.md, which needs no such protection and was already drifting
 # because of it: LF in the index, CRLF in the working tree. The prose record of
 # the hash should normalise like every other .md in the repository.
-data-raw/*.csv -text
+data-raw/*.csv -text -eol

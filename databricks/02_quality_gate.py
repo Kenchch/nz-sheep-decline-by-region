@@ -8,22 +8,29 @@
 # MAGIC # 02 - Quality gate and quarantine
 # MAGIC
 # MAGIC Reads bronze, joins to dimensions, validates data contracts, and writes
-# MAGIC silver. Failed rows go to quarantine rather than being deleted.
+# MAGIC silver. Failed rows go to quarantine, and any failed row stops silver from
+# MAGIC being published, as the R loader stops.
 # MAGIC
-# MAGIC Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ
-# MAGIC for re-use under the Creative Commons Attribution 4.0 International licence.
+# MAGIC This work is based on Stats NZ's data (Agricultural production statistics,
+# MAGIC AGR_AGR_003), licensed by Stats NZ for re-use under the Creative Commons
+# MAGIC Attribution 4.0 International licence (https://creativecommons.org/licenses/by/4.0/).
 
 # COMMAND ----------
 
 # DBTITLE 1,Parameters
+import re
+
 # Keep existing values: Lakeflow task parameters override these defaults.
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
 
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
+for key, value in {"catalog": CATALOG, "schema": SCHEMA}.items():
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
+        raise ValueError(f"invalid {key}: {value!r}")
 
-FQ = f"{CATALOG}.{SCHEMA}"
+FQ = f"`{CATALOG}`.`{SCHEMA}`"
 print(FQ)
 
 # COMMAND ----------
@@ -31,8 +38,11 @@ print(FQ)
 # DBTITLE 1,Build candidate table
 from pyspark.sql import functions as F
 
+# The window and the census years, as in R/load.R. 03 derives what it needs
+# from silver rather than repeating these.
+START_YEAR, END_YEAR = 2002, 2025
 CENSUS_YEARS = [2002, 2007, 2012, 2017, 2022]
-EXPECTED_YEARS = list(range(2002, 2026))
+EXPECTED_YEARS = list(range(START_YEAR, END_YEAR + 1))
 
 bronze = spark.table(f"{FQ}.bronze_agr_agr_003")
 dim_l = spark.table(f"{FQ}.dim_livestock")
@@ -45,7 +55,7 @@ cand = (bronze
     # 1994 sits before the 2002 population change. Dropped explicitly here
     # rather than silently, so the exclusion is visible in the code.
     # Keep unparseable years so they reach quarantine instead of disappearing.
-    .filter(F.col("year").isNull() | (F.col("year") >= 2002))
+    .filter(F.col("year").isNull() | (F.col("year") >= START_YEAR))
     .join(F.broadcast(dim_l), "livestock_code", "inner")  # inner: admits only the 3 verified codes
     .join(F.broadcast(dim_a), "area_code", "left")
     # A suppressed cell is a cell we are not allowed to see. That is a
@@ -70,7 +80,7 @@ cand = (bronze
     .select("year", "area_code", "region", "island", "is_aggregate",
             "livestock_class", "head", "suppressed", "suppression_code",
             "is_census_year", "_value_missing", "OBS_STATUS", "OBS_VALUE",
-            "YEAR_AGR_AGR_003"))
+            "YEAR_AGR_AGR_003", "_source_sha256", "_ingested_at"))
 
 print("candidate rows:", cand.count())  # expect 1397
 
@@ -80,6 +90,10 @@ print("candidate rows:", cand.count())  # expect 1397
 RULES = {
     "head_non_negative": F.col("head").isNull() | (
         (F.col("head") >= 0) & ~F.isnan("head") & (F.col("head") != float("inf"))),
+    # A head count is a non-negative whole number. try_cast to DOUBLE accepts
+    # "4192693.5", "1e3" and "-5", so the original string is checked, as in
+    # R/load.R.
+    "value_is_count": F.col("_value_missing") | F.col("OBS_VALUE").rlike("^[0-9]+$"),
     "value_iff_suppressed": (
         (F.col("head").isNull() == F.col("suppressed")) &
         (F.col("_value_missing") == F.col("suppressed"))),
@@ -116,61 +130,73 @@ checked = (cand
     .withColumn("n_broken", F.size("broken_rules"))
     .drop("_n_in_cell"))
 
-summary = (checked
-    .select(F.explode("broken_rules").alias("rule"))
-    .groupBy("rule").count().orderBy("rule"))
+# One row per rule, including the rules that never fail, so the table can be
+# compared with outputs/validation-summary.csv rather than only displayed.
+RULE_NAMES = list(RULES) + ["no_duplicate_cells"]
+fails = {r["rule"]: r["count"] for r in
+         checked.select(F.explode("broken_rules").alias("rule"))
+                .groupBy("rule").count().collect()}
+summary = spark.createDataFrame(
+    [(name, int(fails.get(name, 0))) for name in RULE_NAMES],
+    "rule string, fails long")
+summary.write.mode("overwrite").option("overwriteSchema", "true") \
+    .saveAsTable(f"{FQ}.quality_rule_summary")
 display(summary)
-# expect exactly one row: census_year_reported = 9
+# expect census_year_reported = 9 and every other rule 0
 
 # COMMAND ----------
 
 # DBTITLE 1,Publish silver or refuse
-BLOCKING = ["head_non_negative", "value_iff_suppressed",
+BLOCKING = ["head_non_negative", "value_is_count", "value_iff_suppressed",
             "region_label_present", "no_duplicate_cells", "year_in_range",
             "status_known"]
-MAX_REJECT_RATE = 0.01
 
 is_rejected = F.coalesce(
     F.arrays_overlap("broken_rules", F.array(*[F.lit(b) for b in BLOCKING])),
     F.lit(False))
-rejected = checked.filter(is_rejected)
+rejected = checked.filter(is_rejected).withColumn("_checked_at", F.current_timestamp())
 # The complement of the same predicate, not `subtract`: subtract is EXCEPT
 # DISTINCT, so it would also collapse any duplicate rows it did not reject.
-clean = checked.filter(~is_rejected).drop(
-    "broken_rules", "n_broken", "_value_missing", "OBS_STATUS", "OBS_VALUE",
-    "YEAR_AGR_AGR_003")
+clean = (checked.filter(~is_rejected)
+    .drop("broken_rules", "n_broken", "_value_missing", "OBS_STATUS", "OBS_VALUE",
+          "YEAR_AGR_AGR_003")
+    # Validated above as a whole number, so the cast is exact.
+    .withColumn("head", F.col("head").cast("bigint")))
 
 n_all, n_bad = checked.count(), rejected.count()
-rate = (n_bad / n_all) if n_all else 0.0
-print(f"rows={n_all} rejected={n_bad} rate={rate:.4%}")
+print(f"rows={n_all} rejected={n_bad}")
 
+# Written on every run, including one that fails below: the quarantine shows
+# the rows of the latest attempt, and _checked_at says when that was.
 (rejected.write.mode("overwrite").option("overwriteSchema", "true")
     .saveAsTable(f"{FQ}.quarantine_livestock"))
 
 if not n_all:
     raise ValueError("No candidate livestock rows. Previous silver left in place.")
 
-if rate > MAX_REJECT_RATE:
+# No tolerance. Publishing without a rejected row is a silent change to the
+# analysis, not a cleaner version of it: losing one Canterbury sheep cell
+# would drop Canterbury from the regional table and replace the headline's
+# top three, and the coverage table would count the cell as never published.
+# The R loader stops on the same input, and so does this.
+if n_bad:
     raise ValueError(
-        f"Reject rate {rate:.2%} exceeds {MAX_REJECT_RATE:.0%}. "
-        f"Previous silver left in place. Inspect {FQ}.quarantine_livestock.")
+        f"{n_bad} row(s) failed blocking rules; see {FQ}.quarantine_livestock. "
+        "Previous silver left in place.")
 
 # COMMAND ----------
 
 # DBTITLE 1,Validate before publishing
 # Validate clean candidates before overwrite: failed coverage checks must not
 # replace the last good silver table. Explicit raises also survive python -O.
+# Row-level contracts (values, flags, labels, duplicates) cannot fail here any
+# more, because any row breaking one has already stopped the notebook above;
+# these are the table-level contracts no single row can break.
 s = clean
 
 years = sorted(r[0] for r in s.select("year").distinct().collect())
 if years != EXPECTED_YEARS:
     raise ValueError(f"Year coverage changed: {years}. Previous silver left in place.")
-
-if s.filter(F.col("head").isNull() != F.col("suppressed")).count():
-    raise ValueError("Every missing value must be suppressed, and every suppressed cell missing")
-
-if s.filter(F.col("region").isNull()).count():
-    raise ValueError("Unmapped AREA code")
 
 nat = s.filter(F.col("area_code") == "20")
 n_classes = dim_l.count()
@@ -178,10 +204,11 @@ if nat.count() != len(EXPECTED_YEARS) * n_classes:
     raise ValueError("A published national total is required once per class-year. "
                      "Previous silver left in place.")
 if nat.filter(F.col("head").isNull()).count():
-    raise ValueError("National totals are never suppressed. Previous silver left in place.")
+    raise ValueError("A published national total is required once per class-year; "
+                     "one is suppressed. Previous silver left in place.")
 
 # Match the R ingestion contract: both published island aggregates must be
-# present for every class-year, including after rejected rows are removed.
+# present for every class-year.
 islands = s.filter(F.col("area_code").isin("10", "19"))
 if (islands.count() != 2 * len(EXPECTED_YEARS) * n_classes or
         islands.filter(F.col("head").isNull()).count()):

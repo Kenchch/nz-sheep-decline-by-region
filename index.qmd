@@ -4,235 +4,403 @@ subtitle: "A regional breakdown of the flock decline, 2002–2025"
 author: "Feng Jiang"
 # Pinned rather than `today`: a render-time date would make every render
 # produce a diff, which the reproducibility check would then report as a
-# failure. Bump this when the analysis is materially revised.
-date: 2026-09-21
+# failure. Bump this, with the version in DESCRIPTION and CITATION.cff, when the
+# analysis is materially revised.
+date: 2026-09-23
+lang: en-NZ
 ---
 
 ```{r setup}
 #| include: false
-source("R/checks.R")   # which sources R/load.R, runs the rules and reconciles
+source("R/checks.R")     # sources R/load.R, runs the rules and reconciles
+source("R/analysis.R")   # pure helpers, tested in tests/test-r-analysis.R
 suppressPackageStartupMessages({
-  library(ggplot2); library(scales); library(tidyr); library(knitr)
+  library(ggplot2); library(scales); library(knitr)
 })
 
 dir.create("outputs/figures", recursive = TRUE, showWarnings = FALSE)
 
+VERSION <- unname(read.dcf("DESCRIPTION")[, "Version"])
+CAPTION <- paste("Source: Stats NZ, Agricultural production statistics (AGR_AGR_003), CC BY 4.0.",
+                 "Chart and calculations by Feng Jiang.", sep = "\n")
+
 d       <- livestock
 regions <- regions_only(d)
-
-fmt <- function(x, digits = 0) format(round(x, digits), big.mark = ",", trim = TRUE)
+REGION_NAMES <- unname(AREA[setdiff(names(AREA), AREA_AGGREGATES)])
+and_list <- function(x) {
+  if (length(x) == 0) return("")
+  if (length(x) == 1) return(as.character(x))
+  paste(paste(head(x, -1), collapse = ", "), "and", tail(x, 1))
+}
 
 # Sheep, first year to last year, by region -------------------------------
-sheep_change <- regions |>
-  filter(livestock_class == "Sheep", year %in% c(2002, 2025)) |>
-  select(region, year, head) |>
-  pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
-  mutate(change = y2025 - y2002, pct = 100 * change / y2002) |>
-  arrange(change)
+sheep_change <- endpoint_change(regions, "Sheep", START_YEAR, END_YEAR)
+measured     <- sheep_change |> filter(!is.na(change))
+headline     <- top3_for(regions, START_YEAR, END_YEAR)
+measurable   <- headline$regions
+excluded     <- sort(sheep_change$region[is.na(sheep_change$change)])
+decline_sum  <- -headline$fall
+top3         <- head(measured |> filter(change < 0), 3)
+fourth       <- (measured |> filter(change < 0))[4, ]
+top3_share   <- headline$share
+top3_base    <- headline$base_share
 
-measurable  <- sum(!is.na(sheep_change$change))
-decline_sum <- sum(sheep_change$change[sheep_change$change < 0], na.rm = TRUE)
-top3        <- head(sheep_change, 3)
-top3_share  <- 100 * sum(top3$change) / decline_sum
+# Each region's share of the fall against its share of the starting flock. If
+# every region had fallen by the same proportion the two would be equal, so
+# the gap is the part of the headline that is about the decline rather than
+# about which regions were largest to begin with.
+measured <- measured |>
+  mutate(base_share = 100 * start / sum(start),
+         fall_share = 100 * change / decline_sum,
+         excess_pp  = fall_share - base_share)
+measured_rate <- 100 * -sum(measured$change) / sum(measured$start)
+over_share    <- top3$region[top3$region %in%
+                               measured$region[measured$excess_pp > 0]]
+under_share   <- setdiff(top3$region, over_share)
+steepest      <- measured |> arrange(pct) |> head(4)
+
+stopifnot("the headline assumes every measurable region declined" =
+            all(measured$change < 0))
 
 nat_sheep <- national(d) |> filter(livestock_class == "Sheep")
-nat_2002  <- nat_sheep$head[nat_sheep$year == 2002]
-nat_2025  <- nat_sheep$head[nat_sheep$year == 2025]
-nat_drop  <- nat_2002 - nat_2025
-nat_pct   <- 100 * nat_drop / nat_2002
+nat_start <- nat_sheep$head[nat_sheep$year == START_YEAR]
+nat_end   <- nat_sheep$head[nat_sheep$year == END_YEAR]
+nat_drop  <- nat_start - nat_end
+nat_pct   <- 100 * nat_drop / nat_start
 top3_national_share <- 100 * -sum(top3$change) / nat_drop
+national_gap_pct <- 100 * (nat_drop + decline_sum) / -decline_sum
 
-nat_wide <- national(d) |>
-  filter(year %in% c(2002, 2025)) |>
-  select(livestock_class, year, head) |>
-  pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
-  mutate(change = y2025 - y2002)
+# Stats NZ's published relative sampling error for the national sheep
+# estimate, 2025 survey, 95 percent confidence (cited under Sources). The
+# 2002 endpoint is a census, so this is the uncertainty of the end alone.
+RSE_2025 <- 0.03
+half_width <- RSE_2025 * nat_end
 
-dairy_gain <- nat_wide$change[nat_wide$livestock_class == "Dairy cattle"]
-beef_gain  <- nat_wide$change[nat_wide$livestock_class == "Beef cattle"]
+nat_change <- function(class, y0, y1) {
+  x <- national(d) |> filter(livestock_class == class)
+  x$head[x$year == y1] - x$head[x$year == y0]
+}
+dairy_gain <- nat_change("Dairy cattle", START_YEAR, END_YEAR)
+beef_gain  <- nat_change("Beef cattle", START_YEAR, END_YEAR)
 
 # Substitution, all three classes ----------------------------------------
-substitution <- regions |>
-  filter(year %in% c(2002, 2025)) |>
-  select(region, livestock_class, year, head) |>
-  pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
-  mutate(change = y2025 - y2002) |>
-  select(region, livestock_class, change) |>
+substitution <- bind_rows(lapply(unname(LIVESTOCK), function(class)
+  endpoint_change(regions, class, START_YEAR, END_YEAR) |>
+    transmute(region, livestock_class = class, change))) |>
   pivot_wider(names_from = livestock_class, values_from = change)
 
-top5_regions <- head(sheep_change$region, 5)
-
-dairy_both    <- substitution |> filter(!is.na(Sheep), !is.na(`Dairy cattle`))
-n_dairy_falls <- sum(dairy_both$`Dairy cattle` < 0)
-n_dairy_both  <- nrow(dairy_both)
-
-# The 2002-2025 substitution count above hides the shape of the series: dairy
-# and sheep moved in OPPOSITE directions to the 2014 dairy peak and in the SAME
-# direction after it. Counting per window is what makes that visible, so the
-# same calculation runs for each of the three comparison windows.
-dairy_window_counts <- function(y0, y1) {
-  w <- regions |>
-    filter(year %in% c(y0, y1), livestock_class %in% c("Sheep", "Dairy cattle")) |>
-    select(region, livestock_class, year, head) |>
-    pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
-    transmute(region, livestock_class,
-              start = .data[[paste0("y", y0)]],
-              end = .data[[paste0("y", y1)]]) |>
-    filter(!is.na(start), !is.na(end)) |>
-    mutate(change = end - start)
-  both <- inner_join(
-    w |> filter(livestock_class == "Sheep") |> select(region, sheep = change),
-    w |> filter(livestock_class == "Dairy cattle") |> select(region, dairy = change),
-    by = "region"
-  )
-  list(n = nrow(both), fell = sum(both$dairy < 0))
+top5_regions <- head(measured$region, 5)
+per_100 <- function(region, class) {
+  x <- substitution[match(region, substitution$region), ]
+  -100 * x[[class]] / x$Sheep
 }
-win_early <- dairy_window_counts(2002, 2014)
-win_late  <- dairy_window_counts(2014, 2025)
+# Dairy cattle gained per 100 sheep lost, largest first, among the five
+# largest sheep declines. The prose names the first two and the largest of
+# the rest, so the gap between them is visible rather than asserted.
+dairy_ratio <- sort(setNames(per_100(top5_regions, "Dairy cattle"), top5_regions),
+                    decreasing = TRUE)
 
-# National dairy against its 2014 peak, for the same reason.
+# The endpoint count hides the shape of the series: dairy and sheep moved in
+# opposite directions to the 2014 dairy peak and in the same direction after
+# it. Counting per window is what makes that visible.
+win_full  <- dairy_window_counts(regions, START_YEAR, END_YEAR)
+win_early <- dairy_window_counts(regions, START_YEAR, DAIRY_PEAK_YEAR)
+win_late  <- dairy_window_counts(regions, DAIRY_PEAK_YEAR, END_YEAR)
+# The three windows admit different regions, so the counts are also given on
+# the regions measurable in all three.
+common <- Reduce(intersect, list(win_full$regions, win_early$regions,
+                                 win_late$regions))
+fell_in <- function(y0, y1, keep) {
+  ch <- endpoint_change(regions, "Dairy cattle", y0, y1)
+  sum(ch$change[ch$region %in% keep] < 0)
+}
+window_counts <- data.frame(
+  y0 = c(START_YEAR, START_YEAR, DAIRY_PEAK_YEAR),
+  y1 = c(END_YEAR, DAIRY_PEAK_YEAR, END_YEAR)
+)
+window_counts$n    <- c(win_full$n, win_early$n, win_late$n)
+window_counts$fell <- c(win_full$fell, win_early$fell, win_late$fell)
+window_counts$excluded <- vapply(list(win_full, win_early, win_late), function(w)
+  and_list(setdiff(REGION_NAMES, w$regions)), character(1))
+window_counts$common_fell <- mapply(fell_in, window_counts$y0, window_counts$y1,
+                                    MoreArgs = list(keep = common))
+chathams_zero_late <- win_late$zero_both == 1 &&
+  "Chatham Islands" %in% win_late$regions
+
+# National dairy against its peak, for the same reason.
 nat_dairy  <- national(d) |> filter(livestock_class == "Dairy cattle")
-dairy_2002 <- nat_dairy$head[nat_dairy$year == 2002]
-dairy_2014 <- nat_dairy$head[nat_dairy$year == 2014]
-dairy_2025 <- nat_dairy$head[nat_dairy$year == 2025]
-dairy_rise <- dairy_2014 - dairy_2002
-dairy_fall <- dairy_2014 - dairy_2025
-sheep_2014 <- nat_sheep$head[nat_sheep$year == 2014]
-sheep_early_drop <- nat_2002 - sheep_2014
+dairy_start <- nat_dairy$head[nat_dairy$year == START_YEAR]
+dairy_peak  <- nat_dairy$head[nat_dairy$year == DAIRY_PEAK_YEAR]
+dairy_rise  <- dairy_peak - dairy_start
+dairy_fall  <- dairy_peak - nat_dairy$head[nat_dairy$year == END_YEAR]
+stopifnot("DAIRY_PEAK_YEAR is described as the in-sample dairy peak" =
+            nat_dairy$year[which.max(nat_dairy$head)] == DAIRY_PEAK_YEAR)
+dairy_runner_up <- nat_dairy |> filter(year != DAIRY_PEAK_YEAR) |>
+  slice_max(head, n = 1)
+
+sheep_peak_year <- nat_sheep$head[nat_sheep$year == DAIRY_PEAK_YEAR]
+sheep_early_drop <- nat_start - sheep_peak_year
+sheep_late_drop  <- sheep_peak_year - nat_end
+annual_rate <- function(a, b, years) 100 * (1 - (b / a)^(1 / years))
+sheep_early_rate <- annual_rate(nat_start, sheep_peak_year, DAIRY_PEAK_YEAR - START_YEAR)
+sheep_late_rate  <- annual_rate(sheep_peak_year, nat_end, END_YEAR - DAIRY_PEAK_YEAR)
 
 # Regions among the top five that lost at least one cattle class as well as
 # sheep, named from the data rather than typed into the prose.
 lost_cattle_class <- substitution |>
   filter(region %in% top5_regions, `Dairy cattle` < 0 | `Beef cattle` < 0) |>
-  pull(region) |> sort() |> paste(collapse = " and ")
+  pull(region) |> sort()
 
 # Endpoint sensitivity ----------------------------------------------------
-# The same headline statistic recomputed from every start year that leaves a
-# window of at least MIN_WINDOW years. Asserted in prose, this claim was wrong.
-# Computed, it is a better finding.
-top3_for <- function(y0, y1 = 2025) {
-  ch <- regions |>
-    filter(livestock_class == "Sheep", year %in% c(y0, y1)) |>
-    select(region, year, head) |>
-    pivot_wider(names_from = year, values_from = head, names_prefix = "y") |>
-    mutate(change = .data[[paste0("y", y1)]] - .data[[paste0("y", y0)]]) |>
-    filter(!is.na(change)) |>
-    arrange(change)
-  dec <- sum(ch$change[ch$change < 0])
-  data.frame(
-    start   = y0,
-    end     = y1,
-    regions = nrow(ch),
-    fall    = -dec,
-    net_fall = -sum(ch$change),
-    share   = 100 * sum(head(ch$change, 3)) / dec,
-    top3    = paste(head(ch$region, 3), collapse = ", ")
-  )
+# The same headline statistic recomputed from every start year, and to every
+# end year, that leaves a window of at least MIN_WINDOW years. The five-year
+# minimum is an analysis choice to focus on longer windows.
+MIN_WINDOW <- 5L
+LAST_START <- END_YEAR - MIN_WINDOW
+FIRST_END  <- START_YEAR + MIN_WINDOW
+
+excluded_regions <- function(y0, y1) {
+  ch <- endpoint_change(regions, "Sheep", y0, y1)
+  setdiff(REGION_NAMES, ch$region[!is.na(ch$change)])
 }
-
-# The extract runs to 2025, so 2021-2024 are also start years arithmetically.
-# The five-year minimum is an analysis choice to focus on longer windows;
-# the sensitivity conclusions below therefore do not cover 2021-2024 starts.
-# The rule is a named constant so the cutoff is explicit.
-MIN_WINDOW <- 5
-LAST_START <- 2025 - MIN_WINDOW
-
-sensitivity <- do.call(rbind, lapply(2002:LAST_START, top3_for))
-
-# Split on the separator rather than substring-matching: no region name is a
-# substring of another today, but a match that silently over-counts if that
-# ever changed is not the kind of code this repository argues for.
-in_top3 <- function(name) {
-  sum(vapply(strsplit(sensitivity$top3, ", ", fixed = TRUE),
-             function(x) name %in% x, logical(1)))
-}
+excluded_in <- function(y0, y1) and_list(excluded_regions(y0, y1))
+sensitivity <- do.call(rbind, lapply(START_YEAR:LAST_START, function(y0)
+  top3_for(regions, y0, END_YEAR)))
+end_sensitivity <- do.call(rbind, lapply(FIRST_END:END_YEAR, function(y1)
+  top3_for(regions, START_YEAR, y1)))
+end_sensitivity$excluded <- vapply(end_sensitivity$end, function(y1)
+  excluded_in(START_YEAR, y1), character(1))
+stopifnot("the prose says the share stays above half for every end year" =
+            all(end_sensitivity$share > 50))
 
 # Design-matched comparison: census start, census end.
-matched <- top3_for(2002, 2022)
+matched <- top3_for(regions, START_YEAR, LAST_CENSUS)
+matched_top3 <- strsplit(matched$top3, ", ", fixed = TRUE)[[1]]
+dropped_in_matched <- setdiff(top3$region, matched_top3)
+added_in_matched   <- setdiff(matched_top3, top3$region)
+matched_gain <- setdiff(excluded, excluded_regions(START_YEAR, LAST_CENSUS))
+stopifnot("the matched-window prose assumes the top three differ" =
+            length(added_in_matched) == 1L)
 
-# Suppression rate --------------------------------------------------------
-supp <- regions |>
-  group_by(year, is_census_year) |>
-  summarise(cells = n(), suppressed_cells = sum(suppressed), .groups = "drop") |>
-  mutate(rate = 100 * suppressed_cells / cells)
+# Withheld and absent cells -----------------------------------------------
+# Every expected region-class-year cell, published, flagged or absent. Before
+# 2012 the export omits cells rather than flagging them.
+grid <- cell_status_grid(regions, EXPECTED_YEARS, unname(LIVESTOCK), REGION_NAMES)
+cells_per_year <- length(REGION_NAMES) * length(LIVESTOCK)
+status_by_year <- grid |>
+  count(year, status) |>
+  mutate(rate = 100 * n / cells_per_year)
+withheld_rate <- grid |>
+  group_by(year) |>
+  summarise(rate = 100 * sum(status %in% c("C", "S")) / n(), .groups = "drop")
 
-# The two flags mean different things and are counted separately. "C" is the
-# confidentiality flag Stats NZ used before 2017; "S" is quality suppression.
-supp_by_code <- regions |>
-  filter(suppressed) |>
-  count(year, suppression_code) |>
-  left_join(select(supp, year, cells), by = "year") |>
-  mutate(
-    rate  = 100 * n / cells,
-    label = ifelse(suppression_code == "c",
-                   "C - confidentiality (pre-2017 method)",
-                   "S - quality suppression")
-  )
+c_years <- sort(unique(grid$year[grid$status == "C"]))
+s_years <- sort(unique(grid$year[grid$status == "S"]))
+absent_years <- sort(unique(grid$year[grid$status == "Absent"]))
+first_flag_year <- min(c(c_years, s_years))
+stopifnot("the absent-row narrative assumes rows stop being absent when flags start" =
+            max(absent_years) < first_flag_year)
+peak_row <- withheld_rate |> slice_max(rate, n = 1)
+recent <- recent_above(withheld_rate$rate, 10, 4)
+stopifnot("the prose says S appears every year from 2017" =
+            all(2017:END_YEAR %in% s_years))
+n_pass <- sum(results$fails == 0)
+number_word <- function(n) c("None", "One", "Two", "Three", "Four", "Five")[n + 1]
 
-c_years <- sort(unique(supp_by_code$year[supp_by_code$suppression_code == "c"]))
-s_years <- sort(unique(supp_by_code$year[supp_by_code$suppression_code == "s"]))
+# Class-years whose region row is incomplete although nothing is flagged: the
+# only way a cell could be missing before 2012.
+unflagged_gaps <- residual_tiers |>
+  filter(regions_present < N_REGIONS, regions_suppressed == 0)
+gap_nonzero <- sum(unflagged_gaps$residual != 0)
 
-# The same check across every livestock code in the raw extract, not just the
-# three used here, so the claim about the C flag is tested on the whole file.
-all_c_years <- all_suppression_years("c")
+# The 2012 confidentiality cells across every livestock code in the extract,
+# and how many of the ten earlier years each one was absent from the export.
+c_2012 <- raw |>
+  filter(year_agr_agr_003 == "2012", obs_status == "c",
+         !area_agr_agr_003 %in% AREA_AGGREGATES) |>
+  distinct(livestock_agr_agr_003, area_agr_agr_003)
+earlier <- raw |>
+  filter(year_agr_agr_003 %in% as.character(START_YEAR:2011)) |>
+  count(livestock_agr_agr_003, area_agr_agr_003, name = "present")
+c_2012 <- c_2012 |>
+  left_join(earlier, by = c("livestock_agr_agr_003", "area_agr_agr_003")) |>
+  mutate(present = coalesce(present, 0L),
+         absent  = length(START_YEAR:2011) - present)
+
+s_census <- grid |> filter(status == "S", year %in% CENSUS_YEARS)
+s_by_year <- grid |> filter(status == "S") |> count(year)
+s_count <- function(y) sum(s_by_year$n[s_by_year$year == y])
+s_census_regions <- sort(unique(s_census$region))
+
+# West Coast against the Chathams, by the metric the sentence names.
+sheep_mean <- regions |>
+  filter(livestock_class == "Sheep", !is.na(head)) |>
+  group_by(region) |>
+  summarise(mean_head = mean(head), years = n(), .groups = "drop") |>
+  arrange(mean_head)
+
+# Codelist nesting, computed from the extract rather than typed.
+codes_2024 <- raw |>
+  filter(area_agr_agr_003 == "20", year_agr_agr_003 == "2024") |>
+  mutate(head = as.numeric(obs_value))
+all_codes_2024   <- sum(codes_2024$head, na.rm = TRUE)
+three_codes_2024 <- sum(codes_2024$head[codes_2024$livestock_agr_agr_003 %in%
+                                          names(LIVESTOCK)])
+
+# Residual tiers -----------------------------------------------------------
+off_tier <- residual_tiers |> filter(tier == "Fully published, off by a few head")
+stopifnot("the tier prose needs every tier to be populated" =
+            nrow(off_tier) > 0, any(residual_tiers$tier == "Exact"),
+          any(residual_tiers$tier == "Incomplete region row" & residual_tiers$residual != 0))
+fp_recent <- residual_tiers |> filter(fully_published, year >= 2017)
+next_smallest <- min(abs(residual_tiers$residual[
+  residual_tiers$tier == "Incomplete region row" & residual_tiers$residual != 0]))
+
+# Key figures, for the README ---------------------------------------------
+# The README repeats a handful of these numbers. Each is written here with the
+# exact phrase the README must contain, and tests/test-readme-figures.R fails
+# if the README stops containing any of them, so the landing page cannot drift
+# from the report the way it once did.
+kf <- function(name, value, phrase) data.frame(name = name, value = value, readme = phrase)
+key_figures <- rbind(
+  kf("national_fall", fmt(nat_drop / 1e6, 1), sprintf("about %s million head", fmt(nat_drop / 1e6, 1))),
+  kf("national_fall_pct", fmt(nat_pct, 0), sprintf("(%s percent)", fmt(nat_pct, 0))),
+  kf("sampling_half_width", fmt(half_width / 1e6, 1), sprintf("±%s million", fmt(half_width / 1e6, 1))),
+  kf("measurable_regions", measurable, sprintf("%d regions measurable at both ends", measurable)),
+  kf("top3", headline$top3, and_list(top3$region)),
+  kf("top3_share", fmt(top3_share, 0), sprintf("**%s percent** of the fall", fmt(top3_share, 0))),
+  kf("top3_base_share", fmt(top3_base, 1), sprintf("%s percent of the %d flock", fmt(top3_base, 1), START_YEAR)),
+  kf("fourth", fourth$region, sprintf("%s and %s", top3$region[3], fourth$region)),
+  kf("third_gap", fmt(headline$third_gap), sprintf("%s head apart", fmt(headline$third_gap))),
+  kf("dairy_rise", fmt(dairy_rise / 1e6, 2),
+     sprintf("+%s million (%s percent)", fmt(dairy_rise / 1e6, 2), fmt(100 * dairy_rise / dairy_start, 1))),
+  kf("dairy_fall", fmt(dairy_fall / 1e6, 2), sprintf("−%s million", fmt(dairy_fall / 1e6, 2))),
+  kf("dairy_net", fmt(dairy_gain / 1e3, 0), sprintf("%s thousand net", fmt(dairy_gain / 1e3, 0))),
+  kf("dairy_count_early", paste(win_early$fell, "of", win_early$n),
+     sprintf("**%d of %d** regions over %d–%d", win_early$fell, win_early$n, START_YEAR, DAIRY_PEAK_YEAR)),
+  kf("dairy_count_late", paste(win_late$fell, "of", win_late$n),
+     sprintf("**%d of %d** over %d–%d", win_late$fell, win_late$n, DAIRY_PEAK_YEAR, END_YEAR)),
+  kf("dairy_count_full", paste(win_full$fell, "of", win_full$n),
+     sprintf("%d of %d over the whole period", win_full$fell, win_full$n)),
+  kf("matched_fall", fmt(matched$fall / 1e6, 1), sprintf("%s million head", fmt(matched$fall / 1e6, 1))),
+  kf("matched_share", fmt(matched$share, 1), sprintf("top three at %s percent", fmt(matched$share, 1))),
+  kf("top3_national_share", fmt(top3_national_share, 1),
+     sprintf("%s percent against the published national fall", fmt(top3_national_share, 1))),
+  kf("national_gap_pct", fmt(national_gap_pct, 2), sprintf("%s percent larger", fmt(national_gap_pct, 2))),
+  kf("excluded", and_list(excluded), sprintf("%s are withheld in %d", and_list(excluded), END_YEAR)),
+  kf("census_rule_fails", results$fails[results$rule == "census_year_reported"],
+     sprintf("fires %d times", results$fails[results$rule == "census_year_reported"])),
+  kf("tiers", paste(table(residual_tiers$tier)[c("Exact", "Fully published, off by a few head",
+                                                  "Incomplete region row")], collapse = "/"),
+     sprintf("%d exact, %d off by at most %d head, %d incomplete",
+             sum(residual_tiers$tier == "Exact"), nrow(off_tier),
+             max(abs(off_tier$residual)),
+             sum(residual_tiers$tier == "Incomplete region row"))),
+  kf("unflagged_gap_nonzero", paste(gap_nonzero, "of", nrow(unflagged_gaps)),
+     sprintf("%d of the %d", gap_nonzero, nrow(unflagged_gaps))),
+  kf("sensitivity_range",
+     paste0(fmt(min(sensitivity$share), 0), "–", fmt(max(sensitivity$share), 0)),
+     sprintf("%s–%s percent", fmt(min(sensitivity$share), 0), fmt(max(sensitivity$share), 0)))
+)
+readr::write_csv(key_figures, "outputs/key-figures.csv")
 ```
 
 ::: {.callout-note appearance="simple"}
-Source data: Stats NZ, *Agricultural production statistics*, licensed by Stats NZ
-for re-use under the Creative Commons Attribution 4.0 International licence.
+This work is based on Stats NZ's data (*Agricultural production statistics*,
+table `AGR_AGR_003`), licensed by Stats NZ for re-use under the [Creative
+Commons Attribution 4.0 International
+licence](https://creativecommons.org/licenses/by/4.0/). The tables and figures
+here are aggregated and reshaped from that data. Version `r VERSION`; see the
+[changelog](https://github.com/Kenchch/nz-sheep-decline-by-region/blob/main/CHANGELOG.md)
+for what changed between versions.
 :::
 
 ## The short version
 
-New Zealand's sheep flock fell by **`r fmt(nat_drop/1e6, 2)` million** between June
-2002 and June 2025, a drop of `r fmt(nat_pct, 0)` percent.
+New Zealand's sheep flock fell by **about `r fmt(nat_drop/1e6, 1)` million** head
+between June `r START_YEAR` and June `r END_YEAR`, a drop of `r fmt(nat_pct, 0)`
+percent. The `r END_YEAR` figure is a sample-survey estimate: at Stats NZ's
+published relative sampling error of `r RSE_2025 * 100` percent, the end point alone
+is uncertain by about ±`r fmt(half_width/1e6, 1)` million head.
 
-Three points, each with one number.
+Three points.
 
-- Three regions — `r paste(top3$region, collapse = ", ")` — account for
-  **`r fmt(top3_share, 0)` percent** of the fall measured across the
-  `r measurable` regions where both endpoints are published.
-- Over the same 23 years the national dairy herd rose by
-  **`r fmt(dairy_gain/1e3, 0)` thousand** cattle net, while beef cattle *fell* by
+- The fall is spread across the country roughly in proportion to where the sheep
+  were. `r and_list(top3$region)` held `r fmt(top3_base, 1)` percent of the
+  `r START_YEAR` flock in the `r measurable` regions where both endpoints are
+  published, and account for `r fmt(top3_share, 0)` percent of the fall there —
+  `r fmt(top3_share - top3_base, 1)` percentage points more than their size
+  alone would give. Of the three, only `r and_list(over_share)` fell by more than
+  their share of the flock.
+  `r top3$region[3]` is third by the narrowest of margins: it lost
+  `r fmt(-top3$change[3])` head against `r fourth$region`'s
+  `r fmt(-fourth$change)`, a difference of `r fmt(headline$third_gap)` head.
+- Over the same `r END_YEAR - START_YEAR` years the national dairy herd rose by
+  **`r fmt(dairy_gain/1e3, 0)` thousand** head net, while beef cattle *fell* by
   `r fmt(-beef_gain/1e3, 0)` thousand. The dairy net hides a
-  `r fmt(dairy_rise/1e6, 2)` million rise to 2014 and a
+  `r fmt(dairy_rise/1e6, 2)` million rise to `r DAIRY_PEAK_YEAR` and a
   `r fmt(dairy_fall/1e6, 2)` million fall since.
-- Dairy fell **alongside** sheep in `r n_dairy_falls` of the `r n_dairy_both`
-  regions with both endpoints published for 2002–2025; over 2002–2014 it fell in
-  only `r win_early$fell` of `r win_early$n`, and over 2014–2025 in
-  `r win_late$fell` of `r win_late$n`. The direction depends on the window, which
-  is why all three are reported below.
+- Whether dairy fell *alongside* sheep depends on the window: in
+  `r win_full$fell` of the `r win_full$n` regions with sheep and dairy published at
+  both ends for `r START_YEAR`–`r END_YEAR`, in only `r win_early$fell` of
+  `r win_early$n` for `r START_YEAR`–`r DAIRY_PEAK_YEAR`, and in
+  `r win_late$fell` of `r win_late$n` for `r DAIRY_PEAK_YEAR`–`r END_YEAR`.
+  The regional counts for all three windows are in
+  [Three endpoint windows](#three-endpoint-windows).
 
-The three-region share uses the measurable regional fall as its denominator.
+The regional shares use the measurable regional fall as their denominator.
 Against the published national fall, the same three regions account for
-`r sprintf("%.1f", top3_national_share)` percent. The national fall is
-`r sprintf("%.2f", 100 * (nat_drop + decline_sum) / -decline_sum)` percent
-larger than the measurable regional fall; Auckland and Nelson have withheld
-2025 endpoints.
+`r fmt(top3_national_share, 1)` percent. The national fall is
+`r fmt(national_gap_pct, 2)` percent larger than the measurable regional fall
+because `r and_list(excluded)` have withheld `r END_YEAR` values. No
+uncertainty is attached to the regional shares: Stats NZ does not publish
+regional sampling errors in this table, so rankings separated by less than the
+national margin above are not distinguished here.
+
+::: {.callout-tip collapse="true"}
+## Terms used on this page
+
+- **Head** — one animal. Every count here is a head count, not a stock unit.
+- **Class** — one of the three livestock totals used: sheep (code 6731), dairy
+  cattle (7193) and beef cattle (7077).
+- **Class-year** — one class in one year: `r length(LIVESTOCK)` classes ×
+  `r length(EXPECTED_YEARS)` years = `r length(LIVESTOCK) * length(EXPECTED_YEARS)`.
+- **Withheld** — a cell present in the export with no value and a flag: `C`
+  (confidentiality) or `S` (quality suppression). The data column for this is
+  called `suppressed`.
+- **Absent** — a region-class-year with no row in the export at all.
+- **Endpoint** — the first or last year of a comparison window.
+- **Measurable region** — a region published (neither withheld nor absent) at
+  both endpoints of the window in question.
+- **Residual** — the published national total minus the sum of the published
+  regions, for one class-year.
+- **Tier** — a class-year's residual classified by whether its region row is
+  complete; see [Data quality checks](#data-quality-checks).
+:::
 
 ### What this means
 
 The common story is that sheep farms became dairy farms. In head counts, in this
-table, over the 2002–2025 endpoints, dairy cattle rose by
+table, over the `r START_YEAR`–`r END_YEAR` endpoints, dairy cattle rose by
 **`r fmt(dairy_gain/1e3, 0)` thousand** while sheep fell by
 **`r fmt(nat_drop/1e6, 1)` million**.
 
 That net figure hides the shape of the series. The national dairy herd rose by
-`r fmt(dairy_rise/1e6, 2)` million (`r fmt(100*dairy_rise/dairy_2002, 1)` percent)
-to its 2014 peak and has fallen by `r fmt(dairy_fall/1e6, 2)` million since. Over
-2002–2014, the years of the steepest sheep decline
-(−`r fmt(sheep_early_drop/1e6, 1)` million), the two moved in opposite directions:
-dairy fell in only `r win_early$fell` of the `r win_early$n` regions with both
-endpoints published. Over 2014–2025 both fell, and dairy fell in
-`r win_late$fell` of `r win_late$n`.
+`r fmt(dairy_rise/1e6, 2)` million (`r fmt(100*dairy_rise/dairy_start, 1)` percent)
+to its `r DAIRY_PEAK_YEAR` peak and has fallen by `r fmt(dairy_fall/1e6, 2)` million
+since. Over `r START_YEAR`–`r DAIRY_PEAK_YEAR`, the period with the larger
+absolute sheep decline (−`r fmt(sheep_early_drop/1e6, 1)` million, against
+−`r fmt(sheep_late_drop/1e6, 1)` million since; the annual rates are similar, at
+`r fmt(sheep_early_rate, 2)` and `r fmt(sheep_late_rate, 2)` percent a year), the
+two moved in opposite directions. Over `r DAIRY_PEAK_YEAR`–`r END_YEAR` both fell.
+`r DAIRY_PEAK_YEAR` is where the dairy herd peaks in this sample, and it was
+chosen after looking at the series: splitting at a peak maximises the
+before/after contrast by construction. `r dairy_runner_up$year` is within
+`r fmt(100 * (dairy_peak - dairy_runner_up$head) / dairy_peak, 1)` percent of
+it.
 
 Whether the earlier dairy growth *replaced* the sheep in feed terms cannot be
 settled from head counts — see the stock-unit note below.
-
-The picture changes region by region. Canterbury and Southland did add dairy
-cattle on a scale worth noticing. Most other regions that lost sheep did not, and
-several lost dairy cattle as well. These totals cannot identify what replaced
-sheep farms or how land use changed.
 
 ### What these numbers do not tell you
 
@@ -244,40 +412,44 @@ sheep are not exchangeable units, and this page does not treat them as such.
 
 ```{r}
 #| label: fig-contribution
-#| fig-cap: "Sheep declines across the 15 regions with both endpoints published, June 2002 to June 2025."
-#| fig-alt: "Horizontal bar chart of 15 regions ordered by how many sheep they
-#|   lost between 2002 and 2025. Canterbury is largest at 3.57 million head
-#|   fewer, then Southland at 2.91 million and Otago at 2.27 million; together
-#|   these three make up 54 percent of the measurable regional fall. The remaining
-#|   regions range from Manawatū-Whanganui at 2.25 million down to the Chatham
-#|   Islands at 0.01 million."
-plot_dat <- sheep_change |>
-  filter(!is.na(change)) |>
+#| fig-cap: !expr 'sprintf("Sheep declines across the %d regions with both endpoints published, June %d to June %d. %s are not shown: their %d values are withheld.", measurable, START_YEAR, END_YEAR, and_list(excluded), END_YEAR)'
+#| fig-alt: !expr 'sprintf("Horizontal bar chart of %d regions ordered by how many sheep they lost between %d and %d. %s is largest at %s million head fewer, then %s at %s million and %s at %s million; these three, drawn darker, make up %s percent of the fall across these regions and held %s percent of their %d flock. %s is fourth at %s million. The remaining regions range down to %s at %s million. A tick on each bar marks the fall the region would have had at the %s percent average rate.", measurable, START_YEAR, END_YEAR, top3$region[1], fmt(-top3$change[1]/1e6, 2), top3$region[2], fmt(-top3$change[2]/1e6, 2), top3$region[3], fmt(-top3$change[3]/1e6, 2), fmt(top3_share, 0), fmt(top3_base, 1), START_YEAR, fourth$region, fmt(-fourth$change/1e6, 2), tail(measured$region, 1), fmt(-tail(measured$change, 1)/1e6, 2), fmt(measured_rate, 1))'
+plot_dat <- measured |>
   mutate(region = factor(region, levels = rev(region)),
-         millions = -change / 1e6)
+         millions = -change / 1e6,
+         proportional = measured_rate / 100 * start / 1e6,
+         group = ifelse(region %in% top3$region, "Top three", "Other regions"))
 
 p1 <- ggplot(plot_dat, aes(x = millions, y = region)) +
-  geom_col(fill = "#2d6a4f", width = 0.72) +
-  geom_text(aes(label = sprintf("%.2f", millions)),
+  geom_col(aes(fill = group), width = 0.72) +
+  geom_errorbar(aes(xmin = proportional, xmax = proportional),
+                width = 0.72, colour = "grey15", linewidth = 0.6) +
+  geom_text(aes(x = pmax(millions, proportional), label = sprintf("%.2f", millions)),
             hjust = -0.15, size = 3.1, colour = "grey25") +
   annotate("label", x = max(plot_dat$millions) * 0.45,
-           y = 4.2,
-           label = sprintf("%s\naccount for %.0f%% of the fall",
-                           paste(top3$region, collapse = ", "), top3_share),
-           hjust = 0, size = 3.4, label.size = 0, fill = "grey96", colour = "grey20") +
+           y = nrow(plot_dat) - 8,
+           label = sprintf("%s:\n%.0f%% of the fall across these %d regions,\n%.1f%% of their %d flock",
+                           and_list(top3$region), top3_share, measurable,
+                           top3_base, START_YEAR),
+           hjust = 0, size = 3.2, linewidth = 0, fill = "grey96", colour = "grey20") +
+  scale_fill_manual(values = c("Top three" = "#1b4332", "Other regions" = "#95a5a0"),
+                    guide = "none") +
   scale_x_continuous(labels = label_comma(accuracy = 0.1),
                      expand = expansion(mult = c(0, 0.14))) +
   labs(
-    title    = sprintf("Three regions account for %.0f%% of the measurable regional fall", top3_share),
-    subtitle = "Reduction in sheep numbers, millions of head, June 2002 to June 2025",
+    title    = sprintf("Three regions account for %.0f%% of the measurable regional fall, and held %.1f%% of the flock",
+                       top3_share, top3_base),
+    subtitle = sprintf("Reduction in sheep, millions of head, June %d to June %d. Tick: fall at the %.1f%% average rate",
+                       START_YEAR, END_YEAR, measured_rate),
     x = "Million head fewer", y = NULL,
-    caption  = "Source: Stats NZ, Agricultural production statistics.\nLicensed by Stats NZ for re-use under CC BY 4.0."
+    caption  = paste0(and_list(excluded), " not shown: ", END_YEAR,
+                      " value withheld.\n", CAPTION)
   ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor   = element_blank(),
         plot.title.position = "plot",
-        plot.title    = element_text(face = "bold"),
+        plot.title    = element_text(face = "bold", size = 12),
         plot.caption  = element_text(colour = "grey45", hjust = 0, size = 8))
 
 ggsave("outputs/figures/01-regional-contribution.png", p1,
@@ -285,37 +457,126 @@ ggsave("outputs/figures/01-regional-contribution.png", p1,
 p1
 ```
 
-Two regions are missing from that chart. Auckland and Nelson have a suppressed
-2025 value, so no change can be computed for them. They are excluded and counted,
-never imputed and never set to zero.
+`r and_list(excluded)` are missing from that chart: each has a withheld
+`r END_YEAR` value, so no change can be computed for them. They are excluded
+and counted, never imputed and never set to zero.
+
+By percentage rather than head, the steepest declines are elsewhere:
+`r and_list(sprintf("%s (%s percent)", steepest$region, fmt(-steepest$pct, 1)))`,
+against `r fmt(measured_rate, 1)` percent across all measurable regions.
+
+The share of the fall taken by the three largest declines stays above half for
+every end year tested below; which three they are does not stay the same. `r top3$region[3]` and `r fourth$region` are
+all but tied, and the census-to-census window below puts
+`r and_list(added_in_matched)` in the top three in place of
+`r and_list(dropped_in_matched)`.
+
+```{r}
+#| label: tbl-share-vs-size
+#| tbl-cap: !expr 'sprintf("Each measurable region''s share of the %d–%d sheep fall against its share of the %d flock.", START_YEAR, END_YEAR, START_YEAR)'
+measured |>
+  transmute(Region = region,
+            `Share of fall` = sprintf("%.1f%%", fall_share),
+            `Share of flock` = sprintf("%.1f%%", base_share),
+            `Difference (points)` = sprintf("%+.1f", excess_pp),
+            `Own decline` = sprintf("%.1f%%", -pct)) |>
+  kable(align = "lrrrr")
+```
 
 ## Did dairy replace the sheep?
+
+In head counts, among the five regions that lost the most sheep, only
+`r names(dairy_ratio)[1]` and, to a lesser extent, `r names(dairy_ratio)[2]`
+added dairy cattle in numbers that register against their sheep losses:
+`r fmt(dairy_ratio[1], 1)` and `r fmt(dairy_ratio[2], 1)` dairy cattle per 100
+sheep lost, against at most `r fmt(dairy_ratio[3], 1)` in the other three.
+Nationally, dairy grew until `r DAIRY_PEAK_YEAR` and has fallen since. Whether
+dairy replaced sheep in feed or land terms cannot be answered from this table.
+
+```{r}
+#| label: fig-national
+#| fig-cap: !expr 'sprintf("National sheep, dairy cattle and beef cattle, indexed to %d = 100, June %d to June %d.", START_YEAR, START_YEAR, END_YEAR)'
+#| fig-alt: !expr 'sprintf("Three line panels, one per class, each indexed to %d equals 100. Sheep falls throughout, to %s by %d. Dairy cattle rises to %s at its %d peak, marked by a dashed line, then falls to %s by %d. Beef cattle ends at %s. Census years are marked with filled points.", START_YEAR, fmt(100 * nat_end / nat_start, 0), END_YEAR, fmt(100 * dairy_peak / dairy_start, 0), DAIRY_PEAK_YEAR, fmt(100 * nat_dairy$head[nat_dairy$year == END_YEAR] / dairy_start, 0), END_YEAR, fmt(100 * (1 + beef_gain / national(d)$head[national(d)$livestock_class == "Beef cattle" & national(d)$year == START_YEAR]), 0))'
+index_dat <- national(d) |>
+  group_by(livestock_class) |>
+  mutate(index = 100 * head / head[year == START_YEAR]) |>
+  ungroup() |>
+  mutate(livestock_class = factor(livestock_class,
+                                  levels = c("Sheep", "Dairy cattle", "Beef cattle")))
+
+p4 <- ggplot(index_dat, aes(x = year, y = index)) +
+  geom_hline(yintercept = 100, colour = "grey70") +
+  geom_vline(xintercept = DAIRY_PEAK_YEAR, colour = "grey50", linetype = "dashed") +
+  geom_line(colour = "#2d6a4f", linewidth = 0.9) +
+  geom_point(data = function(x) filter(x, is_census_year),
+             colour = "#2d6a4f", size = 2) +
+  facet_wrap(~ livestock_class, nrow = 1) +
+  scale_x_continuous(breaks = c(START_YEAR, CENSUS_YEARS[-1], END_YEAR)) +
+  labs(
+    title    = sprintf("Sheep fell %s%% overall; dairy rose to its %d peak and has fallen since",
+                       fmt(nat_pct, 0), DAIRY_PEAK_YEAR),
+    subtitle = sprintf("National head count, index %d = 100. Points: census years. Dashed line: %d dairy peak",
+                       START_YEAR, DAIRY_PEAK_YEAR),
+    x = NULL, y = sprintf("Index, %d = 100", START_YEAR),
+    caption  = CAPTION
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title.position = "plot",
+        plot.title   = element_text(face = "bold"),
+        plot.caption = element_text(colour = "grey45", hjust = 0, size = 8))
+
+ggsave("outputs/figures/04-national-index.png", p4,
+       width = 9, height = 4.5, dpi = 200, bg = "white")
+p4
+```
 
 ### Three endpoint windows
 
 ```{r}
+#| label: tbl-window-counts
+#| tbl-cap: "Regions in which dairy cattle fell, by window, among regions with sheep and dairy published at both ends."
+window_counts |>
+  transmute(Window = paste(y0, y1, sep = "–"),
+            `Dairy fell` = paste(fell, "of", n),
+            `Not measurable` = excluded,
+            !!sprintf("Dairy fell, the %d regions measurable in all three", length(common)) :=
+              paste(common_fell, "of", length(common))) |>
+  kable(align = "lrlr")
+```
+
+Each window admits the regions published at both of its own endpoints, so the
+three counts are not over the same regions; the last column repeats them on the
+`r length(common)` regions measurable in all three.
+`r if (chathams_zero_late) sprintf("The %d–%d count includes the Chatham Islands, which had no dairy cattle at either end and so could not have fallen.", DAIRY_PEAK_YEAR, END_YEAR) else ""`
+
+```{r}
 #| label: tbl-dairy-windows
-dairy_windows |>
+#| tbl-cap: "Published national totals for three comparison windows."
+class_windows |>
   transmute(Window = paste(start_year, end_year, sep = "–"),
             Design = paste(start_design, end_design, sep = " → "),
             Class = livestock_class,
             `Start head` = fmt(start_head), `End head` = fmt(end_head),
-            `Change (head)` = fmt(change_head),
+            `Change (head)` = sprintf("%s%s", ifelse(change_head > 0, "+", ""),
+                                      fmt(change_head)),
             `Change (%)` = sprintf("%+.1f", change_pct)) |>
   kable(align = "lllrrrr")
 ```
 
 These are published **national totals**, not sums with missing regions filled
-with zero. Splitting at 2014 separates the earlier dairy expansion from the
-later period; the 2002–2022 window compares two censuses. The other windows
-include sample-survey estimates, so their differences also carry sampling error.
+with zero. Splitting at `r DAIRY_PEAK_YEAR` separates the earlier dairy expansion
+from the later period; the `r START_YEAR`–`r LAST_CENSUS` window compares two
+censuses. The other windows include sample-survey estimates, so their
+differences also carry sampling error.
 
 A head of dairy cattle and a sheep do not require the same feed, so a head-count
 comparison is not a feed-equivalent one. This analysis uses total-head codes
-only: total sheep (lc6731), total dairy cattle (lc7193) and total beef cattle
-(lc7077). The conclusion above holds in head counts. Whether it also holds in
-feed terms — stock units — is not asserted here either way: a class-specific
-stock-unit comparison was not attempted.
+only: total sheep (6731), total dairy cattle (7193) and total beef cattle
+(7077). The comparisons in this section are in head counts. Whether they also
+hold in feed terms — stock units — is not asserted here either way: a
+class-specific stock-unit comparison was not attempted.
 
 Doing one properly needs two things this analysis does not have. It needs the
 class-specific codes rather than the totals, because applying one adult-cow or
@@ -327,41 +588,41 @@ not a lookup.
 
 ```{r}
 #| label: fig-substitution
-#| fig-cap: "Change in sheep, dairy cattle and beef cattle in the five regions that lost the most sheep."
-#| fig-alt: "Dot chart for the five regions with the largest sheep declines.
-#|   In each region the sheep marker sits far to the left of zero, between 1.3
-#|   and 3.6 million head fewer, while the dairy and beef cattle markers sit
-#|   close to zero. Canterbury has the largest dairy gain at about 795 thousand
-#|   and Southland about 281 thousand. Both cattle classes decline in Hawke's
-#|   Bay; Manawatū-Whanganui loses beef cattle but gains about 19 thousand dairy cattle."
+#| fig-cap: !expr 'sprintf("Change in sheep, dairy cattle and beef cattle in the five regions that lost the most sheep, June %d to June %d. Head counts are not feed-equivalent.", START_YEAR, END_YEAR)'
+#| fig-alt: !expr 'sprintf("Dot chart for the five regions with the largest sheep declines, in millions of head. In each region the sheep marker sits between %s and %s million head below zero. The dairy and beef markers are much closer to zero: the largest dairy gains are %s at %s million and %s at %s million. %s lost at least one cattle class as well as sheep.", fmt(min(-substitution$Sheep[substitution$region %in% top5_regions])/1e6, 2), fmt(max(-substitution$Sheep[substitution$region %in% top5_regions])/1e6, 2), names(dairy_ratio)[1], fmt(substitution$`Dairy cattle`[substitution$region == names(dairy_ratio)[1]]/1e6, 2), names(dairy_ratio)[2], fmt(substitution$`Dairy cattle`[substitution$region == names(dairy_ratio)[2]]/1e6, 2), and_list(lost_cattle_class))'
+classes <- c("Sheep", "Dairy cattle", "Beef cattle")
+offset  <- c("Sheep" = 0.22, "Dairy cattle" = 0, "Beef cattle" = -0.22)
 dumb <- substitution |>
   filter(region %in% top5_regions) |>
   pivot_longer(-region, names_to = "livestock_class", values_to = "change") |>
   mutate(
-    region = factor(region, levels = rev(top5_regions)),
-    livestock_class = factor(livestock_class,
-                             levels = c("Sheep", "Dairy cattle", "Beef cattle")),
-    thousands = change / 1e3
+    y = match(region, rev(top5_regions)) + offset[livestock_class],
+    livestock_class = factor(livestock_class, levels = classes),
+    millions = change / 1e6
   )
 
-p2 <- ggplot(dumb, aes(x = thousands, y = region)) +
+p2 <- ggplot(dumb, aes(x = millions, y = y)) +
   geom_vline(xintercept = 0, colour = "grey60") +
-  geom_line(aes(group = region), colour = "grey75", linewidth = 0.8) +
+  geom_segment(aes(x = 0, xend = millions, yend = y, colour = livestock_class),
+               linewidth = 0.6, alpha = 0.6) +
   # Shape as well as colour, so colour is not the only channel carrying the
   # distinction. The green and the red-brown are close under red-green colour
   # vision deficiency; WCAG 1.4.1 asks that colour not be used alone.
-  geom_point(aes(colour = livestock_class, shape = livestock_class), size = 3.4) +
+  geom_point(aes(colour = livestock_class, shape = livestock_class), size = 3.2) +
   scale_colour_manual(values = c("Sheep" = "#2d6a4f",
                                  "Dairy cattle" = "#c1666b",
                                  "Beef cattle" = "#4a6fa5"), name = NULL) +
   scale_shape_manual(values = c("Sheep" = 16, "Dairy cattle" = 17,
                                 "Beef cattle" = 15), name = NULL) +
-  scale_x_continuous(labels = label_comma(), expand = expansion(mult = 0.07)) +
+  scale_y_continuous(breaks = seq_along(top5_regions), labels = rev(top5_regions)) +
+  scale_x_continuous(labels = label_comma(accuracy = 0.1),
+                     expand = expansion(mult = 0.07)) +
   labs(
-    title    = "Where sheep left, cattle mostly did not arrive in comparable numbers",
-    subtitle = "Change in animals, thousands of head, June 2002 to June 2025, five largest sheep declines",
-    x = "Thousand head, change over the period", y = NULL,
-    caption  = "Source: Stats NZ, Agricultural production statistics.\nLicensed by Stats NZ for re-use under CC BY 4.0."
+    title    = sprintf("Change in head counts, %d–%d, five largest sheep declines",
+                       START_YEAR, END_YEAR),
+    subtitle = "Millions of head. Head counts are not feed-equivalent",
+    x = "Million head, change over the period", y = NULL,
+    caption  = CAPTION
   ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid.major.y = element_blank(),
@@ -380,13 +641,15 @@ Stated plainly, per hundred sheep lost:
 
 ```{r}
 #| label: tbl-substitution
+#| tbl-cap: "Cattle gained (+) or lost (−) per 100 sheep lost, five largest sheep declines, ordered by sheep lost."
 substitution |>
   filter(region %in% top5_regions) |>
+  arrange(Sheep) |>
   transmute(
     Region = region,
     `Sheep lost` = fmt(-Sheep),
-    `Dairy cattle per 100 sheep lost` = sprintf("%+.1f", -100 * `Dairy cattle` / Sheep),
-    `Beef cattle per 100 sheep lost`  = sprintf("%+.1f", -100 * `Beef cattle` / Sheep)
+    `Dairy cattle per 100 sheep lost` = sprintf("%+.1f", per_100(region, "Dairy cattle")),
+    `Beef cattle per 100 sheep lost`  = sprintf("%+.1f", per_100(region, "Beef cattle"))
   ) |>
   kable(align = "lrrr")
 ```
@@ -394,12 +657,12 @@ substitution |>
 Canterbury accounts for by far the largest absolute dairy increase of any region,
 at `r fmt(substitution$"Dairy cattle"[substitution$region == "Canterbury"]/1e3)`
 thousand head. It is not, however, the highest *ratio*: West Coast gained
-`r sprintf("%.0f", -100 * substitution$"Dairy cattle"[substitution$region == "West Coast"] / substitution$Sheep[substitution$region == "West Coast"])`
+`r fmt(per_100("West Coast", "Dairy cattle"), 0)`
 dairy cattle per 100 sheep lost, on a base so small — under
 `r fmt(-substitution$Sheep[substitution$region == "West Coast"]/1e3)` thousand
 sheep — that the ratio says more about the denominator than about land use.
-`r lost_cattle_class` lost sheep and at least one cattle class. A negative figure in
-this table means that class of animal declined as well.
+`r and_list(lost_cattle_class)` lost sheep and at least one cattle class. A
+negative figure in this table means that class of animal declined as well.
 
 ## Data quality checks
 
@@ -407,15 +670,26 @@ Five rules run over the analysis table on every render.
 
 ```{r}
 #| label: tbl-validation
-kable(results, align = "lrrrr")
+#| tbl-cap: "Validation rules on the analysis table. Items: cells checked. nNA: cells where the rule could not be evaluated."
+kable(results, align = "lrrrr",
+      col.names = c("Rule", "Items", "Passes", "Fails", "Not evaluable (nNA)"))
 ```
 
-Four pass. The fifth fires `r results$fails[results$rule == "census_year_reported"]`
+`r number_word(n_pass)` pass. The fifth fires `r results$fails[results$rule == "census_year_reported"]`
 times, and that is a finding rather than a defect. `census_year_reported` asserts
 that a census year — a full-coverage collection, with no sampling error to
 exceed a threshold — should not have withheld cells. It is wrong. Census years do
 withhold cells, because withholding is about confidentiality and imputation
-quality, not about coverage. The rule earns its place by being falsified.
+quality, not about coverage. The rule earns its place by being falsified. It sees
+only flagged cells, so a cell absent from the export is invisible to it:
+`r results$fails[results$rule == "census_year_reported"]` is a lower bound on
+census-year withholding, not a count of it.
+
+Three of the four passing rules cannot fail on anything the loader returns,
+because ingestion already stops on a negative count, a value without a flag or a
+flag without a value, and an unmapped region code. On the real data their zeroes
+restate the ingestion contract; the corrupted copy below is what shows that the
+rules themselves fire.
 
 ### Showing that the rules can fail
 
@@ -427,6 +701,7 @@ label deleted, and one duplicated row.
 
 ```{r}
 #| label: tbl-validation-corrupted
+#| tbl-cap: "The same rules on the real data and on a deliberately corrupted copy."
 results |>
   select(rule, `real data` = fails) |>
   left_join(select(results_corrupted, rule, `corrupted copy` = fails),
@@ -439,18 +714,18 @@ Each corruption moves exactly one rule. `no_duplicate_cells` moves by two
 because a duplicate makes both members of the pair non-unique, and
 `census_year_reported` moves from `r results$fails[results$rule == "census_year_reported"]`
 to `r results_corrupted$fails[results_corrupted$rule == "census_year_reported"]`
-because it already fails nine times on the real data. The corrupted rows are
-chosen at distinct indices and the function asserts as much, so no single
-corruption can be counted twice.
-
-That is what makes the left-hand column mean something: the zeroes are the
-result of rules that demonstrably fire when there is something to fire at.
+because it already fails
+`r results$fails[results$rule == "census_year_reported"]` times on the real data.
+The corrupted rows are chosen at distinct indices and the function asserts as
+much, so no single corruption can be counted twice.
 
 The more interesting result is in the reconciliation: the published national
 total against the sum of the regions.
 
 ```{r}
 #| label: tbl-recon
+#| tbl-cap: "Sheep: sum of published regions against the published national total, by year."
+c_flag_sheep_years <- grid$year[grid$status == "C" & grid$livestock_class == "Sheep"]
 reconciliation |>
   filter(livestock_class == "Sheep") |>
   left_join(select(coverage, year, regions_present, regions_suppressed, regions_absent), by = "year") |>
@@ -458,30 +733,44 @@ reconciliation |>
     Year = year,
     `Region rows present` = regions_present,
     `Region rows absent` = regions_absent,
-    `Regions suppressed` = regions_suppressed,
+    `Regions withheld` = regions_suppressed,
     `Sum of regions` = fmt(region_sum),
     `Published national` = fmt(published),
-    `Residual (head)` = fmt(residual),
-    `Residual %` = sprintf("%.3f", residual_pct)
+    `Residual (head)` = ifelse(year %in% c_flag_sheep_years,
+                               "not shown (C flag)", fmt(residual)),
+    `Residual %` = ifelse(year %in% c_flag_sheep_years, "",
+                          ifelse(residual != 0 & abs(residual_pct) < 0.001,
+                                 "<0.001", sprintf("%.3f", residual_pct)))
   ) |>
   kable(align = "rrrrrrrr")
 ```
 
-There are 17 expected regional rows for sheep in each year. An **absent row**
-is different from a present row whose value is suppressed. The exported coverage
-table records both: `suppression_rate` divides suppressed rows by present rows,
-and `suppression_rate_all_regions` divides them by 17. Neither treats absent
-rows as suppressed or as zero-valued livestock counts.
+There are `r N_REGIONS` expected regional rows for sheep in each year. An
+**absent row** is different from a present row whose value is withheld. The
+exported coverage table records both: `suppression_rate` divides withheld rows
+by present rows, and `suppression_rate_all_regions` divides them by
+`r N_REGIONS`. Neither treats absent rows as withheld or as zero-valued
+livestock counts.
 
 The residual column is reported in head as well as in percent on purpose. At a
 base of 30 million, a percentage rounded to three decimal places renders a
 discrepancy of one animal as `0.000`, which would let the table appear to
-support a stronger claim than the numbers do.
+support a stronger claim than the numbers do; non-zero residuals below that
+resolution are shown as `<0.001`.
+
+A residual is arithmetic on published cells, but when a single region is
+withheld it equals that region's value to within a head or two. Stats NZ does not
+apply secondary suppression to the national totals, so this is a property of
+the published table; the page still does not report residuals for class-years
+carrying the confidentiality flag `C`, or describe any residual as a named
+region's value. `outputs/reconciliation.csv` carries every residual, because
+the port check compares it.
 
 Across all three livestock classes the residual separates into three tiers.
 
 ```{r}
 #| label: tbl-tiers
+#| tbl-cap: "Every class-year, classified by whether its region row is complete and how closely it reconciles."
 residual_tiers |>
   count(tier, name = "Class-years") |>
   left_join(
@@ -496,34 +785,34 @@ residual_tiers |>
 ```
 
 In `r sum(residual_tiers$tier == "Exact")` of the
-`r sum(residual_tiers$fully_published)` class-years where all seventeen regions
-are published and nothing is withheld, the regions sum to the published national
-total **exactly, to the head**.
+`r sum(residual_tiers$fully_published)` class-years where all `r N_REGIONS`
+regions are published and nothing is withheld, the regions sum to the published
+national total **exactly, to the head**.
 
 Completeness is checked before the residual, so a class-year with an incomplete
-region row is never Exact however well it reconciles. That matters
-here: `r sum(residual_tiers$residual == 0)` class-years reconcile to zero, one
-more than the Exact tier contains, because one class-year with an incomplete
-region row happens to reconcile exactly anyway.
+region row is never Exact however well it reconciles. That matters here:
+`r sum(residual_tiers$residual == 0)` class-years reconcile to zero,
+`r sum(residual_tiers$residual == 0) - sum(residual_tiers$tier == "Exact")`
+more than the Exact tier contains, because
+`r sum(residual_tiers$residual == 0 & residual_tiers$tier != "Exact")`
+class-year with an incomplete region row happens to reconcile exactly anyway.
 
-In `r sum(residual_tiers$tier == "Fully published, off by a few head")` further
-fully-published class-years the residual never exceeds
-`r max(abs(residual_tiers$residual[residual_tiers$tier == "Fully published, off by a few head"]))`
-head, on bases between
-`r fmt(min(residual_tiers$published[residual_tiers$tier == "Fully published, off by a few head"])/1e6, 1)`
-and
-`r fmt(max(residual_tiers$published[residual_tiers$tier == "Fully published, off by a few head"])/1e6, 1)`
-million. I cannot attribute that from published data. It
-is consistent with the national aggregate being rounded independently of the
-regional cells, but I have not been able to source that and do not assert it.
-Nor can I rule out input perturbation: only two fully-published class-years fall
-in 2017 or later, from when perturbation was introduced, which is far too few to
-say anything either way.
+In `r nrow(off_tier)` further fully-published class-years the residual never
+exceeds `r max(abs(off_tier$residual))` head, on bases between
+`r fmt(min(off_tier$published)/1e6, 1)` and
+`r fmt(max(off_tier$published)/1e6, 1)` million. I cannot attribute that from
+published data. It is consistent with the national aggregate being rounded
+independently of the regional cells, but I have not been able to source that
+and do not assert it. It is not input perturbation: every one of these
+class-years falls between `r min(off_tier$year)` and `r max(off_tier$year)`,
+before perturbation was introduced in 2017, and the
+`r nrow(fp_recent)` fully-published class-years from 2017 on have residuals of
+`r and_list(unique(fmt(fp_recent$residual)))`.
 
 Every residual larger than that — and the next smallest is
-`r fmt(min(abs(residual_tiers$residual[residual_tiers$tier == "Incomplete region row" & residual_tiers$residual != 0])))`
-head — belongs to a year whose region row is incomplete, because a region is
-withheld or because a region code is absent from that year's table.
+`r fmt(next_smallest)` head — belongs to a year whose region row is incomplete,
+because a region is withheld or because a region row is absent from that year's
+export.
 
 What the one-head residuals are *not* is an artefact of this analysis. The same
 discrepancy appears between cells that this analysis never sums. Adding the two
@@ -536,6 +825,7 @@ one head in
 
 ```{r}
 #| label: tbl-island
+#| tbl-cap: "Class-years in which the two published island totals do not sum to the published national total."
 island_reconciliation |>
   filter(residual != 0) |>
   transmute(
@@ -553,37 +843,43 @@ island_reconciliation |>
 So the one-head discrepancies are a property of the published table, not of the
 join. That does not explain them, but it does locate them.
 
-### Suppression is not constant over time
+### Withholding is not constant over time
 
 ```{r}
 #| label: fig-suppression
-#| fig-cap: "Share of regional cells withheld, by year and by flag."
-#| fig-alt: "Bar chart of the percentage of regional cells withheld each year
-#|   from 2002 to 2025, coloured by flag. Nothing is withheld from 2002 to
-#|   2011. A single orange bar in 2012 marks the C confidentiality flag at
-#|   about 8 percent. A single blue bar for the S quality-suppression flag
-#|   appears in 2014, none in 2015 or 2016, then a blue bar every year from
-#|   2017 to 2025, peaking near 18 percent in 2021. The census year 2022 is
-#|   lower than the survey years on either side of it."
-p3 <- ggplot(supp_by_code, aes(x = year, y = rate)) +
-  geom_col(aes(fill = label), width = 0.7) +
-  scale_fill_manual(values = c("C - confidentiality (pre-2017 method)" = "#e07a5f",
-                               "S - quality suppression" = "#6c8ea4"), name = NULL) +
-  scale_x_continuous(breaks = seq(2002, 2025, 3), limits = c(2001, 2026)) +
-  scale_y_continuous(labels = label_percent(scale = 1)) +
+#| fig-cap: !expr 'sprintf("Share of the %d expected region-by-class cells each year that are withheld with a flag, or absent from the export.", cells_per_year)'
+#| fig-alt: !expr 'sprintf("Stacked bar chart of the percentage of the %d expected regional cells each year, %d to %d, that are not published, split into three kinds. From %d to %d no cell carries a flag, but between %d and %d cells a year are absent from the export. In %s the C confidentiality flag appears on %d cells. The S quality-suppression flag appears in %s, then every year from %d to %d, peaking at %s percent in %d. Census years are shaded.", cells_per_year, START_YEAR, END_YEAR, min(absent_years), max(absent_years), min(status_by_year$n[status_by_year$status == "Absent"]), max(status_by_year$n[status_by_year$status == "Absent"]), and_list(c_years), sum(grid$status == "C"), and_list(s_years[s_years < 2017]), 2017, END_YEAR, fmt(peak_row$rate, 1), peak_row$year)'
+status_labels <- c("C" = "C flag: confidentiality (before 2017)",
+                   "S" = "S flag: quality suppression",
+                   "Absent" = "Absent from the export: no row")
+p3 <- status_by_year |>
+  filter(status != "Published") |>
+  mutate(status = factor(unname(status_labels[status]), levels = rev(unname(status_labels)))) |>
+  ggplot(aes(x = year, y = rate)) +
+  annotate("rect", xmin = CENSUS_YEARS - 0.5, xmax = CENSUS_YEARS + 0.5,
+           ymin = -Inf, ymax = Inf, fill = "grey93") +
+  geom_col(aes(fill = status), width = 0.7) +
+  scale_fill_manual(values = setNames(c("#e07a5f", "#6c8ea4", "#c9c3b6"),
+                                      unname(status_labels)), name = NULL,
+                    breaks = unname(status_labels)) +
+  scale_x_continuous(breaks = sort(unique(c(START_YEAR, CENSUS_YEARS, END_YEAR))),
+                     limits = c(START_YEAR - 1, END_YEAR + 1)) +
+  scale_y_continuous(labels = label_percent(scale = 1), limits = c(0, NA),
+                     expand = expansion(mult = c(0, 0.05))) +
   guides(fill = guide_legend(nrow = 2)) +
   labs(
-    title    = "Two different flags, two different stories",
-    subtitle = "Percentage of region-by-livestock-class cells withheld: sheep, dairy and beef cattle",
-    x = NULL, y = "Cells suppressed",
-    caption  = "Source: Stats NZ, Agricultural production statistics.\nLicensed by Stats NZ for re-use under CC BY 4.0."
+    title    = "Rows are absent until 2011; confidentiality flags appear in 2012; quality suppression from 2014, peaking in 2021",
+    subtitle = sprintf("Percentage of the %d expected region-by-class cells not published: sheep, dairy and beef cattle. Shaded: census years",
+                       cells_per_year),
+    x = NULL, y = "Cells not published",
+    caption  = CAPTION
   ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid.major.x = element_blank(),
         panel.grid.minor   = element_blank(),
         legend.position    = "top",
         plot.title.position = "plot",
-        plot.title   = element_text(face = "bold"),
+        plot.title   = element_text(face = "bold", size = 11),
         plot.caption = element_text(colour = "grey45", hjust = 0, size = 8))
 
 ggsave("outputs/figures/03-suppression-rate.png", p3,
@@ -592,72 +888,61 @@ p3
 ```
 
 Reading that chart as a single rising trend would be wrong, and the `OBS_STATUS`
-column is what makes the difference visible. Two flags are in use, and they are
-not the same mechanism.
+column is what makes the difference visible. Two flags are in use, they are not
+the same mechanism, and before either appears the export does something else
+entirely.
+
+**Before `r first_flag_year`, cells are left out rather than flagged.** From
+`r min(absent_years)` to `r max(absent_years)` no cell carries a flag, but the
+export has fewer rows than the full grid of regions and classes; from
+`r first_flag_year` on it is complete. An absent row is not a zero. In
+`r gap_nonzero` of the `r nrow(unflagged_gaps)` class-years whose region row is
+incomplete without any flag, the published regions fall short of the published
+national total, by between `r fmt(min(unflagged_gaps$residual[unflagged_gaps$residual != 0]))`
+and `r fmt(max(unflagged_gaps$residual))` head, so the animals were counted and
+not shown`r if (gap_nonzero < nrow(unflagged_gaps)) "; the exception reconciles exactly, as it would if the missing region had none of that class" else ""`.
+And the cells that carry `C` in 2012 look like the cells that were absent
+before: across all 44 livestock codes, `r sum(c_2012$absent >= 1)` of the
+`r nrow(c_2012)` regional `C` cells of 2012 had been absent from the export in
+at least one earlier year, on average `r fmt(mean(c_2012$absent), 1)` of the
+`r length(START_YEAR:2011)` years from `r START_YEAR` to 2011. The change in
+`r first_flag_year` is a change in the export's format; it is not evidence that
+nothing was withheld before it, and this chart is not a trend in withholding
+before `r first_flag_year`.
 
 The `C` flag is confidentiality suppression. Among the three livestock classes
-used here it appears in `r paste(c_years, collapse = ", ")` and in no other year.
+used here it appears in `r and_list(c_years)` and in no other year.
 Checked across every one of the 44 livestock codes in the raw extract, it appears
 in `r paste(range(all_c_years), collapse = "–")` and **never after
 `r max(all_c_years)`**.
 
-That is exactly what the published methodology predicts. Stats NZ states that
-prior to 2017, figures affected by the confidentiality provisions were denoted by
-`C`, and that since 2017 confidentiality has instead been implemented by an input
+That is what the published methodology predicts. Stats NZ states that prior to
+2017, figures affected by the confidentiality provisions were denoted by `C`,
+and that since 2017 confidentiality has instead been implemented by an input
 perturbation method that adds noise at individual farm level, so output figures
 no longer have to be replaced with `C`. The flag stops in the file in the same
 year the method changed.
 
 The `S` flag is quality suppression, applied where sampling errors or imputation
-levels are high. It runs from `r min(s_years)` to `r max(s_years)`, peaking at
-`r sprintf("%.1f", max(supp$rate))` percent of cells in
-`r supp$year[which.max(supp$rate)]`. The census year 2022 sits below the survey
-years on either side of it, and 2017 below every survey year that follows it —
-but neither at zero, and the difference between those two statements is the
-mechanism. (2016, a survey year, is itself at zero: the `S` flag is not yet
-continuous that early, so the comparison only becomes meaningful from 2017 on.)
+levels are high. It appears in `r and_list(s_years[s_years < 2017])`, then every
+year from 2017 to `r END_YEAR`, peaking at `r fmt(peak_row$rate, 1)` percent of
+cells in `r peak_row$year`. The census years hold few `S` cells —
+`r s_count(2017)` in 2017 and `r s_count(2022)` in 2022, against
+`r s_count(2024)` in the survey year 2024 — which is consistent with a census
+removing the sampling-error branch of the rule while leaving the imputation
+branch. Two census years are far too few to establish it. All
+`r nrow(s_census)` census-year `S` cells in this table are
+`r and_list(s_census_regions)`.
 
-The published rule withholds data with high sample errors **or** high imputation
-levels. A census removes the first branch, which is why census years sit lower.
-The second branch remains, which is why they are not empty. All
-`r sum(livestock$is_census_year & livestock$suppression_code == "s", na.rm = TRUE)`
-census-year `S` cells in this table are Nelson.
-
-So the 2012 spike is not a quality problem at all. All
-`r sum(regions$year == 2012 & regions$suppressed)` withheld cells that year
-carry `C`, not `S`. Separating the two flags turns an apparent anomaly into
-the expected behaviour of a confidentiality rule that was replaced in 2017.
-
-One qualification remains. I cannot tell from this extract whether the absence of
-any flag before 2012 means no cell was withheld, or that the flag was not carried
-in this export. The chart shows what the file contains.
+So the 2012 spike is not a quality problem. All
+`r sum(grid$year == 2012 & grid$status %in% c("C", "S"))` withheld cells that
+year carry `C`, not `S`.
 
 One of the two regions this analysis has to drop is explained in the published
 methodology rather than guessed at. Sampling error could not be calculated for
 Nelson because only one responding unit was observed in each sampled stratum,
 and at least two are needed to estimate a within-stratum variance. Auckland, the
 other dropped region, is simply withheld, with no reason published.
-
-### Independent recomputation
-
-Stats NZ publishes a national sheep figure for June 2024. Recomputing it from the
-regional cells in the same extract gives a different number, and the difference
-is fully explained.
-
-```{r}
-#| label: tbl-recompute
-r24 <- reconciliation |> filter(livestock_class == "Sheep", year == 2024)
-data.frame(
-  Quantity = c("Published, Total New Zealand, June 2024",
-               "Recomputed as the sum of published regions",
-               "Difference"),
-  Head = c(fmt(r24$published), fmt(r24$region_sum), fmt(r24$residual))
-) |> kable(align = "lr")
-```
-
-The difference is Auckland, whose 2024 value is suppressed. Filling it with zero
-would have produced a total that looked tidier and was wrong by
-`r fmt(r24$residual)` head.
 
 ## Method
 
@@ -669,38 +954,36 @@ would have produced a total that looked tidier and was wrong by
    and no labels. Sheep, dairy cattle and beef cattle were each confirmed against
    the published June 2024 national figures before any analysis was run. The
    `LIVESTOCK` codelist holds 44 entries that nest inside one another; adding all
-   44 for 2024 gives 115.7 million animals against a published 33.8 million. Only
-   the three verified codes are used.
+   44 national totals for 2024 gives `r fmt(all_codes_2024/1e6, 1)` million,
+   against `r fmt(three_codes_2024/1e6, 1)` million for the three verified totals
+   alone. Only those three codes are used.
 3. **Aggregates are separated, not summed.** `AREA` codes 10, 19 and 20 are the
    North Island, South Island and New Zealand totals. They are flagged in the
    analysis table and excluded from every regional sum. The extract publishes
-   no area labels at all, only numeric codes; region names here follow the
-   Statistical standard for geographic areas 2023 (SSGA23), including macrons,
-   which differ from the older spellings the codelist still displays in
-   Aotearoa Data Explorer.
-4. **Suppressed cells stay suppressed.** A suppressed cell becomes `NA` and
-   carries a flag. It is never filled with zero and never dropped. Regions
-   missing either endpoint are excluded from the change calculation and counted
-   in the text.
+   no area labels at all, only numeric codes that are this table's own rather
+   than SSGA23 codes; region names here follow the Statistical standard for
+   geographic areas 2023 (SSGA23), including macrons, which differ from the
+   older spellings the codelist still displays in Aotearoa Data Explorer.
+4. **Withheld cells stay withheld.** A withheld cell becomes `NA` and carries a
+   flag. It is never filled with zero and never dropped. Regions missing either
+   endpoint are excluded from the change calculation and counted in the text.
 5. **Reconciliation is reported, not asserted.** No fixed tolerance is set
    between the regional sum and the published total. The residual is computed for
    every year and published above.
-6. **Quantitative claims are computed, cited, or explicitly rounded — and the
-   three are different things.** Numbers that come from the data are inline
-   expressions evaluated at render time against the analysis table, never
-   transcribed. Numbers that come from Stats NZ's published methodology —
+6. **Quantitative claims are computed or cited, and the two are different
+   things.** Numbers that come from the data — in the prose, the figure and
+   table captions and the figures' alternative text — are expressions evaluated
+   at render time against the analysis table. Qualitative claims that depend on
+   the data (for example, that every measurable region declined) are asserted in
+   the code, so a new vintage that breaks one stops the render instead of
+   leaving the sentence stale. Numbers from Stats NZ's published methodology —
    sample size, eligible population, response rate, imputation level, relative
-   sampling error, the GST threshold, the codelist totals — *cannot* be
-   computed from an aggregate extract; they are typed, and each is attributed
-   under [Sources for the methodological
-   statements](#sources-for-the-methodological-statements). Numbers in the
-   plain-language layer at the top are deliberately rounded, with the exact
-   value always available further down. Qualitative claims are stated with the
-   scope over which they were checked. Earlier versions of this page each
-   carried a universal claim that was typed rather than computed, and each was
-   contradicted by a table printed directly beneath it; this is the rule that
-   came out of that, including the version of this rule that claimed every
-   number on the page was computed, which was itself false.
+   sampling error, the GST threshold — *cannot* be computed from an aggregate
+   extract; they are typed, and each is attributed under [Sources for the
+   methodological statements](#sources-for-the-methodological-statements). The
+   analysis window, the census years, the `r DAIRY_PEAK_YEAR` split and the
+   five-year minimum window are design constants, set once in `R/load.R`,
+   `R/checks.R` and the setup code of this page.
 
 ### Release schedule
 
@@ -711,19 +994,19 @@ replaced by a single final release in mid-April.
 
 ### Survey design
 
-The reference period is the year ended 30 June. Censuses were held in 2002, 2007,
-2012, 2017 and 2022, with annual sample surveys in the intervening years. The
-sample is stratified by regional council area, ANZSIC06 group and size group. The
-2025 survey drew 24,600 geographic locations from an estimated eligible
-population of 45,800; note that a geographic location is the statistical unit and
-is not the same thing as a farm.
+The reference period is the year ended 30 June. Censuses were held in
+`r and_list(CENSUS_YEARS)`, with annual sample surveys in the intervening years.
+The sample is stratified by regional council area, ANZSIC06 group and size group.
+The 2025 survey drew 24,600 geographic locations from an estimated eligible
+population of 45,800; note that a geographic location is the statistical unit
+and is not the same thing as a farm.
 
-The series starts at 2002 because Stats NZ states that the population for the
-2002 census and subsequent surveys differs from that of earlier agricultural
-censuses and surveys, and that figures from 2002 onward may not be directly
-comparable with previous years. That is also why the 1994 observation carried in
-the same table is excluded here. There was no agricultural production survey at
-all in 1997, 1998 or 2001.
+The series starts at `r START_YEAR` because Stats NZ states that the population
+for the 2002 census and subsequent surveys differs from that of earlier
+agricultural censuses and surveys, and that figures from 2002 onward may not be
+directly comparable with previous years. That is also why the 1994 observation
+carried in the same table is excluded here. There was no agricultural
+production survey at all in 1997, 1998 or 2001.
 
 Values for non-respondents are imputed by random hot deck imputation, with the
 imputation class formed from regional council area, ANZSIC06 group and production
@@ -735,39 +1018,48 @@ run by Stats NZ in partnership with the Ministry for Primary Industries.
 
 #### The headline window is not design-matched
 
-2002 is a census and 2025 is a sample survey, so the headline differences a
-full-coverage count against an estimate that carries both sampling error and a
-30 percent imputation rate. This is a common and accepted comparison — Stats NZ
-publishes the series as one — but it is an asymmetry, and this report carries
+`r START_YEAR` is a census and `r END_YEAR` is a sample survey, so the headline
+differences a full-coverage count against an estimate that carries both sampling
+error and a 30 percent imputation rate. Stats NZ publishes both years in the
+same table, but the comparison is still an asymmetry, and this report carries
 the `is_census_year` flag through the analysis table precisely so that it can be
 checked rather than assumed.
 
-The census-to-census window that avoids the asymmetry is 2002 to 2022:
+The census-to-census window that avoids the asymmetry is `r START_YEAR` to
+`r LAST_CENSUS`:
 
 ```{r}
 #| label: tbl-matched
+#| tbl-cap: "The headline window against the design-matched census-to-census window."
 rbind(
-  data.frame(Window = "2002–2025, census to sample survey (headline)",
-             Regions = sensitivity$regions[sensitivity$start == 2002],
-             Fall = fmt(sensitivity$fall[sensitivity$start == 2002]),
-             `Top three share` = sprintf("%.1f%%", sensitivity$share[sensitivity$start == 2002]),
-             `The three regions` = sensitivity$top3[sensitivity$start == 2002],
+  data.frame(Window = sprintf("%d–%d, census to sample survey (headline)", START_YEAR, END_YEAR),
+             Regions = headline$regions,
+             Fall = fmt(headline$fall),
+             `Top three share` = sprintf("%.1f%%", headline$share),
+             `Their share of the flock` = sprintf("%.1f%%", headline$base_share),
+             `The three regions` = headline$top3,
              check.names = FALSE),
-  data.frame(Window = "2002–2022, census to census (design-matched)",
+  data.frame(Window = sprintf("%d–%d, census to census (design-matched)", START_YEAR, LAST_CENSUS),
              Regions = matched$regions,
              Fall = fmt(matched$fall),
              `Top three share` = sprintf("%.1f%%", matched$share),
+             `Their share of the flock` = sprintf("%.1f%%", matched$base_share),
              `The three regions` = matched$top3,
              check.names = FALSE)
-) |> kable(align = "lrrrl")
+) |> kable(align = "lrrrrl")
 ```
 
-The design-matched window is measurable across one more region, because Auckland
-is published in 2022 and withheld in 2025. It gives the same qualitative answer:
+The design-matched window is measurable across `r matched$regions - headline$regions`
+more region`r if (matched$regions - headline$regions != 1) "s" else ""`, because
+`r and_list(matched_gain)` is published in `r LAST_CENSUS` and withheld in
+`r END_YEAR`. The share is similar:
 a fall of `r fmt(matched$fall/1e6, 1)` million head with the three largest
-decliners accounting for `r sprintf("%.1f", matched$share)` percent.
+decliners accounting for `r fmt(matched$share, 1)` percent, against
+`r fmt(matched$base_share, 1)` percent of the flock. The three are not the same:
+`r and_list(added_in_matched)` replaces `r and_list(dropped_in_matched)`. The
+share is robust; the list is not.
 
-The 2025 endpoint is used in the headline because it is the most recent
+The `r END_YEAR` endpoint is used in the headline because it is the most recent
 published figure, not because it is the better-matched one.
 
 ### What was excluded, and why
@@ -798,32 +1090,35 @@ the output rather than the sheep.
 
 Regional council is the only geography available annually; territorial authority
 exists only in census years, so any sub-regional time series is structurally
-unavailable rather than merely unpublished. Suppression now runs above ten
-percent of cells, and it is not spread evenly. Nelson and the Chatham Islands
-account for `r sprintf("%.0f", 100 * sum(regions$suppressed & regions$region %in% c("Nelson", "Chatham Islands")) / sum(regions$suppressed))`
-percent of every withheld cell in this table between them, Auckland for a
-further `r sprintf("%.0f", 100 * sum(regions$suppressed & regions$region == "Auckland") / sum(regions$suppressed))`
+unavailable rather than merely unpublished. Withholding has exceeded ten percent
+of cells in `r recent$above` of the last `r recent$of` years, and it is not
+spread evenly. Nelson and the Chatham Islands account for
+`r fmt(100 * sum(regions$suppressed & regions$region %in% c("Nelson", "Chatham Islands")) / sum(regions$suppressed), 0)`
+percent of all withheld cells in this table between them, Auckland for a
+further `r fmt(100 * sum(regions$suppressed & regions$region == "Auckland") / sum(regions$suppressed), 0)`
 percent, and
 `r length(setdiff(unique(regions$region[regions$suppressed]), c("Nelson", "Chatham Islands", "Auckland")))`
 other regions for the rest.
 
 Two different grounds are at work, and it is worth separating them. Nelson and
 the Chathams are withheld persistently — they hold the two smallest livestock
-populations in the table — which makes their *trends* unusable. (By sheep alone
-the second smallest is West Coast, published in 21 of the 24 years: being small
-and being withheld are not the same thing.) Auckland is
-withheld only at scattered points including the 2025 endpoint, which is what
-removes it from this analysis' *change* calculation while leaving most of its
-series intact. Auckland is not a small region, and by sheep it is not even among
-the smallest: its last published count is larger than Northland's or West
-Coast's. Being withheld and being small are related here but not the same thing,
-and an output that conflated them would mislead.
+populations in the table — which makes their *trends* unusable. (By sheep alone,
+averaged over the years each is published, the second smallest is
+`r sheep_mean$region[2]`, published in `r sheep_mean$years[2]` of the
+`r length(EXPECTED_YEARS)` years: being small and being withheld are not the
+same thing.) Auckland is withheld only at scattered points including the
+`r END_YEAR` endpoint, which is what removes it from this analysis' *change*
+calculation while leaving most of its series intact. Auckland is not a small
+region, and by sheep it is not even among the smallest: its last published count
+is larger than Northland's or West Coast's. Being withheld and being small are
+related here but not the same thing, and an output that conflated them would
+mislead.
 
 A suppression-aware grouping that pooled the persistently withheld regions would
-preserve more signal than withholding them one at a time does. And the alternating census-and-survey design
-makes every regional series in this table structurally uneven, which belongs on
-the output rather than being left for a user to discover from a reconciliation
-residual.
+preserve more signal than withholding them one at a time does. And the
+alternating census-and-survey design makes every regional series in this table
+structurally uneven, which belongs on the output rather than being left for a
+user to discover from a reconciliation residual.
 
 There is also a class of question this data cannot answer at all: anything at
 farm level, or any breakdown finer than what is published. The access route for
@@ -833,25 +1128,40 @@ have not used here.
 ### Sources for the methodological statements
 
 Every statement about the collection above was read on the page cited here, not
-carried over from secondary summaries.
+carried over from secondary summaries. Pages read 4 September 2026.
 
 | Statement | Source |
 |---|---|
-| Census years 2002, 2007, 2012, 2017, 2022; sample surveys in between; eligible population 45,800 and sample 24,600 geographic locations; stratification by regional council, ANZSIC06 group and size group; 2025 response rate 72.1 percent; sampling error and imputation levels by line code; GST registration level of \$60,000 giving "partial and unquantifiable" coverage below it; random hot deck imputation and imputation class; `C` before 2017 and input perturbation since; `S` for data with high sample errors or imputation levels; Nelson variance not estimable; horticulture years; forestry production now MPI; Tier 1 statistics | [Agricultural Production Statistics: June 2025 (Final), DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029) |
-| Programme run in partnership with MPI; provisional mid-December plus final mid-May up to 2024, single final mid-April from 2025; 2002 population differs from earlier collections; no survey in 1997, 1998, 2001; regional council annually and territorial authority in censuses | [Agriculture Production Statistics series, DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/6362a469-f374-412e-ac25-d76fd0962003) |
+| Census years 2002, 2007, 2012, 2017, 2022, with sample surveys in between | [Agricultural Production Statistics: June 2025 (Final), DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/a9908d00-4827-46b2-a38a-310c0c75b029) |
+| Eligible population 45,800; sample 24,600 geographic locations | same page |
+| Stratification by regional council, ANZSIC06 group and size group | same page |
+| 2025 response rate 72.1 percent | same page |
+| 30 percent of the 2025 sheep estimate imputed; 3 percent relative sampling error at 95 percent confidence | same page |
+| Random hot deck imputation and the imputation class | same page |
+| GST registration level of \$60,000; coverage below it "partial and unquantifiable" | same page |
+| `C` before 2017; input perturbation since | same page |
+| `S` for data with high sample errors or imputation levels | same page |
+| Nelson sampling error not estimable (one responding unit per stratum) | same page |
+| Horticulture collection years; forestry production now published by MPI | same page |
+| Programme run in partnership with MPI | [Agriculture Production Statistics series, DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/6362a469-f374-412e-ac25-d76fd0962003) |
+| Provisional mid-December plus final mid-May up to 2024; single final mid-April from 2025 | same page |
+| 2002 population differs from earlier collections; no survey in 1997, 1998, 2001 | same page |
+| Regional council annually; territorial authority in censuses | same page |
 | Release date of 16 April 2026 for the year to June 2025; NEFD data and planned revisions for 2016–2021 | [Agricultural production statistics: Year to June 2025](https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2025/) |
 | Mana Ōrite Relationship Agreement signed with the Data Iwi Leaders Group of the National Iwi Chairs Forum on 30 October 2019 | [Mana Ōrite Relationship Agreement](https://www.stats.govt.nz/about-us/what-we-do/mana-orite-relationship-agreement/) |
 
-Statements I could not source on those pages are not made anywhere in this
-report. Pages read 4 September 2026.
+Statements that could not be sourced on those pages are not made anywhere in
+this report.
 
 ## Limitations
 
 - Non-census years are **sample estimates**. I have not recomputed their sampling
   errors and I have applied no weighting of my own. A year-on-year movement in a
-  single small region should not be read as real change.
-- Suppressed cells are retained as `NA` and counted. Two regions are excluded
-  from the 2002–2025 change entirely for that reason.
+  single small region should not be read as real change, and regional rankings
+  separated by small margins — such as `r top3$region[3]` and
+  `r fourth$region` — should not be read as ranked at all.
+- Withheld cells are retained as `NA` and counted. Two regions are excluded
+  from the `r START_YEAR`–`r END_YEAR` change entirely for that reason.
 - The sheep-to-cattle comparisons are **ratios of head counts**. They are not
   claims about stocking rate, feed demand, land use or emissions.
 - The frame is Stats NZ's Business Register, which is built on GST registration.
@@ -860,27 +1170,29 @@ report. Pages read 4 September 2026.
 - **Imputation is large.** Stats NZ reports 30 percent of the 2025 national sheep
   estimate as imputed. That national rate does not establish the imputation rate
   for any individual region or another year; this extract does not provide those
-  rates, and this analysis does not adjust the published estimates.
+  rates, and this analysis does not adjust the published estimates. Whether
+  hot-deck imputation biases changes towards zero has not been assessed here.
 - Since 2017, confidentiality has been implemented by input perturbation, which
-  adds noise at individual farm level. It is small relative to the effects
-  discussed here, but it is present in every year from 2017 on.
-- **The endpoints are of different collection designs.** 2002 is a census and
-  2025 is a sample survey. The `is_census_year` flag is carried through the
-  analysis table for exactly this reason, and the design-matched comparison is
-  reported under [Survey design](#survey-design).
-- **Choosing the start year is a choice, and the two halves of the headline
-  survive it differently.** See the sensitivity analysis below.
+  adds noise at individual farm level. Its size is not published on the pages
+  cited here, so it is not quantified; it is present in every year from 2017 on.
+- **The endpoints are of different collection designs.** `r START_YEAR` is a
+  census and `r END_YEAR` is a sample survey. The `is_census_year` flag is carried
+  through the analysis table for exactly this reason, and the design-matched
+  comparison is reported under [Survey design](#survey-design).
+- **Choosing the start and end years is a choice, and the two halves of the
+  headline survive it differently.** See the sensitivity analysis below.
 
 ### How much does the start year matter?
 
 Recomputing the headline statistic from every start year that leaves a window
-of at least `r MIN_WINDOW` years — 2002 to `r LAST_START` — against the same
-2025 endpoint. The five-year minimum is an analysis choice to focus on longer
-windows. Starts in 2021–2024 are excluded, so the sensitivity conclusions apply
-only to the windows shown:
+of at least `r MIN_WINDOW` years — `r START_YEAR` to `r LAST_START` — against the
+same `r END_YEAR` endpoint. The five-year minimum is an analysis choice to focus
+on longer windows. Starts in `r LAST_START + 1`–`r END_YEAR - 1` are excluded, so
+the sensitivity conclusions apply only to the windows shown:
 
 ```{r}
 #| label: tbl-sensitivity
+#| tbl-cap: !expr 'sprintf("The headline statistic from every start year, %d to %d, against the %d endpoint.", START_YEAR, LAST_START, END_YEAR)'
 sensitivity |>
   transmute(
     `Start year` = ifelse(start %in% CENSUS_YEARS,
@@ -889,42 +1201,82 @@ sensitivity |>
     `Gross fall (head)` = fmt(fall),
     `Net fall (head)` = fmt(net_fall),
     `Top three share` = sprintf("%.1f%%", share),
+    `Their share of the flock` = sprintf("%.1f%%", base_share),
     `The three regions` = top3
   ) |>
-  kable(align = "lrrrrl")
+  kable(align = "lrrrrrl")
 ```
 
 `Gross fall` sums losses only in the declining regions with both endpoints
 published; it is the denominator for `Top three share`. `Net fall` subtracts
 gains in other measurable regions. Neither is the published national fall,
-because some regional endpoints are withheld or absent. For 2002–2025 all
-measurable regions declined, so the gross and net regional falls are both
-`r fmt(sensitivity$fall[sensitivity$start == 2002])` head against a published
-national fall of `r fmt(nat_drop)`, a gap of
-`r sprintf("%.2f", 100 * (nat_drop - sensitivity$fall[sensitivity$start == 2002]) / sensitivity$fall[sensitivity$start == 2002])`
+because some regional endpoints are withheld or absent. For
+`r START_YEAR`–`r END_YEAR` every measurable region declined, so the gross and
+net regional falls are both `r fmt(headline$fall)` head against a published
+national fall of `r fmt(nat_drop)`, a gap of `r fmt(national_gap_pct, 2)`
 percent, as set out at the top of this page.
 
-The three largest declines account for roughly half of the gross regional fall.
-Across the
-`r nrow(sensitivity)` start years the three largest-declining regions account
-for between `r sprintf("%.0f", min(sensitivity$share))` and
-`r sprintf("%.0f", max(sensitivity$share))` percent. The narrower claim
-"over half" does not hold for every start year: the share is below 50 percent
-for `r paste(sensitivity$start[sensitivity$share < 50], collapse = ", ")`.
+Across the `r nrow(sensitivity)` start years the three largest-declining regions
+account for between `r fmt(min(sensitivity$share), 0)` and
+`r fmt(max(sensitivity$share), 0)` percent of the gross regional fall, while
+holding between `r fmt(min(sensitivity$base_share), 0)` and
+`r fmt(max(sensitivity$base_share), 0)` percent of the starting flock. The
+narrower claim "over half" does not hold for every start year: the share is
+below 50 percent for `r and_list(sensitivity$start[sensitivity$share < 50])`.
 
 Which three regions they are is not robust. Manawatū-Whanganui is in the top
-three in `r in_top3("Manawatū-Whanganui")` of the `r nrow(sensitivity)`
-windows, Otago in `r in_top3("Otago")`, Southland in `r in_top3("Southland")`,
-and Canterbury in only `r in_top3("Canterbury")` —
-`r paste(sensitivity$start[vapply(strsplit(sensitivity$top3, ", ", fixed = TRUE), function(x) "Canterbury" %in% x, logical(1))], collapse = ", ")`.
+three in `r count_in_top3(sensitivity$top3, "Manawatū-Whanganui")` of the
+`r nrow(sensitivity)` windows, Otago in `r count_in_top3(sensitivity$top3, "Otago")`,
+Southland in `r count_in_top3(sensitivity$top3, "Southland")`, and Canterbury in
+only `r count_in_top3(sensitivity$top3, "Canterbury")` —
+`r and_list(sensitivity$start[vapply(strsplit(sensitivity$top3, ", ", fixed = TRUE), function(x) "Canterbury" %in% x, logical(1))])`.
 Canterbury dominates the window this report uses because its decline is
 concentrated in the early years; from a start year of 2009 or later it usually
 drops out of the top three altogether.
 
 That is worth stating plainly, because Canterbury is the region this report
-names most often. It leads the 2002–2025 window, and it is the one region where
-the substitution story carries weight. It is not a permanent feature of the
-data.
+names most often. It leads the `r START_YEAR`–`r END_YEAR` window, and it is the
+one region where the substitution story carries weight. It is not a permanent
+feature of the data.
+
+### And the end year?
+
+Holding the start at `r START_YEAR` and moving the end instead, from
+`r FIRST_END` to `r END_YEAR`. The measurable regions change from window to
+window, so the shares do not share a denominator; the last column names the
+regions each window excludes.
+
+```{r}
+#| label: tbl-end-sensitivity
+#| tbl-cap: !expr 'sprintf("The headline statistic from %d to every end year, %d to %d.", START_YEAR, FIRST_END, END_YEAR)'
+end_sensitivity |>
+  transmute(
+    `End year` = ifelse(end %in% CENSUS_YEARS,
+                        paste0(end, " (census)"), as.character(end)),
+    `Regions measurable` = regions,
+    `Top three share` = sprintf("%.1f%%", share),
+    `Their share of the flock` = sprintf("%.1f%%", base_share),
+    `The three regions` = top3,
+    `Not measurable` = ifelse(excluded == "", "—", excluded)
+  ) |>
+  kable(align = "lrrrll")
+```
+
+From every end year the three largest declines take more of the fall than they
+held of the flock, by between
+`r fmt(min(end_sensitivity$share - end_sensitivity$base_share), 1)` and
+`r fmt(max(end_sensitivity$share - end_sensitivity$base_share), 1)` percentage
+points. Canterbury and Southland are in the top three for every end year; the
+third place moves between
+`r and_list(sort(unique(vapply(strsplit(end_sensitivity$top3, ", ", fixed = TRUE), function(x) x[3], character(1)))))`.
+
+```{r}
+#| include: false
+stopifnot("the end-year prose names Canterbury and Southland as ever-present" =
+            count_in_top3(end_sensitivity$top3, "Canterbury") == nrow(end_sensitivity),
+          count_in_top3(end_sensitivity$top3, "Southland") == nrow(end_sensitivity),
+          all(end_sensitivity$share > end_sensitivity$base_share))
+```
 
 ## Ethics
 
@@ -941,42 +1293,44 @@ characterise the terms of that agreement.
 
 ## Reproduce
 
-Two steps, because they write different things.
+The full command sequence — restoring the pinned packages, the ingestion and
+helper tests, regenerating the CSVs and rendering this page — is in the
+[README](https://github.com/Kenchch/nz-sheep-decline-by-region#reproduce).
 
-```bash
-Rscript R/checks.R    # regenerates outputs/*.csv: validation, coverage, reconciliation
-quarto render         # regenerates this page and outputs/figures/*.png
-```
+`R/load.R` reads the SHA-256 recorded in `data-raw/SOURCE.md` and stops unless
+the extract's bytes match it, then tidies the extract; `R/checks.R` runs the
+rules and both reconciliations; `index.qmd` produces this page, the figures and
+`outputs/key-figures.csv`.
 
-`R/load.R` verifies the extract against the SHA-256 recorded in
-`data-raw/SOURCE.md` before reading it, then tidies it; `R/checks.R` runs the
-rules and both reconciliations; `index.qmd` produces this page and the figures.
-
-Both sets of outputs are committed. A clean checkout that runs the two commands
-above must reproduce the CSVs byte for byte. The figures are regenerated as
+Both sets of outputs are committed. A clean checkout that runs the documented
+commands must reproduce the CSVs byte for byte. The figures are regenerated as
 well, but their bytes can differ with the platform's fonts and graphics device,
-so they are not compared. If the extract were ever replaced without
-`SOURCE.md` being updated, `R/load.R` stops rather than analysing it.
+so they are checked for existence rather than compared.
 
-That claim is checked rather than asserted. A GitHub Actions job runs both
-commands on a clean Ubuntu runner on every push, fails if any committed CSV
-differs, and publishes this page from the same run — so what you are reading is
-the output of a build that passed.
+That claim is checked rather than asserted. A GitHub Actions workflow runs the
+commands on a clean Ubuntu runner for every pull request and every push to
+`main`, and weekly, and fails if any committed CSV differs. On `main`, the site
+it rendered and verified is the one deployed to GitHub Pages, so what you are
+reading is the output of a build that passed.
 
 It earned its place on the first run, by failing. The extract arrives from the
 SDMX endpoint with CRLF line endings and the recorded SHA-256 is the hash of
 those bytes, but Git had normalised them to LF on commit. The hash gate
 therefore passed on the Windows machine this was written on, where checkout
 restores the CRLFs, and would have stopped every clone on Linux or macOS at the
-first line of `R/load.R`. `data-raw` is now marked `-text` so Git leaves those
-bytes alone.
+first line of `R/load.R`. `.gitattributes` now marks `data-raw/*.csv` as `-text`
+so Git leaves those bytes alone.
 
 The general point is worth more than the fix: a single machine cannot see a
 whole class of defect, because the thing that hides the defect is the same thing
 that makes the analysis run. Only a second platform could find that one.
 
+::: {.callout-note collapse="true"}
+## Session information
+
 ```{r}
 #| label: session
-#| code-fold: false
+#| echo: false
 sessionInfo()
 ```
+:::

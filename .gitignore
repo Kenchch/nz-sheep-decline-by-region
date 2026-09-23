@@ -7,5 +7,18 @@ _site/
 .Rapp.history
 .DS_Store
 
-/.quarto/
 **/*.quarto_ipynb
+
+# Python and the local Spark run of the Databricks port
+__pycache__/
+.venv/
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Local secrets and intermediate render files
+.Renviron
+.env
+index_files/
+
+/.quarto/

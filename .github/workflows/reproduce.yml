@@ -1,102 +1,167 @@
 name: Reproduce analysis
 
 # Checks the claim the report and the README both make: that a clean checkout
-# running the two documented commands regenerates the committed outputs
-# unchanged. The site is then published from the same run, so the page a reader
-# opens is always the output of a build that passed.
+# running the documented commands regenerates the committed outputs
+# unchanged. The site that run rendered is then the one deployed, so the page a
+# reader opens is always the output of a build that passed.
 #
 # Only the CSVs are compared byte-for-byte. The PNGs are rendered by ggplot2
 # against whatever fonts and graphics devices the runner has, so they are not
 # byte-reproducible across platforms; asserting that they were would produce a
 # permanently red check that says nothing about the analysis. The figures are
-# still rendered, so a break in the plotting code fails the job.
+# still rendered, checked for existence and uploaded for review.
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Weekly, so drift in the runner image, a package mirror or an action shows
+  # up on its own rather than on the next unrelated pull request. Deployment
+  # requires a push, so a scheduled run never publishes.
+  schedule:
+    - cron: "17 3 * * 1"
 
-# Read-only by default. Only the publish job below is granted write, and only
-# it needs it: every pull request run, and every push that does not reach
-# publishing, now carries a token that cannot alter the repository.
+# Read-only by default. Only the deploy job below is granted more, and it runs
+# none of the project's code.
 permissions:
   contents: read
 
-# One run per ref. A second push while the first is still rendering used to
-# leave two jobs racing for gh-pages, and the slower one won.
-# Pull request runs are superseded by the next push to the same branch, so
-# cancelling them is free. Pushes to main are not cancelled: that job publishes,
-# and cancelling a publisher mid-`quarto publish gh-pages` is both a worse
-# outcome than queueing and easier to overlook than a failure.
+# One run per ref. Pull request runs are superseded by the next push to the
+# same branch, so cancelling them is free. Pushes to main are not cancelled:
+# queueing a deployment is better than abandoning one midway.
 concurrency:
   group: reproduce-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   reproduce:
-    runs-on: ubuntu-latest
+    # Pinned rather than ubuntu-latest, so a change of LTS image (system
+    # libraries, fonts, caches) is a deliberate commit, not a surprise.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0   # quarto publish needs the gh-pages history
+          persist-credentials: false
 
-      - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+      - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2.13.0
         with:
           r-version: renv
           use-public-rspm: true
 
+      # Pinned: the default, "release", asks quarto.org for whatever is newest
+      # at run time.
       - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
+        with:
+          version: 1.10.18
 
       # DESCRIPTION still declares what the analysis uses; renv.lock pins the
       # exact versions those resolve to. The snapshot is 'explicit', so the two
       # cannot drift apart: adding an Import without re-snapshotting fails here.
-      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2.13.0
 
       - name: Dependencies and lockfile must stay synchronized
         run: Rscript -e 'stopifnot(isTRUE(renv::status()$synchronized))'
 
-      - name: Verify the pinned extract against its recorded hash
-        run: Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
+      # data-raw/SOURCE.md is the one record of the extract's hash, and
+      # R/load.R reads it from there. The Databricks notebook carries a copy as
+      # its default parameter; this keeps the copy honest.
+      - name: The extract, SOURCE.md and the Databricks default agree on the hash
+        run: |
+          h=$(sha256sum data-raw/agr_agr_003_2026-09-04.csv | cut -d' ' -f1)
+          grep -qxF "| SHA-256 | \`$h\` |" data-raw/SOURCE.md
+          grep -qF "\"$h\"" databricks/01_ingest_and_pin.py
+          Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
+
+      # A development version (x.y.z.9000) between releases is allowed; the
+      # released part must match what CITATION.cff and the CHANGELOG cite.
+      - name: Version metadata agrees
+        run: |
+          v=$(sed -n 's/^Version: //p' DESCRIPTION)
+          test "${v%.9000}" = "$(sed -n 's/^version: //p' CITATION.cff)"
+          grep -q "^## \[${v%.9000}\]" CHANGELOG.md
 
       - name: Reject malformed extract fixtures
         run: Rscript tests/test-r-contracts.R
+
+      - name: Test the report's helper functions
+        run: Rscript tests/test-r-analysis.R
 
       # Deleted first so the comparison below cannot be satisfied by doing
       # nothing. `git diff --exit-code` compares the worktree against the
       # index, so a checks.R that silently stopped writing — an early exit, a
       # dropped write_csv, a guard that no longer fires — left the committed
       # files untouched and passed. Removing them turns "nothing changed" into
-      # "every one of them was rewritten, and matches".
+      # "every one of them was rewritten, and matches". The figures go too, so
+      # a chunk that stopped saving one cannot pass on the committed copy.
       - name: Regenerate the validation outputs
         run: |
-          rm -f outputs/*.csv
+          rm -f outputs/*.csv outputs/figures/*.png
           Rscript R/checks.R
 
       - name: Render the report and the figures
         run: quarto render
 
-      # Scoped to the CSVs, like the diff: `quarto render` also rewrites
-      # outputs/figures/*.png, which are deliberately not byte-reproducible
-      # across platforms, so a tree-wide check here would be permanently red.
-      # --untracked-files so a newly produced CSV that nobody committed is a
-      # failure rather than an invisible extra file.
+      # Warnings are shown on the page rather than swallowed (_quarto.yml), so
+      # a max() of an empty vector or a deprecated argument fails here.
+      - name: The rendered page carries no R warnings
+        run: |
+          if grep -q 'cell-output-stderr' _site/index.html; then
+            grep -o 'cell-output-stderr.\{0,300\}' _site/index.html
+            exit 1
+          fi
+
+      - name: Every figure was rendered
+        run: |
+          for f in 01-regional-contribution 02-substitution 03-suppression-rate 04-national-index; do
+            test -s "outputs/figures/$f.png" || { echo "missing $f.png"; exit 1; }
+          done
+
+      # Scoped to the CSVs, like the diff: the PNGs are deliberately not
+      # byte-reproducible across platforms, so a tree-wide check here would be
+      # permanently red. --untracked-files so a newly produced CSV that nobody
+      # committed is a failure rather than an invisible extra file.
       - name: Committed CSV outputs must match a fresh run
         run: |
           git diff --exit-code -- 'outputs/*.csv'
           test -z "$(git status --porcelain --untracked-files=all -- 'outputs/*.csv')"
 
+      - name: The README quotes the report's figures as rendered
+        run: Rscript tests/test-readme-figures.R
+
+      # For review: the figures and page this run produced, on every run.
+      - name: Upload the rendered site and figures
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rendered-site
+          path: |
+            _site
+            outputs/figures
+          retention-days: 14
+
+      # The verified site, handed to the deploy job as-is. It is not
+      # re-rendered anywhere else, so the page that is published is the page
+      # that passed every check above.
+      - name: Upload the verified site for GitHub Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+
   # The Databricks notebooks cannot run here as notebooks, but they can run as
   # Python against a local Spark session, and the claim that they are a port
-  # of the same analysis can be checked: every gold table is compared against
-  # the CSVs the R job above reproduces. Separate from that job because it
-  # needs a JVM and PySpark and nothing else here does.
+  # of the same analysis can be checked: silver and the gold tables are
+  # compared against the CSVs the R job above reproduces. Separate from that
+  # job because it needs a JVM and PySpark and nothing else here does.
   port:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -107,53 +172,39 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # Pins live in databricks/requirements.txt so Dependabot can see them.
+      # Every transitive dependency is pinned and hashed in
+      # databricks/requirements.txt, compiled from requirements.in.
       - name: Install PySpark
-        run: python -m pip install --quiet -r databricks/requirements.txt
+        run: |
+          python -m pip install --quiet --require-hashes -r databricks/requirements.txt
+          python -m pip freeze
 
-      - name: Run the notebooks locally and compare every gold table with outputs/*.csv
+      - name: Run the notebooks locally and compare them with outputs/*.csv
         run: python databricks/run_local.py
 
-  # Publishing is gated on both jobs above via `needs`, so the live page can
-  # only ever be a version that reproduced its own outputs and whose port
-  # agrees with them -- the same guarantee as before, now expressed as a
-  # dependency rather than as step ordering.
+  # Gated on both jobs above via `needs`, so the live page can only ever be a
+  # version that reproduced its own outputs and whose port agrees with them.
   #
-  # A separate job because permissions are granted per job. As one job, every
-  # pull request run held a write token it never used; the gate does not need
-  # one and the publisher does.
-  #
-  # `quarto publish gh-pages` renders the project itself, so this repeats the
-  # render rather than passing an artifact between jobs. That costs a few
-  # minutes on pushes to main and keeps the publisher a single documented
-  # command instead of a hand-assembled directory.
-  publish:
+  # It checks out nothing, restores no packages and renders nothing: it only
+  # deploys the artifact the reproduce job verified. The token it holds can
+  # write to Pages and nothing else, so a compromised R package, Quarto
+  # release or action in the build cannot use it to alter the repository,
+  # its branches or its tags. Requires Settings -> Pages -> Source to be
+  # "GitHub Actions".
+  deploy:
     needs: [reproduce, port]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     permissions:
-      contents: write   # pushes the rendered site to the gh-pages branch
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0   # quarto publish needs the gh-pages history
-
-      - uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
-        with:
-          r-version: renv
-          use-public-rspm: true
-
-      - uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
-
-      - uses: r-lib/actions/setup-renv@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
-
-      - name: Regenerate the validation outputs
-        run: Rscript R/checks.R
-
-      - name: Publish to GitHub Pages
-        uses: quarto-dev/quarto-actions/publish@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
-        with:
-          target: gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

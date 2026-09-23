@@ -1,0 +1,25 @@
+name,value,readme
+national_fall,16.3,about 16.3 million head
+national_fall_pct,41,(41 percent)
+sampling_half_width,0.7,±0.7 million
+measurable_regions,15,15 regions measurable at both ends
+top3,"Canterbury, Southland, Otago","Canterbury, Southland and Otago"
+top3_share,54,**54 percent** of the fall
+top3_base_share,50.6,50.6 percent of the 2002 flock
+fourth,Manawatū-Whanganui,Otago and Manawatū-Whanganui
+third_gap,"15,971","15,971 head apart"
+dairy_rise,1.54,+1.54 million (29.8 percent)
+dairy_fall,0.95,−0.95 million
+dairy_net,588,588 thousand net
+dairy_count_early,4 of 15,**4 of 15** regions over 2002–2014
+dairy_count_late,12 of 14,**12 of 14** over 2014–2025
+dairy_count_full,7 of 13,7 of 13 over the whole period
+matched_fall,14.4,14.4 million head
+matched_share,55.6,top three at 55.6 percent
+top3_national_share,53.6,53.6 percent against the published national fall
+national_gap_pct,0.77,0.77 percent larger
+excluded,Auckland and Nelson,Auckland and Nelson are withheld in 2025
+census_rule_fails,9,fires 9 times
+tiers,10/12/50,"10 exact, 12 off by at most 2 head, 50 incomplete"
+unflagged_gap_nonzero,21 of 22,21 of the 22
+sensitivity_range,48–59,48–59 percent
