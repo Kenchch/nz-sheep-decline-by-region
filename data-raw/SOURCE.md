@@ -13,10 +13,15 @@
 | File | `agr_agr_003_2026-09-04.csv` |
 | SHA-256 | `e9d82621c2db8517dbf906a8b952d462a360cd2adcc351eb107e187afbe03a4c` |
 
-Attribution, verbatim as required by the licensor:
+Attribution:
 
-> Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ
-> for re-use under the Creative Commons Attribution 4.0 International licence.
+> This work is based on Stats NZ's data (Agricultural production statistics,
+> AGR_AGR_003), licensed by Stats NZ for re-use under the [Creative Commons
+> Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/).
+
+The SHA-256 row above is the one record of the hash. `R/load.R` reads it from
+this file, and CI checks that the default in
+`databricks/01_ingest_and_pin.py` matches it.
 
 ## Why a committed CSV rather than a live API call
 
@@ -43,6 +48,11 @@ In 2017 the South Island does **not** reconcile — Nelson's sheep cell is
 suppressed, leaving the eight regional codes 19,568 head short of the published
 South Island total — which is the behaviour the report's reconciliation tiers
 exist to report rather than a defect in the extract.
+
+The June 2024 expected totals were read from the Stats NZ release for that year
+before the extract was used; the page they were read from was not recorded at
+the time, so they are not cited here. They are the figures the three codes
+were matched against, not a statement this repository relies on elsewhere.
 
 `OBS_STATUS` takes two non-empty values in this extract: `s` (suppressed) and
 `c` (confidential). Every cell with an empty `OBS_VALUE` carries one of the two;

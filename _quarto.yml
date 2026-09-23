@@ -11,13 +11,16 @@ project:
 website:
   title: "Where New Zealand's sheep went"
   page-footer:
-    center: "Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence."
+    center: "This work is based on Stats NZ's data (Agricultural production statistics, AGR_AGR_003), licensed by Stats NZ for re-use under the [Creative Commons Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/). Tables and figures are aggregated and reshaped from that data."
 
 format:
   html:
     theme: cosmo
+    lang: en-NZ
     toc: true
-    toc-depth: 2
+    # 3, so the sections a reader is sent to from the top of the page
+    # ("Three endpoint windows", the sensitivity tables) appear in the contents.
+    toc-depth: 3
     number-sections: false
     fig-width: 9
     fig-height: 5.5
@@ -27,5 +30,8 @@ format:
     embed-resources: false
 
 execute:
-  warning: false
+  # Warnings are shown, not swallowed: max() of an empty vector or a
+  # deprecated argument should be visible on the page, and CI fails the build
+  # if the rendered page contains any.
+  warning: true
   message: false

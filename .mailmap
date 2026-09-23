@@ -1,9 +1,8 @@
-# One author recorded under several names and addresses.
-# This file collapses them for git log / shortlog / blame.
+# One author recorded under several names.
+# This file collapses them for git log / shortlog / blame. Personal email
+# addresses are deliberately not listed: no commit on main uses them.
 
-Feng Jiang <148679986+Kenchch@users.noreply.github.com> <janfinq@gmail.com>
 Feng Jiang <148679986+Kenchch@users.noreply.github.com> <Kenchch@users.noreply.github.com>
 Feng Jiang <148679986+Kenchch@users.noreply.github.com> Fong <148679986+Kenchch@users.noreply.github.com>
 Feng Jiang <148679986+Kenchch@users.noreply.github.com> Feng <148679986+Kenchch@users.noreply.github.com>
 Feng Jiang <148679986+Kenchch@users.noreply.github.com> kenchch <148679986+Kenchch@users.noreply.github.com>
-Feng Jiang <148679986+Kenchch@users.noreply.github.com> kenchch <fji27@uclive.ac.nz>

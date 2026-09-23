@@ -12,7 +12,9 @@ suppressPackageStartupMessages({
 
 source("R/load.R")
 
-livestock <- load_livestock()
+# Read once: the analysis table and the all-codes flag check share the bytes.
+raw       <- read_raw()
+livestock <- load_livestock(raw = raw)
 
 rules <- validator(
   head_non_negative    = is.na(head) | head >= 0,
@@ -26,11 +28,24 @@ rules <- validator(
   # withholding is keyed to confidentiality and imputation level, not to
   # coverage. Written as an implication: FALSE <= TRUE, so it holds unless a
   # census-year cell is withheld.
+  #
+  # It sees flagged cells only. A row that is absent from the export — the
+  # way cells were withheld before 2012 — is invisible to it, so 9 is a lower
+  # bound on census-year withholding, not a count of it.
   census_year_reported = is_census_year <= !suppressed
 )
 
-results <- summary(confront(livestock, rules)) |>
-  select(rule = name, items, passes, fails, nNA)
+# validate does not raise by default: a rule that errors is recorded with
+# error = TRUE and fails = 0, which would print as a clean pass. The same goes
+# for a rule that evaluates to NA. Both are refused here rather than trusted.
+summarise_rules <- function(data) {
+  s <- summary(confront(data, rules))
+  stopifnot("a validation rule errored or warned" = !any(s$error | s$warning),
+            "a validation rule evaluated to NA" = all(s$nNA == 0))
+  select(s, rule = name, items, passes, fails, nNA)
+}
+
+results <- summarise_rules(livestock)
 
 # A rule that cannot fail is not evidence. The same five rules are confronted
 # with a deliberately corrupted copy of the table, so a reader can see which
@@ -65,13 +80,28 @@ corrupt <- function(x) {
   rbind(broken, broken[i_dup, ])                # duplicated cell
 }
 
-results_corrupted <- summary(confront(corrupt(livestock), rules)) |>
-  select(rule = name, items, passes, fails, nNA)
+results_corrupted <- summarise_rules(corrupt(livestock))
 
+# Keyed by rule name, not by position, so reordering the validator cannot
+# silently pair a delta with the wrong rule.
+expected_delta <- c(head_non_negative = 1L, value_iff_suppressed = 1L,
+                    region_label_present = 1L, no_duplicate_cells = 2L,
+                    census_year_reported = 1L)
+observed_delta <- setNames(as.integer(results_corrupted$fails - results$fails),
+                           results$rule)
 stopifnot(
-  identical(as.integer(results_corrupted$fails - results$fails), c(1L, 1L, 1L, 2L, 1L)),
-  all(results$fails[results$rule != "census_year_reported"] == 0)
+  "real and corrupted summaries must list the same rules in the same order" =
+    identical(results$rule, results_corrupted$rule),
+  "each corruption must move exactly its own rule" =
+    identical(observed_delta[names(expected_delta)], expected_delta),
+  "only census_year_reported may fail on the real data" =
+    all(results$fails[results$rule != "census_year_reported"] == 0)
 )
+
+# Three of the five rules cannot fail on anything load_livestock() returns,
+# because ingestion already stops on a negative count, a value/flag mismatch
+# or an unmapped code. On the real data their zeroes restate the ingestion
+# contract; the corrupted copy is what shows the rules themselves can fire.
 
 # Coverage is deliberately reported rather than asserted, because it is
 # genuinely incomplete: for sheep, 2003-2006, 2008 and 2009 carry fewer region
@@ -88,7 +118,7 @@ coverage <- livestock |>
     .groups = "drop"
   ) |>
   mutate(
-    regions_expected = length(setdiff(names(AREA), AREA_AGGREGATES)),
+    regions_expected = N_REGIONS,
     regions_absent = regions_expected - regions_present,
     suppression_rate = regions_suppressed / regions_present,
     suppression_rate_all_regions = regions_suppressed / regions_expected
@@ -101,15 +131,28 @@ coverage <- livestock |>
 # actually fail is the one on the grid: group_by(year) emits no row for a year
 # with no regional cells at all, which would drop that year from the coverage
 # table silently rather than reporting it as wholly absent.
-stopifnot(identical(sort(coverage$year), EXPECTED_YEARS),
-          all(coverage$regions_absent >= 0),
+stopifnot("coverage must have a row for every expected year" =
+            identical(sort(coverage$year), EXPECTED_YEARS),
+          "no year can have more regions than AREA defines" =
+            all(coverage$regions_absent >= 0),
           all(coverage$regions_with_value + coverage$regions_suppressed +
                 coverage$regions_absent == coverage$regions_expected))
 
 # National totals avoid treating absent/suppressed regional cells as zero.
 # All classes are headcounts, not feed-equivalent stock units.
-dairy_windows <- bind_rows(lapply(list(c(2002L, 2014L), c(2014L, 2025L),
-                                      c(2002L, 2022L)), function(window) {
+#
+# 2014 is where the national dairy herd peaks in this sample. It was chosen
+# after looking at the series, so a split there maximises the before/after
+# contrast by construction; the report says so.
+DAIRY_PEAK_YEAR <- 2014L
+# The most recent census, for the design-matched census-to-census window.
+LAST_CENSUS <- max(CENSUS_YEARS[CENSUS_YEARS <= END_YEAR])
+COMPARISON_WINDOWS <- list(c(START_YEAR, DAIRY_PEAK_YEAR),
+                           c(DAIRY_PEAK_YEAR, END_YEAR),
+                           c(START_YEAR, LAST_CENSUS))
+
+# All three classes, per window: named for what it holds, not only dairy.
+class_windows <- bind_rows(lapply(COMPARISON_WINDOWS, function(window) {
   livestock |>
     filter(area_code == "20", year %in% window) |>
     select(livestock_class, year, head) |>
@@ -122,23 +165,33 @@ dairy_windows <- bind_rows(lapply(list(c(2002L, 2014L), c(2014L, 2025L),
               start_design = ifelse(window[1] %in% CENSUS_YEARS, "census", "survey"),
               end_design = ifelse(window[2] %in% CENSUS_YEARS, "census", "survey"))
 }))
-stopifnot(nrow(dairy_windows) == 9L, !anyNA(dairy_windows),
-          all(dairy_windows$start_head > 0))
+stopifnot("every window must have every class" =
+            nrow(class_windows) == length(COMPARISON_WINDOWS) * length(LIVESTOCK),
+          "a window endpoint is missing" = !anyNA(class_windows),
+          all(class_windows$start_head > 0))
 
 # Reconciliation: sum of non-aggregate regions against the published national
 # total, reported as a residual per year. No fixed tolerance is asserted; the
 # residual is the finding.
+# The one published national cell of a class-year, asserted rather than
+# summed. load.R already requires it, but sum() would hide a breach: sum() of
+# an empty selection is 0, and with na.rm a suppressed total would also become
+# 0, so either failure would be reported as a rounding discrepancy.
+one_published <- function(x) {
+  if (length(x) != 1L || is.na(x)) {
+    stop("A class-year does not have exactly one published national total.",
+         call. = FALSE)
+  }
+  x
+}
+
 reconciliation <- livestock |>
   group_by(year, livestock_class) |>
   summarise(
     # na.rm on the regional sum is load-bearing: suppressed cells are meant to
-    # drop out and surface as residual. It is deliberately NOT used on the
-    # published total, which is contractually a single non-missing cell
-    # (load.R enforces that). With na.rm there, a suppressed national total
-    # would silently become 0 and the class-year would be reported as a
-    # rounding discrepancy rather than as a missing total.
+    # drop out and surface as residual.
     region_sum = sum(head[!is_aggregate], na.rm = TRUE),
-    published  = sum(head[area_code == "20"]),
+    published  = one_published(head[area_code == "20"]),
     .groups    = "drop"
   ) |>
   mutate(
@@ -166,11 +219,9 @@ residual_tiers <- livestock |>
             .groups = "drop") |>
   left_join(reconciliation, by = c("year", "livestock_class")) |>
   mutate(
-    # Derived, not a literal 17: coverage above computes the same expression,
-    # and a hardcoded copy here would silently mis-tier every class-year if
-    # AREA ever gained or lost a region code.
-    fully_published = regions_present ==
-      length(setdiff(names(AREA), AREA_AGGREGATES)) & regions_suppressed == 0,
+    # Derived, not a literal 17: a hardcoded copy here would silently mis-tier
+    # every class-year if AREA ever gained or lost a region code.
+    fully_published = regions_present == N_REGIONS & regions_suppressed == 0,
     tier = case_when(
       fully_published & residual == 0 ~ "Exact",
       fully_published                 ~ "Fully published, off by a few head",
@@ -178,12 +229,23 @@ residual_tiers <- livestock |>
     )
   )
 
+# group_by() emits no row for a class-year with no regional rows at all, which
+# would shrink every "N of the 72 class-years" statement without an error.
+stopifnot("residual_tiers must cover every class-year" =
+            nrow(residual_tiers) == length(EXPECTED_YEARS) * length(LIVESTOCK),
+          "every class-year must be tiered" = !anyNA(residual_tiers$tier))
+
+# Every livestock code in the extract, not only the three analysed: the years
+# in which the confidentiality flag appears. Computed here so the report does
+# not read and hash the extract a second time.
+all_c_years <- all_suppression_years("c", raw)
+
 if (sys.nframe() == 0) {
   dir.create("outputs", showWarnings = FALSE)
   write_csv(livestock,         "outputs/livestock_regional.csv")
   write_csv(results,           "outputs/validation-summary.csv")
   write_csv(results_corrupted, "outputs/validation-summary-corrupted.csv")
-  write_csv(dairy_windows, "outputs/dairy-comparison-windows.csv")
+  write_csv(class_windows,     "outputs/dairy-comparison-windows.csv")
   write_csv(coverage,          "outputs/coverage-and-suppression.csv")
   write_csv(reconciliation,    "outputs/reconciliation.csv")
   write_csv(residual_tiers,    "outputs/residual-tiers.csv")

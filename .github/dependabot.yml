@@ -2,16 +2,27 @@ version: 2
 
 # Dependabot has no R ecosystem, so R package versions stay the lockfile's job.
 # The workflow actions and the port's Python pins are watched here. Monthly
-# keeps the noise low enough to actually read.
+# keeps the noise low enough to actually read, and the cooldown means a release
+# has been public for a week before an update is proposed, so a compromised or
+# withdrawn release has time to be noticed first.
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 5
 
+  # databricks/requirements.txt is compiled, with hashes, from requirements.in.
   - package-ecosystem: pip
     directory: /databricks
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 5
+    ignore:
+      # pandas 3 is not yet fully supported by PySpark 4.2 (see requirements.in).
+      - dependency-name: pandas
+        update-types: ["version-update:semver-major"]

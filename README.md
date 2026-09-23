@@ -1,162 +1,78 @@
 # Where New Zealand's sheep went: a regional breakdown of the flock decline, 2002–2025
 
-New Zealand's sheep flock fell by 16.32 million head between June 2002 and June 2025, and three regions account for over half of that fall.
+New Zealand's sheep flock fell by about 16.3 million head (41 percent) between June 2002 and June 2025, and the fall was spread across the regions roughly in proportion to where the sheep were.
 
-**[Read the full release →](https://kenchch.github.io/nz-sheep-decline-by-region/)**
+**[Read the full report →](https://kenchch.github.io/nz-sheep-decline-by-region/)**
 
-![Sheep declines across the 15 regions with both endpoints published, 2002 to 2025](outputs/figures/01-regional-contribution.png)
+![Horizontal bar chart of the 15 regions with both endpoints published, ordered by sheep lost between 2002 and 2025. Canterbury lost 3.57 million head, Southland 2.91 million and Otago 2.27 million, drawn darker; together 54 percent of the fall across these regions, against 50.6 percent of their 2002 flock. Manawatū-Whanganui is fourth at 2.25 million. A tick on each bar marks the fall at the 41.3 percent average rate.](outputs/figures/01-regional-contribution.png)
 
 ## Key findings
 
-- Canterbury, Southland and Otago together account for **54 percent** of the fall measured across the 15 regions with both endpoints published. Against the published national fall the same three regions are 53.6 percent; the published fall is 0.77 percent larger than the measurable regional one, because Auckland and Nelson are withheld in 2025.
-- Over the same 23 years the national dairy herd rose by **588 thousand** cattle net. That net hides the shape of the series: it rose by 1.54 million (29.8 percent) to a 2014 peak and has fallen by 0.95 million since.
-- Dairy fell *alongside* sheep in **7 of the 13** regions with both endpoints published for 2002–2025; over 2002–2014, the years of the steepest sheep decline, it fell in only **4 of 15**, and over 2014–2025 in **12 of 14**. The direction depends on the window, so all three are reported in [Three endpoint windows](https://kenchch.github.io/nz-sheep-decline-by-region/#three-endpoint-windows). Whether the earlier dairy growth replaced the sheep in feed terms cannot be settled from head counts.
+- **The flock fell by about 16.3 million head (41 percent).** The 2025 figure is a sample-survey estimate; at Stats NZ's 3 percent relative sampling error, the end point alone is uncertain by about ±0.7 million head.
+- **The fall tracks where the sheep were.** Canterbury, Southland and Otago held 50.6 percent of the 2002 flock across the 15 regions measurable at both ends, and account for **54 percent** of the fall there. Only Canterbury and Southland fell by more than their share. Otago and Manawatū-Whanganui are all but tied for third, 15,971 head apart, so the share is robust and the list of three is not.
+- **Dairy rose, then fell.** The national dairy herd rose +1.54 million (29.8 percent) to a 2014 peak and has changed by −0.95 million since: 588 thousand net. Dairy fell alongside sheep in only **4 of 15** regions over 2002–2014 and in **12 of 14** over 2014–2025 (7 of 13 over the whole period). Head counts cannot say whether dairy replaced sheep in feed or land terms.
 
-## Data quality checks
+## Caveats
 
-Five rules run over the analysis table, and the same five run against a deliberately corrupted copy of it — because an all-green table cannot tell a reader whether the rules are sound or merely too loose to fire.
+- **Head counts only.** A dairy cow and a sheep are not exchangeable units; nothing here is a stock-unit, land-use or emissions comparison.
+- **Census against survey.** 2002 is a census, 2025 a sample survey with 30 percent of the sheep estimate imputed. The census-to-census window, 2002–2022, gives a fall of 14.4 million head with the top three at 55.6 percent, but Manawatū-Whanganui replaces Otago in the three.
+- **Withheld and absent cells.** Auckland and Nelson are withheld in 2025, so the regional shares use the measurable regional fall; the published national fall is 0.77 percent larger, and the same three regions account for 53.6 percent against the published national fall. Before 2012 the export leaves cells out instead of flagging them; in 21 of the 22 class-years with a region missing and no flag, the regions fall short of the national total, so an absent row is not a zero.
 
-| Rule | Fails on real data | Fails on corrupted copy |
-|---|---:|---:|
-| `head_non_negative` | 0 | 1 |
-| `value_iff_suppressed` | 0 | 1 |
-| `region_label_present` | 0 | 1 |
-| `no_duplicate_cells` | 0 | 2 |
-| `census_year_reported` | **9** | 10 |
+Across start years from 2002 to 2020 the three largest declines take 48–59 percent of the gross regional fall, below half for 2008, 2009 and 2010 starts. The report sets out the start- and end-year sensitivity in full.
 
-Each corruption moves exactly one rule. `no_duplicate_cells` moves by two because a duplicate makes both members of the pair non-unique; `census_year_reported` moves from 9 to 10 because it already fails nine times on the real data.
-
-`census_year_reported` fires 9 times on the real data, and that is a finding rather than a defect: a census is full coverage with no sampling error, yet census-year cells are still withheld, because withholding is about confidentiality and imputation quality rather than coverage. The rule earns its place by being falsified.
-
-The reconciliation separates into three tiers across the 72 class-years:
-
-| Tier | Class-years | Largest absolute residual |
-|---|---:|---:|
-| Exact — fully published and reconciling to zero | 10 | 0 head |
-| Fully published, off by a few head | 12 | 2 head |
-| Incomplete region row | 50 | 701,526 head |
-
-Completeness is checked before the residual, so a class-year with an incomplete region row is never Exact however well it reconciles: 11 class-years reconcile to zero, one more than the Exact tier holds, because one incomplete class-year happens to reconcile exactly anyway.
-
-In 10 of the 22 fully-published class-years the regions sum to the published national total **exactly, to the head**. In 12 further fully-published class-years the residual never exceeds two head, on bases of 3.5–31.1 million — which the report does not attribute, because it cannot from published data. Every residual above that (the next smallest is 507 head) belongs to a year with a withheld region or an absent region code.
-
-Those one-head discrepancies are not an artefact of the analysis: adding the two *published* island totals and comparing against the *published* national total — three aggregate cells this analysis never sums — gives a one-head difference in 14 of the 72 class-years. The discrepancy lives in the published table, not in the join.
-
-Suppression is also not one thing. The `OBS_STATUS` column carries two different flags, and separating them turns an apparent anomaly into confirmation of the published method:
-
-- **`C`, confidentiality.** Among the three livestock classes used here it appears only in 2012; across all 44 livestock codes in the extract it appears in 2012–2016 and **never after 2016**. Stats NZ states that `C` was used prior to 2017 and that confidentiality has since been implemented by input perturbation instead, so cells no longer need replacing with `C`. The file stops using the flag in the same year the method changed.
-- **`S`, quality suppression** — applied where sampling errors **or** imputation levels are high. Runs from 2014 to 2025 and peaks at 17.6 percent of cells in 2021. Census years sit below the survey years around them but not at zero: a census removes the sampling-error branch, which is why they are lower, while the imputation branch remains, which is why they are not empty. All five census-year `S` cells are Nelson.
-
-The 2012 spike is therefore not a quality problem at all: all four withheld cells that year are `C`, not `S`. Whether the absence of any flag before 2012 means "nothing withheld" or "flag not carried in this export" cannot be determined from the extract, and the report says so.
-
-One of the two dropped regions is explained in the methodology rather than guessed at: sampling error could not be calculated for Nelson because only one responding unit was observed per sampled stratum. Auckland is simply withheld, with no reason published.
-
-![Share of regional cells suppressed, by year](outputs/figures/03-suppression-rate.png)
-
-## Data source and licence
+## Data and licence
 
 Stats NZ table `AGR_AGR_003`, *Livestock Numbers by Regional Council*, dataflow `STATSNZ:AGR_AGR_003(1.0)`, final vintage, downloaded 2026-09-04 and committed with its SHA-256. Full provenance in [`data-raw/SOURCE.md`](data-raw/SOURCE.md).
 
-> Source data: Stats NZ, Agricultural production statistics, licensed by Stats NZ for re-use under the Creative Commons Attribution 4.0 International licence.
+> This work is based on Stats NZ's data (*Agricultural production statistics*, `AGR_AGR_003`), licensed by Stats NZ for re-use under the [Creative Commons Attribution 4.0 International licence](https://creativecommons.org/licenses/by/4.0/). The tables and figures in `outputs/` and the report are aggregated and reshaped from that data.
 
-Code in this repository is MIT licensed ([`LICENSE`](LICENSE)); the `data-raw/`
-extract stays under CC BY 4.0. Both are set out in
-[`DATA-LICENCE.md`](DATA-LICENCE.md).
+Code is MIT licensed ([`LICENSE`](LICENSE)). The `data-raw/` extract, the derived files in `outputs/` and the report's text and figures are CC BY 4.0. Details in [`DATA-LICENCE.md`](DATA-LICENCE.md).
 
-Every methodological statement in the report was read on its source page before being written down; the [report lists which page each one came from](https://kenchch.github.io/nz-sheep-decline-by-region/#sources-for-the-methodological-statements). Claims that could not be sourced there are not made.
+Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the numeric area codes are this table's own, not SSGA23 codes, and the extract carries no labels.
 
-## Method
+## How the numbers are checked
 
-1. **One table, one vintage** — downloaded once, committed with its hash. A pipeline that re-queries the API on every run would silently change its own answers at the next release.
-2. **Codes verified before code was written** — the extract carries numeric codes and no labels. The three livestock codes used were each confirmed against published June 2024 national figures. The codelist holds 44 nested entries; adding all 44 gives 115.7 million animals against a published 33.8 million.
-3. **Aggregates separated, not summed** — `AREA` 10, 19 and 20 are island and national totals. They are flagged and excluded from every regional sum.
-4. **Suppressed cells stay suppressed** — `NA` plus a flag, never zero, never dropped. Two regions are excluded from the change calculation for missing an endpoint, and are counted in the text.
-5. **Reconciliation reported, not asserted** — no fixed tolerance. The residual is computed for every year and published.
-6. **Numbers are computed, cited, or explicitly rounded, and the report says which** — figures derived from the data are inline expressions evaluated at render time; figures from Stats NZ's methodology (sample size, response rate, imputation level, the GST threshold) cannot be computed from an aggregate extract and are typed with an attribution; figures in the plain-language layer are rounded, with the exact value further down the page.
-
-## Limitations
-
-- Non-census years are sample estimates. Sampling errors are not recomputed and no weighting is applied here; a movement in a single small region should not be read as real change.
-- Imputation is large: Stats NZ reports 30 percent of the 2025 national sheep estimate as imputed, against a 3 percent relative sampling error. These national rates do not establish the rates for individual regions or other years, which are not supplied in this extract.
-- All comparisons are ratios of head counts. They say nothing about stocking rate, feed demand, land use or emissions.
-- The target population is GST-registered agricultural businesses, so coverage of the smallest farms is partial and not quantifiable from published data.
-- **The two endpoints are different collection designs**: 2002 is a census, 2025 a sample survey, so a full-coverage count is differenced against an estimate carrying sampling error and 30 percent imputation. The design-matched window — 2002 to 2022, census to census — gives a fall of 14.4 million head across 16 measurable regions with the top three at 55.6 percent: the same qualitative answer. The report says why the 2025 endpoint is used anyway.
-- **The start year changes which regions lead and whether their share exceeds half.** Across the 19 start years from 2002 to 2020, against the same 2025 endpoint, the three largest decliners account for 48–59 percent of gross losses in measurable regions. This excludes gains elsewhere; the report also shows the net fall. The share is below half for 2008, 2009 and 2010 starts. The five-year minimum is an analysis choice, so this conclusion does not cover the shorter 2021–2024 windows. Which three regions lead also rotates: Manawatū-Whanganui appears in 17 of the 19 windows, Southland in 16, Otago in 14, and Canterbury in only 9. Canterbury leads the headline window because its decline is concentrated in the early years.
-- No map is drawn, deliberately: a choropleth encodes land area rather than magnitude, and the three largest contributors are also among the largest regions by area.
+- **Pinned input.** `R/load.R` refuses the extract unless its bytes match the SHA-256 recorded in `data-raw/SOURCE.md`, and stops on any change of shape: unexpected columns, an unknown flag, a head count that is not a whole number, a duplicate or unmapped cell, a missing year or a missing national or island total. [`tests/test-r-contracts.R`](tests/test-r-contracts.R) feeds it broken copies to show each check fires.
+- **Rules that can fail.** Five validation rules run on the analysis table and on a deliberately corrupted copy; each corruption moves exactly one rule. `census_year_reported` fires 9 times on the real data, which is a finding: census years still withhold cells.
+- **Reconciliation, reported not asserted.** The regions are summed against the published national total for all 72 class-years: 10 exact, 12 off by at most 2 head, 50 incomplete because a region is withheld or absent.
+- **Reproduced by CI.** GitHub Actions regenerates every CSV from a clean checkout on every pull request, every push to `main` and weekly, and fails if any differs from the committed copy. The site deployed to GitHub Pages is the one that build rendered.
+- **No hand-copied numbers.** The report's numbers, captions and figure alt text are computed at render time. The figures quoted in this README are written to [`outputs/key-figures.csv`](outputs/key-figures.csv) by the render, and [`tests/test-readme-figures.R`](tests/test-readme-figures.R) fails if this README stops quoting them.
 
 ## Reproduce
 
-Requirements: R >= 4.1 (for the native pipe) and the Quarto CLI. The R packages are declared in [`DESCRIPTION`](DESCRIPTION) and pinned to exact versions in [`renv.lock`](renv.lock), so `renv::restore()` installs the set these outputs were produced with rather than whatever CRAN serves today.
+Requirements: R 4.6.1 (the version in [`renv.lock`](renv.lock), which CI uses) and Quarto 1.10.18. The R packages are declared in [`DESCRIPTION`](DESCRIPTION) and pinned to exact versions in [`renv.lock`](renv.lock). Run from the repository root:
 
 ```bash
 git clone https://github.com/Kenchch/nz-sheep-decline-by-region.git
 cd nz-sheep-decline-by-region
-Rscript -e 'renv::restore()'   # installs the pinned package versions
+Rscript -e 'renv::restore()'                                 # the pinned package versions
 Rscript -e 'stopifnot(isTRUE(renv::status()$synchronized))'
-Rscript tests/test-r-contracts.R  # rejects malformed extract fixtures
-Rscript R/checks.R    # regenerates outputs/*.csv
-quarto render         # regenerates the report and outputs/figures/*.png
+Rscript tests/test-r-contracts.R                             # malformed extracts are rejected
+Rscript tests/test-r-analysis.R                              # the report's helper functions
+Rscript R/checks.R                                           # regenerates outputs/*.csv
+quarto render                                                # the report, figures and key-figures.csv
+Rscript tests/test-readme-figures.R                          # this README against the report
 ```
 
-Both sets of outputs are committed. A clean checkout that runs those commands
-must reproduce the CSVs exactly; figures are regenerated too, but their binary
-bytes can differ with the platform's fonts and graphics device. `R/load.R`
-verifies the extract against the SHA-256 in `SOURCE.md` before reading it and
-stops if they disagree.
+A clean checkout must reproduce the committed CSVs byte for byte. The figures are regenerated too, but their bytes differ with the platform's fonts and graphics device, so CI checks that each exists rather than comparing it.
 
-GitHub Actions runs the same regeneration on every pull request and every push
-to `main`, fails if any committed CSV differs, and publishes the report to GitHub Pages from that
-same green run — so the live page is always the output of a build that
-reproduced its own outputs. It renders the figures too, but does not compare
-their bytes, because graphics differ across platforms. Ingestion stops on schema
-changes, unknown suppression flags, duplicate cells, missing years, or missing
-national totals, so a changed source shape cannot silently produce
-plausible-looking results.
-
-The check paid for itself on its first run, by failing: the pinned extract
-arrives with CRLF line endings and the recorded SHA-256 is the hash of those
-bytes, but Git had normalised them to LF on commit, so the hash gate passed on
-Windows and would have stopped every clone on Linux or macOS. Dependencies are
-declared once in [`DESCRIPTION`](DESCRIPTION), which the workflow reads, and pinned in [`renv.lock`](renv.lock). The snapshot is `explicit`, so an Import added without re-snapshotting fails CI rather than drifting.
+## Repository layout
 
 ```
-index.qmd                 the published report
-R/load.R                  hash gate, read, label, isolate withheld cells
-R/checks.R                five rules, the corrupted-copy demo, both reconciliations
-tests/test-r-contracts.R  negative ingestion fixtures and unchanged-output check
-data-raw/                 the pinned extract and its provenance
-outputs/                  analysis table, validation summaries, reconciliations, figures
-databricks/               the same analysis as three PySpark notebooks, see databricks/README.md
+index.qmd                    the published report
+R/load.R                     hash gate, read, label, isolate withheld cells
+R/checks.R                   five rules, the corrupted-copy demo, both reconciliations
+R/analysis.R                 pure helpers the report uses
+tests/                       ingestion contracts, helper tests, README check
+data-raw/                    the pinned extract and its provenance
+outputs/                     analysis table, validation summaries, reconciliations, key figures, figures
+databricks/                  the same pipeline as three PySpark notebooks
 ```
 
-The PySpark port in [`databricks/`](databricks/README.md) is a port, not a
-re-run: it rebuilds the pipeline on Databricks serverless with the same hash
-gate, the same five rules and the same reconciliation tiers.
-[`databricks/run_local.py`](databricks/run_local.py) runs the three notebooks on
-a local Spark session and asserts that silver and every gold table agree with
-the committed `outputs/*.csv`, or, for the regional change table that has no
-committed CSV, with the same change recomputed from the analysis table. CI
-runs it on every pull request and every push to `main`, and the page is
-published only if it passes too.
+## Databricks port
 
-Region names follow the Statistical standard for geographic areas 2023 (SSGA23); the extract itself publishes numeric codes and no labels.
-
-Figures in this README are transcribed from the report. The report provides the calculations, source citations and rounding conventions.
+[`databricks/`](databricks/README.md) rebuilds the pipeline in PySpark for Databricks serverless, with the same hash gate, the same rules and the same reconciliation tiers. The quality gate refuses to publish if any row breaks a blocking rule, as the R loader does. [`databricks/run_local.py`](databricks/run_local.py) runs the three notebooks on a local Spark session in CI and compares silver and the gold tables with the committed `outputs/*.csv`; the [port's README](databricks/README.md) says exactly which columns are compared.
 
 ## How this was built
 
-I set the problem, the data contracts and the quality rules, ran the benchmarks
-and reviewed every diff; Claude Code and OpenAI Codex drafted code, refactored
-and scaffolded tests. The full note — including the `Co-Authored-By` trailers
-removed from this repository's history on 6 September 2026 — is on my profile:
-[How I use AI tools](https://github.com/Kenchch/Kenchch#how-i-use-ai-tools).
-
-### Coverage and comparison windows
-
-[Coverage CSV](outputs/coverage-and-suppression.csv) separates sheep region rows
-that are absent from rows whose values are suppressed. Its two suppression rates
-use present rows and all 17 expected regions respectively.
-[Three comparison windows](outputs/dairy-comparison-windows.csv) report national
-headcounts for 2002–2014, 2014–2025 and census-to-census 2002–2022. These mixed-age
-animal totals do not support an adult-cow/ewe stock-unit conversion; the
-[report](https://kenchch.github.io/nz-sheep-decline-by-region/#three-endpoint-windows) explains the required data and source.
+I set the problem, the data contracts and the quality rules, ran the checks and reviewed every diff. Claude Code and OpenAI Codex drafted code, refactored and scaffolded tests. Commits made before 6 September 2026 had their `Co-Authored-By` trailers removed when the history was rewritten; some later commits carry them. Each pull request records its own AI involvement in its description.
