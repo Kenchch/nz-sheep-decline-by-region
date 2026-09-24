@@ -26,7 +26,8 @@ quality gate replaces the last good silver table.
 
 Usage, from the repository root, with Java 17+ on the PATH:
 
-    pip install --require-hashes -r databricks/requirements.txt
+    pip install --require-hashes -r databricks/build-requirements.txt
+    pip install --require-hashes --no-build-isolation -r databricks/requirements.txt
     python databricks/run_local.py
 
 This work is based on Stats NZ's data (Agricultural production statistics,
@@ -404,11 +405,21 @@ class Gate:
         return rows
 
 
-SHEEP = F.col("LIVESTOCK_AGR_AGR_003") == "6731"
 START = str(START_YEAR)
-SHEEP_START = SHEEP & (F.col("YEAR_AGR_AGR_003") == START)
-CANTERBURY_END = SHEEP & (F.col("YEAR_AGR_AGR_003") == str(END_YEAR)) & \
-    (F.col("AREA_AGR_AGR_003") == "15")
+
+
+# Functions, not module constants: F.col needs an active Spark session.
+def sheep() -> Column:
+    return F.col("LIVESTOCK_AGR_AGR_003") == "6731"
+
+
+def sheep_start() -> Column:
+    return sheep() & (F.col("YEAR_AGR_AGR_003") == START)
+
+
+def canterbury_end() -> Column:
+    return (sheep() & (F.col("YEAR_AGR_AGR_003") == str(END_YEAR)) &
+            (F.col("AREA_AGR_AGR_003") == "15"))
 
 
 def with_value(frame: DataFrame, cell: Column, value, column: str = "OBS_VALUE") -> DataFrame:
@@ -423,7 +434,7 @@ def check_malformed_rows(gate: Gate) -> None:
     # Row-level failures, one per rule, all in a single run, with ANSI mode on
     # and off: casts that raise under one mode return null under the other,
     # and either way the row must reach quarantine rather than silver.
-    area = lambda code: SHEEP_START & (F.col("AREA_AGR_AGR_003") == code)
+    area = lambda code: sheep_start() & (F.col("AREA_AGR_AGR_003") == code)
     bad = gate.bronze
     for code, value in [("1", "not-a-number"), ("2", "NaN"), ("3", "Infinity"),
                         ("6", "4192693.5"), ("7", "1e3"), ("8", "-5"),
@@ -453,16 +464,16 @@ def check_single_cells(gate: Gate) -> None:
     b = gate.bronze
     end = str(END_YEAR)
     for label, frame, key, rule in [
-            ("duplicate", b.unionByName(b.filter(CANTERBURY_END)), ("15", end), "no_duplicate_cells"),
-            ("unmapped area", with_value(b, CANTERBURY_END, "999", "AREA_AGR_AGR_003"),
+            ("duplicate", b.unionByName(b.filter(canterbury_end())), ("15", end), "no_duplicate_cells"),
+            ("unmapped area", with_value(b, canterbury_end(), "999", "AREA_AGR_AGR_003"),
              ("999", end), "region_label_present"),
-            ("fractional count", with_value(b, CANTERBURY_END, "4192693.5"),
+            ("fractional count", with_value(b, canterbury_end(), "4192693.5"),
              ("15", end), "value_is_count"),
             # value_iff_suppressed in both directions: without these, a rule
             # replaced by F.lit(True) still passed every scenario.
-            ("flagged published value", with_value(b, CANTERBURY_END, "s", "OBS_STATUS"),
+            ("flagged published value", with_value(b, canterbury_end(), "s", "OBS_STATUS"),
              ("15", end), "value_iff_suppressed"),
-            ("unflagged blank", with_value(b, CANTERBURY_END, F.lit(None).cast("string")),
+            ("unflagged blank", with_value(b, canterbury_end(), F.lit(None).cast("string")),
              ("15", end), "value_iff_suppressed")]:
         gate.refused(frame)
         gate.quarantined({key: rule})
@@ -475,8 +486,8 @@ def check_single_cells(gate: Gate) -> None:
 
 def check_table_contracts(gate: Gate) -> None:
     b = gate.bronze
-    national = SHEEP_START & (F.col("AREA_AGR_AGR_003") == "20")
-    island = SHEEP_START & (F.col("AREA_AGR_AGR_003") == "10")
+    national = sheep_start() & (F.col("AREA_AGR_AGR_003") == "20")
+    island = sheep_start() & (F.col("AREA_AGR_AGR_003") == "10")
     gate.refused(b.filter(~national), "national total is required")
     gate.refused(withheld(b, national), "national total is required")
     gate.refused(b.filter(~island), "island total is required")
@@ -488,7 +499,7 @@ def check_table_contracts(gate: Gate) -> None:
     # 03's own output contract: a year with no regional sheep rows passes 02
     # (the aggregates are still there) but must not vanish from gold_coverage.
     year = START_YEAR + 8
-    gate.write_bronze(b.filter(~(SHEEP & (F.col("YEAR_AGR_AGR_003") == str(year)) &
+    gate.write_bronze(b.filter(~(sheep() & (F.col("YEAR_AGR_AGR_003") == str(year)) &
                                  ~F.col("AREA_AGR_AGR_003").isin("10", "19", "20"))))
     run_notebook(gate.spark, NOTEBOOKS[1], show=False)
     expect_failure(gate.spark, NOTEBOOKS[2], f"gold_coverage is missing years: [{year}]")
