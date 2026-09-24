@@ -44,9 +44,8 @@ and makes any change of vintage a visible commit rather than an invisible drift.
 | YEAR coverage | 1994, then 2002–2025 continuous | confirmed |
 
 The island check uses 2012 because it is a year in which no region is withheld.
-In 2017 the South Island does **not** reconcile — Nelson's sheep cell is
-suppressed, leaving the eight regional codes 19,568 head short of the published
-South Island total — which is the behaviour the report's reconciliation tiers
+In 2017 the South Island does **not** reconcile exactly, because Nelson's sheep
+cell is withheld — which is the behaviour the report's reconciliation tiers
 exist to report rather than a defect in the extract.
 
 The June 2024 expected totals were read from the Stats NZ release for that year

@@ -12,6 +12,10 @@ lang: en-NZ
 
 ```{r setup}
 #| include: false
+# Every warning is an error. Most of the computation is in this hidden chunk
+# and in inline expressions, whose warnings never reach the page, so a
+# max() of an empty vector would otherwise render as "-Inf" and pass.
+options(warn = 2)
 source("R/checks.R")     # sources R/load.R, runs the rules and reconciles
 source("R/analysis.R")   # pure helpers, tested in tests/test-r-analysis.R
 suppressPackageStartupMessages({
@@ -42,7 +46,11 @@ excluded     <- sort(sheep_change$region[is.na(sheep_change$change)])
 decline_sum  <- -headline$fall
 top3         <- head(measured |> filter(change < 0), 3)
 fourth       <- (measured |> filter(change < 0))[4, ]
+stopifnot("the prose compares the third and fourth largest declines" =
+            nrow(fourth) == 1L, !is.na(fourth$change))
 top3_share   <- headline$share
+# The same share with the fourth-largest decline counted third instead.
+alt_share    <- 100 * (sum(top3$change[1:2]) + fourth$change) / decline_sum
 top3_base    <- headline$base_share
 
 # Each region's share of the fall against its share of the starting flock. If
@@ -66,6 +74,9 @@ nat_sheep <- national(d) |> filter(livestock_class == "Sheep")
 nat_start <- nat_sheep$head[nat_sheep$year == START_YEAR]
 nat_end   <- nat_sheep$head[nat_sheep$year == END_YEAR]
 nat_drop  <- nat_start - nat_end
+# The last year the flock was still at or above its starting level, so the
+# figure 4 text says where the fall begins rather than "throughout".
+sheep_flat_until <- max(nat_sheep$year[nat_sheep$head >= nat_start])
 nat_pct   <- 100 * nat_drop / nat_start
 top3_national_share <- 100 * -sum(top3$change) / nat_drop
 national_gap_pct <- 100 * (nat_drop + decline_sum) / -decline_sum
@@ -352,10 +363,15 @@ The regional shares use the measurable regional fall as their denominator.
 Against the published national fall, the same three regions account for
 `r fmt(top3_national_share, 1)` percent. The national fall is
 `r fmt(national_gap_pct, 2)` percent larger than the measurable regional fall
-because `r and_list(excluded)` have withheld `r END_YEAR` values. No
-uncertainty is attached to the regional shares: Stats NZ does not publish
-regional sampling errors in this table, so rankings separated by less than the
-national margin above are not distinguished here.
+because `r and_list(excluded)` have withheld `r END_YEAR` values. The ±`r fmt(half_width/1e6, 1)` million sampling
+margin above is national and belongs to one endpoint; it says nothing about the gap between two regions.
+Stats NZ does not publish regional sampling errors in this table, so no
+uncertainty is attached to the regional shares or ranks. `r top3$region[3]` and
+`r fourth$region` differ by `r fmt(100 * headline$third_gap / top3$end[3], 1)`
+percent of `r top3$region[3]`'s `r END_YEAR` flock and are not ranked against each
+other here. The top-three share depends only on which of the two is counted
+third: `r fmt(top3_share, 1)` percent with `r top3$region[3]`,
+`r fmt(alt_share, 1)` percent with `r fourth$region`.
 
 ::: {.callout-tip collapse="true"}
 ## Terms used on this page
@@ -426,8 +442,8 @@ p1 <- ggplot(plot_dat, aes(x = millions, y = region)) +
                 width = 0.72, colour = "grey15", linewidth = 0.6) +
   geom_text(aes(x = pmax(millions, proportional), label = sprintf("%.2f", millions)),
             hjust = -0.15, size = 3.1, colour = "grey25") +
-  annotate("label", x = max(plot_dat$millions) * 0.45,
-           y = nrow(plot_dat) - 8,
+  annotate("label", x = max(plot_dat$millions) * 0.9,
+           y = nrow(plot_dat) - 1.9,
            label = sprintf("%s:\n%.0f%% of the fall across these %d regions,\n%.1f%% of their %d flock",
                            and_list(top3$region), top3_share, measurable,
                            top3_base, START_YEAR),
@@ -435,10 +451,10 @@ p1 <- ggplot(plot_dat, aes(x = millions, y = region)) +
   scale_fill_manual(values = c("Top three" = "#1b4332", "Other regions" = "#95a5a0"),
                     guide = "none") +
   scale_x_continuous(labels = label_comma(accuracy = 0.1),
-                     expand = expansion(mult = c(0, 0.14))) +
+                     expand = expansion(mult = c(0, 0.3))) +
   labs(
-    title    = sprintf("Three regions account for %.0f%% of the measurable regional fall, and held %.1f%% of the flock",
-                       top3_share, top3_base),
+    title    = sprintf("Three regions account for %.0f%% of the measurable regional fall,\nand held %.1f%% of the %d flock in these regions",
+                       top3_share, top3_base, START_YEAR),
     subtitle = sprintf("Reduction in sheep, millions of head, June %d to June %d. Tick: fall at the %.1f%% average rate",
                        START_YEAR, END_YEAR, measured_rate),
     x = "Million head fewer", y = NULL,
@@ -496,7 +512,7 @@ dairy replaced sheep in feed or land terms cannot be answered from this table.
 ```{r}
 #| label: fig-national
 #| fig-cap: !expr 'sprintf("National sheep, dairy cattle and beef cattle, indexed to %d = 100, June %d to June %d.", START_YEAR, START_YEAR, END_YEAR)'
-#| fig-alt: !expr 'sprintf("Three line panels, one per class, each indexed to %d equals 100. Sheep falls throughout, to %s by %d. Dairy cattle rises to %s at its %d peak, marked by a dashed line, then falls to %s by %d. Beef cattle ends at %s. Census years are marked with filled points.", START_YEAR, fmt(100 * nat_end / nat_start, 0), END_YEAR, fmt(100 * dairy_peak / dairy_start, 0), DAIRY_PEAK_YEAR, fmt(100 * nat_dairy$head[nat_dairy$year == END_YEAR] / dairy_start, 0), END_YEAR, fmt(100 * (1 + beef_gain / national(d)$head[national(d)$livestock_class == "Beef cattle" & national(d)$year == START_YEAR]), 0))'
+#| fig-alt: !expr 'sprintf("Three line panels, one per class, each indexed to %d equals 100. Sheep stays at or above its %d level until %d, then falls to %s by %d. Dairy cattle rises to %s at its %d peak, marked by a dashed line, then falls to %s by %d. Beef cattle ends at %s. Census years are marked with filled points.", START_YEAR, START_YEAR, sheep_flat_until, fmt(100 * nat_end / nat_start, 0), END_YEAR, fmt(100 * dairy_peak / dairy_start, 0), DAIRY_PEAK_YEAR, fmt(100 * nat_dairy$head[nat_dairy$year == END_YEAR] / dairy_start, 0), END_YEAR, fmt(100 * (1 + beef_gain / national(d)$head[national(d)$livestock_class == "Beef cattle" & national(d)$year == START_YEAR]), 0))'
 index_dat <- national(d) |>
   group_by(livestock_class) |>
   mutate(index = 100 * head / head[year == START_YEAR]) |>

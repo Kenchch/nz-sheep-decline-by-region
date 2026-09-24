@@ -372,7 +372,13 @@ def check_failure_paths(spark):
                 ("unmapped area", with_value(bronze, canterbury_2025, "999", "AREA_AGR_AGR_003"),
                  ("999", "2025"), "region_label_present"),
                 ("fractional count", with_value(bronze, canterbury_2025, "4192693.5"),
-                 ("15", "2025"), "value_is_count")]:
+                 ("15", "2025"), "value_is_count"),
+                # value_iff_suppressed in both directions: without these, a
+                # rule replaced by F.lit(True) still passed every scenario.
+                ("flagged published value", with_value(bronze, canterbury_2025, "s", "OBS_STATUS"),
+                 ("15", "2025"), "value_iff_suppressed"),
+                ("unflagged blank", with_value(bronze, canterbury_2025, F.lit(None).cast("string")),
+                 ("15", "2025"), "value_iff_suppressed")]:
             write_bronze(frame)
             expect_failure(spark, NOTEBOOKS[1], "failed blocking rules")
             quarantined({key: rule})

@@ -8,6 +8,31 @@ version needs to know.
 
 ## [Unreleased]
 
+### Corrections to published findings
+
+- The report said regional rankings closer than the ±0.7 million national
+  sampling margin "are not distinguished", which would have left the whole top
+  four unranked while the text still ranked them; that margin is national and
+  belongs to one endpoint. The sentence now says regional sampling errors are
+  not published, that Otago and Manawatū-Whanganui (0.4 percent apart) are not
+  ranked against each other, and that the top-three share is 54.0 or 53.9
+  percent depending on which of them is counted third.
+- Figure 4's alternative text said sheep "falls throughout"; the flock was at or
+  above its 2002 level until 2006. The text is now computed.
+- Figure 1's title gives the 50.6 percent as a share of the 2002 flock *in the
+  measurable regions*, not of the national flock, and its label sits beside the
+  three bars it describes.
+- `data-raw/SOURCE.md` no longer gives the 2017 South Island shortfall in head,
+  which is an approximation of Nelson's withheld cell.
+
+### Fixed
+
+- Warnings raised in the hidden setup code or in inline expressions never
+  reached the page, so the CI check for R warnings could not see them. The
+  render now turns every warning into an error.
+- The port's local check had no scenario for `value_iff_suppressed`; a flagged
+  published value and an unflagged blank are now both quarantined.
+
 ## [0.3.0] - 2026-09-23
 
 ### Corrections to published findings
