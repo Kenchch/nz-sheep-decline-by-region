@@ -28,11 +28,15 @@ dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
 dbutils.widgets.text("source_file", "agr_agr_003_2026-09-04.csv")
 dbutils.widgets.text("expected_sha256", PINNED_SHA256)
+# Lakeflow can pass {{job.run_id}}; every table written by the three notebooks
+# carries it, so a gold row can be traced to the run that produced it.
+dbutils.widgets.text("run_id", "manual")
 
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
 SRC = dbutils.widgets.get("source_file")
 EXPECT = dbutils.widgets.get("expected_sha256")
+RUN_ID = dbutils.widgets.get("run_id")
 
 # Parameters become SQL identifiers and a file path, so they are validated
 # rather than interpolated as given: a name with a hyphen would be a syntax
@@ -43,6 +47,8 @@ for key, value in {"catalog": CATALOG, "schema": SCHEMA}.items():
         raise ValueError(f"invalid {key}: {value!r}")
 if not re.fullmatch(r"[A-Za-z0-9_-][A-Za-z0-9._-]*", SRC):
     raise ValueError(f"source_file must be a bare file name: {SRC!r}")
+if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", RUN_ID):
+    raise ValueError(f"invalid run_id: {RUN_ID!r}")
 if not re.fullmatch(r"[0-9a-f]{64}", EXPECT):
     raise ValueError(f"expected_sha256 is not a SHA-256 hex digest: {EXPECT!r}")
 
@@ -91,12 +97,16 @@ bronze = (spark.read
     .option("mode", "FAILFAST")
     .csv(SRC_PATH))
 
+# Spark reads lazily: without materialising here, every later action would
+# read the file again, after the second hash below, and a file replaced in
+# between would be analysed unchecked. localCheckpoint(eager=True) reads it
+# once, now; from here on nothing in this notebook touches the file.
+bronze = bronze.localCheckpoint(eager=True)
 n_bronze = bronze.count()
 print("rows:", n_bronze)  # expect 19626; reuse the same count in the manifest
 
-# Spark reads the file separately from the hash above. Hashing again after
-# the read closes the window in which the file could have been replaced
-# between the check and the use.
+# Hashing again after that single read closes the window in which the file
+# could have been replaced between the check and the use.
 if sha256_of(SRC_PATH) != got:
     raise ValueError("The extract changed while it was being read. Refusing to proceed.")
 display(bronze.limit(10))
@@ -112,6 +122,14 @@ if missing:
 extra = [c for c in bronze.columns if c not in REQUIRED + ["DATAFLOW"]]
 if extra:
     raise ValueError(f"Pinned extract has unexpected column(s): {extra}")
+
+# As R/load.R: the rows must all belong to the one dataflow that was verified.
+DATAFLOW = "STATSNZ:AGR_AGR_003(1.0)"
+if "DATAFLOW" in bronze.columns:
+    flows = {r[0] for r in bronze.select("DATAFLOW").distinct().collect()}
+    if flows - {DATAFLOW}:
+        raise ValueError(f"Pinned extract contains a DATAFLOW other than {DATAFLOW}: "
+                         f"{sorted(map(str, flows - {DATAFLOW}))[:5]}")
 
 statuses = {r[0] for r in bronze.select("OBS_STATUS").distinct().collect()
             if r[0] not in (None, "")}
@@ -132,11 +150,12 @@ spark.sql(f"CREATE SCHEMA IF NOT EXISTS {FQ}")
     .withColumn("_source_file", F.lit(SRC))
     .withColumn("_source_sha256", F.lit(got))
     .withColumn("_ingested_at", F.current_timestamp())
+    .withColumn("_run_id", F.lit(RUN_ID))
     .write.mode("overwrite").option("overwriteSchema", "true")
     .saveAsTable(f"{FQ}.bronze_agr_agr_003"))
 
-(spark.createDataFrame([(SRC, got, n_bronze, HASH_OVERRIDDEN)],
-    "source_file string, sha256 string, row_count long, hash_overridden boolean")
+(spark.createDataFrame([(SRC, got, n_bronze, HASH_OVERRIDDEN, RUN_ID)],
+    "source_file string, sha256 string, row_count long, hash_overridden boolean, run_id string")
     .withColumn("ingested_at", F.current_timestamp())
     .write.mode("append").option("mergeSchema", "true")
     .saveAsTable(f"{FQ}.ingest_manifest"))
@@ -155,6 +174,19 @@ livestock_rows = [("6731", "Sheep", 23583001),
     "livestock_code string, livestock_class string, verified_2024_head long")
     .write.mode("overwrite").option("overwriteSchema", "true")
     .saveAsTable(f"{FQ}.dim_livestock"))
+
+# COMMAND ----------
+
+# DBTITLE 1,dim_year
+# The analysis window and the census years, as in R/load.R. Written once here
+# so 02 and 03 read them instead of each repeating the literals.
+START_YEAR, END_YEAR = 2002, 2025
+CENSUS_YEARS = {2002, 2007, 2012, 2017, 2022}
+(spark.createDataFrame(
+    [(y, y in CENSUS_YEARS) for y in range(START_YEAR, END_YEAR + 1)],
+    "year int, is_census_year boolean")
+    .write.mode("overwrite").option("overwriteSchema", "true")
+    .saveAsTable(f"{FQ}.dim_year"))
 
 # COMMAND ----------
 

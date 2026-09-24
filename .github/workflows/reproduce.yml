@@ -14,11 +14,14 @@ name: Reproduce analysis
 on:
   push:
     branches: [main]
+    # Release tags run the checks too, including that the tag names the version.
+    tags: ["v*"]
   pull_request:
   workflow_dispatch:
   # Weekly, so drift in the runner image, a package mirror or an action shows
   # up on its own rather than on the next unrelated pull request. Deployment
-  # requires a push, so a scheduled run never publishes.
+  # needs a push to main or a manual run on main (to redeploy without a
+  # commit), so a scheduled run never publishes.
   schedule:
     - cron: "17 3 * * 1"
 
@@ -75,18 +78,31 @@ jobs:
           Rscript -e 'source("R/load.R"); check_extract_hash(); cat("hash OK\n")'
 
       # A development version (x.y.z.9000) between releases is allowed; the
-      # released part must match what CITATION.cff and the CHANGELOG cite.
+      # released part must match what CITATION.cff and the CHANGELOG cite, and
+      # the three must agree on the release date. On a release (no .9000), the
+      # report's date must be that date too. A pushed tag must name the version.
       - name: Version metadata agrees
         run: |
           v=$(sed -n 's/^Version: //p' DESCRIPTION)
-          test "${v%.9000}" = "$(sed -n 's/^version: //p' CITATION.cff)"
-          grep -q "^## \[${v%.9000}\]" CHANGELOG.md
+          released=${v%.9000}
+          test "$released" = "$(sed -n 's/^version: //p' CITATION.cff)"
+          cff_date=$(sed -n 's/^date-released: //p' CITATION.cff)
+          grep -qx "## \[$released\] - $cff_date" CHANGELOG.md
+          if [ "$v" = "$released" ]; then
+            test "$(sed -n 's/^date: //p' index.qmd)" = "$cff_date"
+          fi
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            test "${GITHUB_REF_NAME}" = "v$released"
+          fi
 
       - name: Reject malformed extract fixtures
         run: Rscript tests/test-r-contracts.R
 
       - name: Test the report's helper functions
         run: Rscript tests/test-r-analysis.R
+
+      - name: The derived tables refuse gaps
+        run: Rscript tests/test-r-tables.R
 
       # Deleted first so the comparison below cannot be satisfied by doing
       # nothing. `git diff --exit-code` compares the worktree against the
@@ -103,8 +119,9 @@ jobs:
       - name: Render the report and the figures
         run: quarto render
 
-      # Warnings are shown on the page rather than swallowed (_quarto.yml), so
-      # a max() of an empty vector or a deprecated argument fails here.
+      # index.qmd sets options(warn = 2), so a warning in hidden code or an
+      # inline expression already fails the render. This catches the rest:
+      # warnings shown on the page from visible chunks (_quarto.yml).
       - name: The rendered page carries no R warnings
         run: |
           if grep -q 'cell-output-stderr' _site/index.html; then
@@ -145,7 +162,7 @@ jobs:
       # re-rendered anywhere else, so the page that is published is the page
       # that passed every check above.
       - name: Upload the verified site for GitHub Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site
@@ -172,11 +189,15 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # Every transitive dependency is pinned and hashed in
-      # databricks/requirements.txt, compiled from requirements.in.
+      # Every dependency is pinned and hashed, including the tools that build
+      # pyspark from its source distribution: pip, setuptools and wheel are
+      # installed first from build-requirements.txt, and --no-build-isolation
+      # makes the pyspark build use them instead of fetching its own,
+      # unhashed copies.
       - name: Install PySpark
         run: |
-          python -m pip install --quiet --require-hashes -r databricks/requirements.txt
+          python -m pip install --quiet --require-hashes -r databricks/build-requirements.txt
+          python -m pip install --quiet --require-hashes --no-build-isolation -r databricks/requirements.txt
           python -m pip freeze
 
       - name: Run the notebooks locally and compare them with outputs/*.csv
@@ -193,7 +214,7 @@ jobs:
   # "GitHub Actions".
   deploy:
     needs: [reproduce, port]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

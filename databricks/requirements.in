@@ -1,10 +1,10 @@
 # Direct dependencies of the Databricks port's local check (run_local.py).
-# requirements.txt is generated from this file with every transitive
+# requirements.txt is generated from this file by uv, with every transitive
 # dependency pinned and hashed; edit this file, then regenerate:
 #
-#   pip-compile --generate-hashes --output-file=databricks/requirements.txt databricks/requirements.in
-#
-# (uv pip compile accepts the same arguments.)
+#   uv pip compile --generate-hashes --python-version 3.12 \
+#     --python-platform x86_64-manylinux_2_28 \
+#     -o databricks/requirements.txt databricks/requirements.in
 #
 # pandas stays on 2.x: pandas 3 is not yet fully supported by PySpark 4.2,
 # which warns on every toPandas(). Dependabot ignores pandas major updates.

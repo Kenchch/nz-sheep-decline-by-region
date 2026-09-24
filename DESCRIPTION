@@ -13,7 +13,6 @@ Imports:
     digest,
     dplyr,
     ggplot2,
-    janitor,
     knitr,
     readr,
     rmarkdown,

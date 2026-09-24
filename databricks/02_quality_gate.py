@@ -23,12 +23,16 @@ import re
 # Keep existing values: Lakeflow task parameters override these defaults.
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
+dbutils.widgets.text("run_id", "manual")
 
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
+RUN_ID = dbutils.widgets.get("run_id")
 for key, value in {"catalog": CATALOG, "schema": SCHEMA}.items():
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
         raise ValueError(f"invalid {key}: {value!r}")
+if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", RUN_ID):
+    raise ValueError(f"invalid run_id: {RUN_ID!r}")
 
 FQ = f"`{CATALOG}`.`{SCHEMA}`"
 print(FQ)
@@ -38,11 +42,12 @@ print(FQ)
 # DBTITLE 1,Build candidate table
 from pyspark.sql import functions as F
 
-# The window and the census years, as in R/load.R. 03 derives what it needs
-# from silver rather than repeating these.
-START_YEAR, END_YEAR = 2002, 2025
-CENSUS_YEARS = [2002, 2007, 2012, 2017, 2022]
-EXPECTED_YEARS = list(range(START_YEAR, END_YEAR + 1))
+# The window and the census years come from dim_year, written by 01, rather
+# than being repeated here.
+dim_y = spark.table(f"{FQ}.dim_year")
+EXPECTED_YEARS = sorted(r["year"] for r in dim_y.collect())
+CENSUS_YEARS = sorted(r["year"] for r in dim_y.filter("is_census_year").collect())
+START_YEAR = EXPECTED_YEARS[0]
 
 bronze = spark.table(f"{FQ}.bronze_agr_agr_003")
 dim_l = spark.table(f"{FQ}.dim_livestock")
@@ -76,11 +81,15 @@ cand = (bronze
         F.length(F.trim(F.coalesce(F.col("OBS_VALUE"), F.lit("")))) == 0)
     # ANSI mode must not raise before the bad row can be quarantined.
     .withColumn("head", F.expr("try_cast(OBS_VALUE AS DOUBLE)"))
+    # The value silver keeps. try_cast returns null for a count too large for
+    # BIGINT, where a DOUBLE-then-BIGINT cast with ANSI off would silently
+    # saturate at Long.MaxValue.
+    .withColumn("_head_count", F.expr("try_cast(OBS_VALUE AS BIGINT)"))
     .withColumn("is_census_year", F.col("year").isin(CENSUS_YEARS))
     .select("year", "area_code", "region", "island", "is_aggregate",
             "livestock_class", "head", "suppressed", "suppression_code",
-            "is_census_year", "_value_missing", "OBS_STATUS", "OBS_VALUE",
-            "YEAR_AGR_AGR_003", "_source_sha256", "_ingested_at"))
+            "is_census_year", "_value_missing", "_head_count", "OBS_STATUS",
+            "OBS_VALUE", "YEAR_AGR_AGR_003", "_source_sha256", "_ingested_at"))
 
 print("candidate rows:", cand.count())  # expect 1397
 
@@ -92,13 +101,17 @@ RULES = {
         (F.col("head") >= 0) & ~F.isnan("head") & (F.col("head") != float("inf"))),
     # A head count is a non-negative whole number. try_cast to DOUBLE accepts
     # "4192693.5", "1e3" and "-5", so the original string is checked, as in
-    # R/load.R.
-    "value_is_count": F.col("_value_missing") | F.col("OBS_VALUE").rlike("^[0-9]+$"),
+    # R/load.R, and it must also fit in BIGINT.
+    "value_is_count": F.col("_value_missing") | (
+        F.col("OBS_VALUE").rlike("^[0-9]+$") & F.col("_head_count").isNotNull()),
     "value_iff_suppressed": (
         (F.col("head").isNull() == F.col("suppressed")) &
         (F.col("_value_missing") == F.col("suppressed"))),
     "region_label_present": F.col("region").isNotNull(),
-    "year_in_range": F.col("year").isin(EXPECTED_YEARS),
+    # The string too, as in R/load.R: try_cast reads " 2025", "+2025" and
+    # "02025" as 2025.
+    "year_in_range": (F.col("YEAR_AGR_AGR_003").rlike("^[0-9]{4}$") &
+                      F.col("year").isin(EXPECTED_YEARS)),
     "status_known": F.coalesce(F.col("OBS_STATUS"), F.lit("")).isin("", "s", "c"),
     # census_year_reported encodes an assumption that turns out to be FALSE.
     # Written as an implication: is_census_year <= !suppressed. It fails 9
@@ -132,13 +145,15 @@ checked = (cand
 
 # One row per rule, including the rules that never fail, so the table can be
 # compared with outputs/validation-summary.csv rather than only displayed.
+# Written on every run, including one the gate then refuses: it describes the
+# latest attempt, as the quarantine does, and _run_id says which.
 RULE_NAMES = list(RULES) + ["no_duplicate_cells"]
 fails = {r["rule"]: r["count"] for r in
          checked.select(F.explode("broken_rules").alias("rule"))
                 .groupBy("rule").count().collect()}
 summary = spark.createDataFrame(
-    [(name, int(fails.get(name, 0))) for name in RULE_NAMES],
-    "rule string, fails long")
+    [(name, int(fails.get(name, 0)), RUN_ID) for name in RULE_NAMES],
+    "rule string, fails long, _run_id string")
 summary.write.mode("overwrite").option("overwriteSchema", "true") \
     .saveAsTable(f"{FQ}.quality_rule_summary")
 display(summary)
@@ -154,14 +169,18 @@ BLOCKING = ["head_non_negative", "value_is_count", "value_iff_suppressed",
 is_rejected = F.coalesce(
     F.arrays_overlap("broken_rules", F.array(*[F.lit(b) for b in BLOCKING])),
     F.lit(False))
-rejected = checked.filter(is_rejected).withColumn("_checked_at", F.current_timestamp())
+rejected = (checked.filter(is_rejected)
+    .withColumn("_checked_at", F.current_timestamp())
+    .withColumn("_run_id", F.lit(RUN_ID)))
 # The complement of the same predicate, not `subtract`: subtract is EXCEPT
 # DISTINCT, so it would also collapse any duplicate rows it did not reject.
 clean = (checked.filter(~is_rejected)
     .drop("broken_rules", "n_broken", "_value_missing", "OBS_STATUS", "OBS_VALUE",
           "YEAR_AGR_AGR_003")
-    # Validated above as a whole number, so the cast is exact.
-    .withColumn("head", F.col("head").cast("bigint")))
+    # Validated above as a whole number that fits in BIGINT.
+    .withColumn("head", F.col("_head_count"))
+    .drop("_head_count")
+    .withColumn("_run_id", F.lit(RUN_ID)))
 
 n_all, n_bad = checked.count(), rejected.count()
 print(f"rows={n_all} rejected={n_bad}")

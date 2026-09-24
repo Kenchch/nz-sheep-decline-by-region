@@ -22,12 +22,16 @@ import re
 # Keep existing values: Lakeflow task parameters override these defaults.
 dbutils.widgets.text("catalog", "workspace")
 dbutils.widgets.text("schema", "nz_livestock")
+dbutils.widgets.text("run_id", "manual")
 
 CATALOG = dbutils.widgets.get("catalog")
 SCHEMA = dbutils.widgets.get("schema")
+RUN_ID = dbutils.widgets.get("run_id")
 for key, value in {"catalog": CATALOG, "schema": SCHEMA}.items():
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
         raise ValueError(f"invalid {key}: {value!r}")
+if not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", RUN_ID):
+    raise ValueError(f"invalid run_id: {RUN_ID!r}")
 
 FQ = f"`{CATALOG}`.`{SCHEMA}`"
 print(FQ)
@@ -50,9 +54,25 @@ LAST_CENSUS = s.filter("is_census_year").agg(F.max("year")).first()[0]
 # Where the national dairy herd peaks in this sample; chosen after looking at
 # the series, as the report says.
 DAIRY_PEAK_YEAR = 2014
+peak = (s.filter((F.col("area_code") == "20") & (F.col("livestock_class") == "Dairy cattle"))
+    .orderBy(F.desc("head")).first())
+if peak["year"] != DAIRY_PEAK_YEAR:
+    raise ValueError(f"DAIRY_PEAK_YEAR is {DAIRY_PEAK_YEAR} but the national dairy herd "
+                     f"peaks in {peak['year']}")
 EXPECTED_REGIONS = spark.table(f"{FQ}.dim_area").filter(~F.col("is_aggregate")).count()
 N_CLASSES = spark.table(f"{FQ}.dim_livestock").count()
 print(START_YEAR, END_YEAR, LAST_CENSUS, EXPECTED_REGIONS, N_CLASSES)
+# Every gold table records the run that wrote it and the extract it came
+# from, so a number on a dashboard can be traced back to a hash.
+SOURCE_SHA256 = [r[0] for r in s.select("_source_sha256").distinct().collect()]
+if len(SOURCE_SHA256) != 1:
+    raise ValueError(f"silver mixes extracts: {SOURCE_SHA256}")
+
+def save(df, name):
+    (df.withColumn("_run_id", F.lit(RUN_ID))
+       .withColumn("_source_sha256", F.lit(SOURCE_SHA256[0]))
+       .write.mode("overwrite").option("overwriteSchema", "true")
+       .saveAsTable(f"{FQ}.{name}"))
 
 # COMMAND ----------
 
@@ -68,8 +88,7 @@ nat = (s.filter(F.col("area_code") == "20")
     .withColumn("change_head", F.col("end_head") - F.col("start_head")))
 if nat.count() != N_CLASSES or nat.filter(F.col("change_head").isNull()).count():
     raise ValueError("gold_national_change is incomplete")
-nat.write.mode("overwrite").option("overwriteSchema", "true") \
-    .saveAsTable(f"{FQ}.gold_national_change")
+save(nat, "gold_national_change")
 display(nat)
 
 # COMMAND ----------
@@ -98,8 +117,7 @@ gold = (change
     .withColumn("share_of_fall", 100 * F.col("change") / F.lit(totals["fall"]))
     .withColumn("share_of_start", 100 * F.col("start_head") / F.lit(totals["start_total"]))
     .orderBy("change"))
-gold.write.mode("overwrite").option("overwriteSchema", "true") \
-    .saveAsTable(f"{FQ}.gold_regional_change")
+save(gold, "gold_regional_change")
 display(gold)
 
 # COMMAND ----------
@@ -134,8 +152,7 @@ recon = (published.join(regional, ["livestock_class", "year"], "left")
 
 if recon.count() != len(YEARS) * N_CLASSES:
     raise ValueError("gold_reconciliation must cover every class-year")
-recon.write.mode("overwrite").option("overwriteSchema", "true") \
-    .saveAsTable(f"{FQ}.gold_reconciliation")
+save(recon, "gold_reconciliation")
 
 display(recon.groupBy("tier")
     .agg(F.count("*").alias("class_years"),
@@ -157,8 +174,7 @@ islands = (s.filter(F.col("area_code").isin("10", "19", "20"))
 if (islands.count() != len(YEARS) * N_CLASSES or
         islands.filter(F.col("residual").isNull()).count()):
     raise ValueError("gold_island_reconciliation is incomplete")
-islands.write.mode("overwrite").option("overwriteSchema", "true") \
-    .saveAsTable(f"{FQ}.gold_island_reconciliation")
+save(islands, "gold_island_reconciliation")
 
 # COMMAND ----------
 
@@ -184,7 +200,7 @@ cov = (s.filter(~F.col("is_aggregate") & (F.col("livestock_class") == "Sheep"))
 got = sorted(r["year"] for r in cov.select("year").collect())
 if got != YEARS:
     raise ValueError(f"gold_coverage is missing years: {sorted(set(YEARS) - set(got))}")
-cov.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{FQ}.gold_coverage")
+save(cov, "gold_coverage")
 display(cov)
 
 # COMMAND ----------
@@ -215,6 +231,5 @@ dw = reduce(lambda a, b: a.unionByName(b), frames)
 if (dw.count() != len(windows) * N_CLASSES or
         dw.filter(F.col("change_pct").isNull()).count()):
     raise ValueError("gold_dairy_windows is incomplete")
-dw.write.mode("overwrite").option("overwriteSchema", "true") \
-    .saveAsTable(f"{FQ}.gold_dairy_windows")
+save(dw, "gold_dairy_windows")
 display(dw.orderBy("livestock_class", "start_year"))
