@@ -48,11 +48,14 @@ In 2017 the South Island does **not** reconcile exactly, because Nelson's sheep
 cell is withheld — which is the behaviour the report's reconciliation tiers
 exist to report rather than a defect in the extract.
 
-The June 2024 expected totals were read from the Stats NZ release for that year
-before the extract was used; the page they were read from was not recorded at
-the time, so they are not cited here. They are the figures the three codes
-were matched against, not a statement this repository relies on elsewhere.
+The June 2024 expected totals are those of [Agricultural production statistics:
+Year to June 2024 (final)](https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2024-final/),
+whose text gives them rounded — 23.6 million sheep, 5.8 million dairy cattle
+and 3.7 million beef cattle — consistent with the exact values here. They are
+the figures the three codes were matched against, not a statement this
+repository relies on elsewhere.
 
-`OBS_STATUS` takes two non-empty values in this extract: `s` (suppressed) and
-`c` (confidential). Every cell with an empty `OBS_VALUE` carries one of the two;
-there are no unexplained blanks.
+`OBS_STATUS` takes two non-empty values in this extract, written in the report
+as the `S` and `C` flags: `s`, quality suppression, and `c`, confidentiality.
+The report calls a cell carrying either flag *withheld*. Every cell with an
+empty `OBS_VALUE` carries one of the two; there are no unexplained blanks.

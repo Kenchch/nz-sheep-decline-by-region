@@ -1,0 +1,12 @@
+# Build tools for pyspark, which is published only as a source distribution.
+# They are installed first, pinned and hashed like everything else, and
+# requirements.txt is then installed with --no-build-isolation so that
+# building pyspark uses these instead of fetching unpinned, unhashed copies.
+# Regenerate with:
+#
+#   uv pip compile --generate-hashes --python-version 3.12 \
+#     --python-platform x86_64-manylinux_2_28 \
+#     -o databricks/build-requirements.txt databricks/build-requirements.in
+pip==26.2.1
+setuptools==84.0.0
+wheel==0.48.0

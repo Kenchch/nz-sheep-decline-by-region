@@ -17,7 +17,6 @@ if (!file.exists("R/load.R") || !file.exists("renv.lock")) {
 suppressPackageStartupMessages({
   library(readr)
   library(dplyr)
-  library(janitor)
 })
 
 RAW_CSV   <- "data-raw/agr_agr_003_2026-09-04.csv"
@@ -155,8 +154,10 @@ assert_extract_shape <- function(raw) {
 parse_raw <- function(input) {
   # Only an empty source cell is missing. The default na = c("", "NA")
   # would hide a malformed literal "NA" value or suppression flag.
-  raw <- read_csv(input, col_types = cols(.default = col_character()), na = "") |>
-    clean_names()
+  raw <- read_csv(input, col_types = cols(.default = col_character()), na = "")
+  # The extract's headers are upper-case SDMX names; lower-casing them is
+  # all that is needed, without a package for it.
+  names(raw) <- tolower(names(raw))
   stop_for_problems(raw)
   assert_extract_shape(raw)
   raw
@@ -231,7 +232,8 @@ load_livestock <- function(path = RAW_CSV, raw = read_raw(path)) {
       suppression_code = ifelse(suppressed, obs_status, NA_character_),
       is_census_year   = year %in% CENSUS_YEARS
     ) |>
-    arrange(livestock_class, area_code, year)
+    # Numeric order of the area code, so 2 sorts before 10.
+    arrange(livestock_class, as.integer(area_code), year)
 
   # Fail loudly when the pinned table changes shape. These are prerequisites
   # for every downstream total, so they belong at the ingestion boundary rather

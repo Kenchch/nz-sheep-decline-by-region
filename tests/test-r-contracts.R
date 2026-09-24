@@ -1,7 +1,10 @@
 # Run from the repository root: Rscript tests/test-r-contracts.R
 # Negative fixtures for the ingestion contract in R/load.R. Plain base-R
-# assertions, no test framework; the code under test needs readr, dplyr,
-# janitor and digest, all pinned in renv.lock.
+# assertions, no test framework; the code under test needs readr, dplyr and
+# digest, all pinned in renv.lock.
+if (!file.exists("renv.lock")) {
+  stop("Run from the repository root: Rscript tests/test-r-contracts.R", call. = FALSE)
+}
 source("R/load.R")
 
 failures <- character()
@@ -203,7 +206,7 @@ test("hash gate and CSV parser", {
 test("committed analysis table unchanged", {
   csv <- tempfile(fileext = ".csv")
   on.exit(unlink(csv))
-  write_csv(load_livestock(), csv)
+  write_csv(load_livestock(), csv, na = "")
   stopifnot(identical(digest::digest(file = csv, algo = "sha256"),
                       digest::digest(file = "outputs/livestock_regional.csv",
                                      algo = "sha256")))

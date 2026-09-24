@@ -29,13 +29,18 @@ inside it, then upload the pinned CSV from `data-raw/` into that volume. Pass th
 same `catalog` and `schema` task parameters to all three notebooks (defaults:
 `workspace` and `nz_livestock`); both must be plain identifiers. The ingest task
 also accepts `source_file`, which must be a bare file name inside the volume,
-and `expected_sha256`. Existing widget values and Lakeflow task parameters are
+and `expected_sha256`. All three accept `run_id` (default `manual`); pass
+`{{job.run_id}}` so every silver, quarantine, rule-summary and gold row names the
+run that wrote it. Existing widget values and Lakeflow task parameters are
 kept; the notebooks' defaults apply only when no value was supplied.
 
-Ingestion stops on a changed column set or an unknown suppression flag. The
-quality gate quarantines malformed years, head counts that are not
-non-negative whole numbers, unknown suppression flags, duplicate cells and
-unmapped areas, and any quarantined row stops publication. The census-year
+Ingestion reads the extract once, into a checkpoint, before hashing it a second
+time, and stops on a changed column set, a row from another dataflow or an
+unknown suppression flag. The quality gate quarantines years that are not four
+digits in the window (`" 2025"`, `"+2025"` and `"02025"` included), head counts
+that are not non-negative whole numbers that fit in BIGINT, unknown suppression
+flags, duplicate cells and unmapped areas, and any quarantined row stops
+publication. The census-year
 suppression rule remains informational. Empty input, missing years, and missing
 or suppressed national or island totals also fail **before** silver is
 overwritten, preserving the last successful table. The analysis notebook
@@ -47,12 +52,13 @@ class-year missing.
 | Layer | Table | Rows | Description |
 | --- | --- | --- | --- |
 | Bronze | bronze_agr_agr_003 | 19,626 | Raw extract, nothing cast or renamed |
-| Bronze | ingest_manifest | 1+ | File, SHA-256, row count, hash override flag, timestamp per run |
+| Bronze | ingest_manifest | 1+ | File, SHA-256, row count, hash override flag, run id, timestamp per run |
 | Dim | dim_livestock | 3 | Sheep, Dairy cattle, Beef cattle (verified codes only) |
+| Dim | dim_year | 24 | The analysis window, with census years flagged |
 | Dim | dim_area | 20 | 17 regions + 3 aggregates; SSGA23 names on the table's own codes |
-| Silver | silver_livestock_regional | 1,397 | Typed, labelled, validated; carries `_source_sha256` and `_ingested_at` |
-| Quarantine | quarantine_livestock | 0 | Failed rows of the latest run, with broken rule names and `_checked_at` |
-| Quality | quality_rule_summary | 8 | Failures per rule, including rules that never fail |
+| Silver | silver_livestock_regional | 1,397 | Typed, labelled, validated; carries `_source_sha256`, `_ingested_at` and `_run_id` |
+| Quarantine | quarantine_livestock | 0 | Failed rows of the latest run, with broken rule names, `_checked_at` and `_run_id` |
+| Quality | quality_rule_summary | 8 | Failures per rule in the latest run, including rules that never fail |
 | Gold | gold_national_change | 3 | National change 2002→2025 by class |
 | Gold | gold_regional_change | 15 | Sheep change 2002→2025 by region, with share of the fall and of the 2002 flock |
 | Gold | gold_reconciliation | 72 | Regional vs national, per class-year, in tiers |
@@ -60,7 +66,12 @@ class-year missing.
 | Gold | gold_coverage | 24 | Suppression coverage by year (sheep only) |
 | Gold | gold_dairy_windows | 9 | Three windows × three classes |
 
-Gold values are unrounded; format them where they are displayed. `gold_coverage`
+`quarantine_livestock` and `quality_rule_summary` describe the latest attempt,
+so a run the gate refuses overwrites them while silver and gold keep the last
+successful run; compare `_run_id` across the tables to tell which is which.
+
+Every gold table carries `_run_id` and `_source_sha256`. Gold values are
+unrounded; format them where they are displayed. `gold_coverage`
 matches the R CSV's units and column definitions: `suppression_rate` is the
 fraction of present regions suppressed; `suppression_rate_all_regions` uses all
 17 expected regions. Dashboards must format these fractions as percentages.
@@ -70,12 +81,16 @@ fraction of present regions suppressed; `suppression_rate_all_regions` uses all
 With Java 17+ and Python 3.12, run from the repository root:
 
 ```bash
-pip install --require-hashes -r databricks/requirements.txt
+pip install --require-hashes -r databricks/build-requirements.txt
+pip install --require-hashes --no-build-isolation -r databricks/requirements.txt
 python databricks/run_local.py
 ```
 
-`requirements.txt` pins and hashes every transitive dependency; it is compiled
-from `requirements.in`. CI runs the same two commands.
+`requirements.txt` pins and hashes every transitive dependency, and
+`build-requirements.txt` does the same for pip, setuptools and wheel, which
+build pyspark from its source distribution; `--no-build-isolation` makes that
+build use them rather than fetch its own. Both are generated by
+`uv pip compile` from the matching `.in` file. CI runs the same commands.
 
 The runner compares, cell for cell:
 
@@ -86,17 +101,22 @@ The runner compares, cell for cell:
 | gold_reconciliation | `outputs/residual-tiers.csv` | every column, `residual_pct` to 1e-9 |
 | gold_island_reconciliation | `outputs/island-reconciliation.csv` | every column |
 | gold_coverage | `outputs/coverage-and-suppression.csv` | every column, rates to 1e-9 |
-| gold_dairy_windows | `outputs/dairy-comparison-windows.csv` | every column, `change_pct` to 1e-9 |
+| gold_dairy_windows | `outputs/class-comparison-windows.csv` | every column, `change_pct` to 1e-9 |
 | gold_national_change | recomputed from `outputs/livestock_regional.csv` | heads and change |
 | gold_regional_change | recomputed from `outputs/livestock_regional.csv` | change and both shares, to 1e-9 |
 
 The R pipeline's corrupted-copy demonstration has no Spark counterpart. Instead
 the runner injects failures and checks each is quarantined or refused: a bad
-hash, unsafe parameters, a dropped or extra column, malformed values (including
-`4192693.5`, `1e3` and `-5`) and years, an unknown flag, a single duplicate or
-unmapped cell, missing or suppressed national and island totals, a missing
-year, empty input, and a year with no regional rows. Every refused run must
-leave the previous silver table in place.
+hash, unsafe parameters, a dropped or extra column, another dataflow, an
+unknown flag at ingestion, malformed values (including `4192693.5`, `1e3`, `-5`
+and a 20-digit count) and years (including `" 2025"`, `"+2025"` and `"02025"`),
+with ANSI mode on and off, a single duplicate, unmapped, flagged-but-published
+or blank-but-unflagged cell, missing or suppressed national and island totals,
+a missing year, empty input, and a year with no regional rows. Every refused
+run must leave the previous silver table in place. It also checks that a hash
+override is recorded in the manifest, that bronze no longer reads the file
+after the second hash, and that every gold table carries its run id and source
+hash.
 
 ## Key results
 
@@ -123,16 +143,15 @@ The job includes a run where the SHA-256 hash was intentionally broken. The `ing
 
 See `screenshots/` for the red (failure) and green (success) run graphs.
 
-### The screenshots are out of date
+### About the screenshots
 
-The screenshots were taken on 2026-09-20, before the fixes in 0.3.0, and show
-output that is now known to be wrong: the dashboard's suppression line starts
-at 2017 because of the null-flag bug fixed since, its rates are percentages
-where `gold_coverage` now returns fractions, and its regional bars are sorted
-alphabetically rather than by decline. Nothing in this repository shows the
-current notebooks running on serverless. The run graphs (red and green) still
-illustrate the hash-gate behaviour, which has not changed. They will be
-replaced by screenshots of the current notebooks.
+The run graphs were taken on 2026-09-20, before the fixes in 0.3.0. They still
+illustrate the hash-gate behaviour, which has not changed, but not the current
+notebooks: nothing in this repository shows those running on serverless. The
+workspace paths, which contained part of a personal email address, and the job
+and run IDs are masked. A dashboard screenshot was removed because it showed
+output since corrected (a suppression line starting at 2017, percentage units,
+and regional bars in alphabetical order).
 
 ## Source data
 

@@ -3,6 +3,9 @@
 # fixtures whose answers can be checked by eye. The byte comparison of
 # outputs/*.csv never reaches the figures or the prose, so these helpers need
 # their own tests.
+if (!file.exists("renv.lock")) {
+  stop("Run from the repository root: Rscript tests/test-r-analysis.R", call. = FALSE)
+}
 source("R/analysis.R")
 
 failures <- character()
@@ -81,8 +84,10 @@ test("cell_status_grid marks absent cells", {
 })
 
 test("recent_above", {
-  r <- recent_above(c(20, 5.9, 13.7, 5.9, 11.8), 10, 4)
-  stopifnot(r$above == 2L, r$of == 4L)
+  # The first four and the last four differ (2 and 1 above ten), so taking
+  # the head instead of the tail fails.
+  r <- recent_above(c(20, 5.9, 5.9, 11.8, 5.9), 10, 4)
+  stopifnot(r$above == 1L, r$of == 4L)
 })
 
 if (length(failures)) {
