@@ -77,4 +77,6 @@ databricks/                  the same pipeline as three PySpark notebooks
 
 ## How this was built
 
-I set the problem, the data contracts and the quality rules, ran the checks and reviewed every diff. Claude Code and OpenAI Codex drafted code, refactored and scaffolded tests. Commits made before 6 September 2026 had their `Co-Authored-By` trailers removed when the history was rewritten; some later commits carry them. Each pull request records its own AI involvement in its description.
+I used Claude Code and OpenAI Codex as drafting tools. The problem, the data contracts and the quality rules are mine, and so are the checks and the review: every generated change was read and run before it was committed. The tools drafted code, refactored and scaffolded tests.
+
+Commits made before 6 September 2026 carried `Co-Authored-By` trailers naming these tools. They were removed when I rewrote that history; some later commits carry them, and each pull request records its own AI involvement in its description.
