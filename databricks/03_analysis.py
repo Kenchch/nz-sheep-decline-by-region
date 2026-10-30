@@ -68,11 +68,15 @@ SOURCE_SHA256 = [r[0] for r in s.select("_source_sha256").distinct().collect()]
 if len(SOURCE_SHA256) != 1:
     raise ValueError(f"silver mixes extracts: {SOURCE_SHA256}")
 
-def save(df, name):
-    (df.withColumn("_run_id", F.lit(RUN_ID))
-       .withColumn("_source_sha256", F.lit(SOURCE_SHA256[0]))
-       .write.mode("overwrite").option("overwriteSchema", "true")
-       .saveAsTable(f"{FQ}.{name}"))
+# Nothing is written until every table has been built and checked. Writing
+# each table as it was built let a later check fail after earlier tables had
+# been overwritten, so gold held tables from two different runs. Each write is
+# still separate, so a failure during the writes themselves is not covered.
+staged = {}
+
+def stage(df, name):
+    staged[name] = (df.withColumn("_run_id", F.lit(RUN_ID))
+                      .withColumn("_source_sha256", F.lit(SOURCE_SHA256[0])))
 
 # COMMAND ----------
 
@@ -88,7 +92,7 @@ nat = (s.filter(F.col("area_code") == "20")
     .withColumn("change_head", F.col("end_head") - F.col("start_head")))
 if nat.count() != N_CLASSES or nat.filter(F.col("change_head").isNull()).count():
     raise ValueError("gold_national_change is incomplete")
-save(nat, "gold_national_change")
+stage(nat, "gold_national_change")
 display(nat)
 
 # COMMAND ----------
@@ -117,7 +121,7 @@ gold = (change
     .withColumn("share_of_fall", 100 * F.col("change") / F.lit(totals["fall"]))
     .withColumn("share_of_start", 100 * F.col("start_head") / F.lit(totals["start_total"]))
     .orderBy("change"))
-save(gold, "gold_regional_change")
+stage(gold, "gold_regional_change")
 display(gold)
 
 # COMMAND ----------
@@ -152,7 +156,7 @@ recon = (published.join(regional, ["livestock_class", "year"], "left")
 
 if recon.count() != len(YEARS) * N_CLASSES:
     raise ValueError("gold_reconciliation must cover every class-year")
-save(recon, "gold_reconciliation")
+stage(recon, "gold_reconciliation")
 
 display(recon.groupBy("tier")
     .agg(F.count("*").alias("class_years"),
@@ -174,7 +178,7 @@ islands = (s.filter(F.col("area_code").isin("10", "19", "20"))
 if (islands.count() != len(YEARS) * N_CLASSES or
         islands.filter(F.col("residual").isNull()).count()):
     raise ValueError("gold_island_reconciliation is incomplete")
-save(islands, "gold_island_reconciliation")
+stage(islands, "gold_island_reconciliation")
 
 # COMMAND ----------
 
@@ -200,7 +204,7 @@ cov = (s.filter(~F.col("is_aggregate") & (F.col("livestock_class") == "Sheep"))
 got = sorted(r["year"] for r in cov.select("year").collect())
 if got != YEARS:
     raise ValueError(f"gold_coverage is missing years: {sorted(set(YEARS) - set(got))}")
-save(cov, "gold_coverage")
+stage(cov, "gold_coverage")
 display(cov)
 
 # COMMAND ----------
@@ -231,5 +235,19 @@ dw = reduce(lambda a, b: a.unionByName(b), frames)
 if (dw.count() != len(windows) * N_CLASSES or
         dw.filter(F.col("change_pct").isNull()).count()):
     raise ValueError("gold_dairy_windows is incomplete")
-save(dw, "gold_dairy_windows")
+stage(dw, "gold_dairy_windows")
 display(dw.orderBy("livestock_class", "start_year"))
+
+# COMMAND ----------
+
+# DBTITLE 1,Publish gold
+# Every table above has passed its check. Only now are they written, one after
+# another, from the same silver and the same run.
+expected = {"gold_national_change", "gold_regional_change", "gold_reconciliation",
+            "gold_island_reconciliation", "gold_coverage", "gold_dairy_windows"}
+if set(staged) != expected:
+    raise ValueError(f"gold tables staged: {sorted(staged)}; expected {sorted(expected)}")
+for name, df in staged.items():
+    (df.write.mode("overwrite").option("overwriteSchema", "true")
+       .saveAsTable(f"{FQ}.{name}"))
+print("gold tables written:", ", ".join(sorted(staged)))

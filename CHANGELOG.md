@@ -38,6 +38,20 @@ version needs to know.
 - The port's second hash of the extract ran while bronze was still a lazy read
   of the file, so later reads were unchecked. Bronze is now read once, into a
   checkpoint, before the second hash, and the local check asserts it.
+- The port dropped years before the window by their parsed value, before the
+  year format was checked, so `"01994"` or `"+1994"` on a 2002 cell was read as
+  1994 and dropped instead of being quarantined. Only a well-formed earlier
+  year is now excluded, as in R.
+- The analysis notebook wrote each gold table as soon as it was built, so a
+  check that failed later (a year missing from coverage) left four gold tables
+  from the failed run beside two from the last good one. All six are now built
+  and checked before any is written.
+- `build_island_reconciliation()` did not notice a class-year with all three
+  totals missing, because the missing row had no residual to be `NA`. It now
+  checks its keys, like the other builders. The ingestion contract already
+  stopped such input, so no output changed.
+- R read a head count above 2^53 − 1 as the nearest double, a different whole
+  number. Such counts are now refused, in R and in the port.
 - The table assertions in `R/checks.R` (one published total per class-year,
   every class-year tiered, every year covered) had no tests; deleting any one of
   them left CI green. They now live in `R/tables.R` and `tests/test-r-tables.R`

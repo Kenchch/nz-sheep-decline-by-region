@@ -59,8 +59,12 @@ cand = (bronze
     .withColumn("year", F.expr("try_cast(YEAR_AGR_AGR_003 AS INT)"))
     # 1994 sits before the 2002 population change. Dropped explicitly here
     # rather than silently, so the exclusion is visible in the code.
-    # Keep unparseable years so they reach quarantine instead of disappearing.
-    .filter(F.col("year").isNull() | (F.col("year") >= START_YEAR))
+    # Only a well-formed year is dropped, as R/load.R checks the string before
+    # it filters: try_cast reads "01994" and "+1994" as 1994, and filtering on
+    # the parsed value would lose them before year_in_range could quarantine
+    # them. Unparseable and malformed years are kept for the same reason.
+    .filter(~F.coalesce(F.col("YEAR_AGR_AGR_003").rlike("^[0-9]{4}$"), F.lit(False)) |
+            (F.col("year") >= START_YEAR))
     .join(F.broadcast(dim_l), "livestock_code", "inner")  # inner: admits only the 3 verified codes
     .join(F.broadcast(dim_a), "area_code", "left")
     # A suppressed cell is a cell we are not allowed to see. That is a
@@ -101,9 +105,11 @@ RULES = {
         (F.col("head") >= 0) & ~F.isnan("head") & (F.col("head") != float("inf"))),
     # A head count is a non-negative whole number. try_cast to DOUBLE accepts
     # "4192693.5", "1e3" and "-5", so the original string is checked, as in
-    # R/load.R, and it must also fit in BIGINT.
+    # R/load.R, and it must also fit in BIGINT and, as R requires, be at most
+    # 2^53 - 1, the largest count a double holds exactly.
     "value_is_count": F.col("_value_missing") | (
-        F.col("OBS_VALUE").rlike("^[0-9]+$") & F.col("_head_count").isNotNull()),
+        F.col("OBS_VALUE").rlike("^[0-9]+$") & F.col("_head_count").isNotNull() &
+        (F.col("_head_count") <= F.lit(2**53 - 1))),
     "value_iff_suppressed": (
         (F.col("head").isNull() == F.col("suppressed")) &
         (F.col("_value_missing") == F.col("suppressed"))),

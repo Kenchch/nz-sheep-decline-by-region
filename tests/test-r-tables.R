@@ -74,6 +74,13 @@ test("island reconciliation refuses a missing island total", {
   expect_error(build_island_reconciliation(x), "all three aggregates")
 })
 
+test("island reconciliation refuses a class-year with all three totals gone", {
+  x <- livestock[!(livestock$area_code %in% c("10", "19", "20") &
+                     livestock$year == 2016L & livestock$livestock_class == "Sheep"), ]
+  expect_error(build_island_reconciliation(x),
+               "island_reconciliation does not cover exactly the expected keys. Missing: 2016 Sheep")
+})
+
 test("assert_covers names duplicates", {
   expect_error(assert_covers(c("a", "a", "b"), c("a", "b"), "x"), "duplicated: a")
 })
