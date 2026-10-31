@@ -537,6 +537,11 @@ def check_table_contracts(gate: Gate) -> None:
 
 def check_failure_paths(spark: SparkSession) -> None:
     print("\n===== injected failures and publication protection")
+    # check_ingest_failures ends by ingesting again, which gives bronze a new
+    # _ingested_at that silver does not have yet. Rebuild silver from it, so
+    # the gate holds the silver its bronze produces, and a scenario that
+    # restores bronze and reruns 02 gets the same table back.
+    run_notebook(spark, NOTEBOOKS[1], show=False)
     # Detach the snapshot from the table before overwriting it in scenarios.
     gate = Gate(spark,
                 spark.table(f"{FQ}.bronze_agr_agr_003").localCheckpoint(eager=True),
