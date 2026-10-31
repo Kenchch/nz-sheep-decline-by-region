@@ -211,9 +211,13 @@ load_livestock <- function(path = RAW_CSV, raw = read_raw(path)) {
     filter(year >= START_YEAR) |>
     mutate(head = as.numeric(obs_value))
 
-  if (any(!is.na(selected$obs_value) & !is.finite(selected$head))) {
-    stop("Selected series contains an OBS_VALUE too large to represent.",
-         call. = FALSE)
+  # A double holds every whole number up to 2^53 - 1 exactly and rounds past
+  # it: "9007199254740993" would become 9007199254740992. Any string above the
+  # limit parses to at least 2^53, so the parsed value can be compared.
+  if (any(!is.na(selected$obs_value) &
+          (!is.finite(selected$head) | selected$head > 2^53 - 1))) {
+    stop("Selected series contains an OBS_VALUE too large to represent ",
+         "exactly (above 2^53 - 1).", call. = FALSE)
   }
 
   out <- selected |>

@@ -69,6 +69,8 @@ CATALOG, SCHEMA = "spark_catalog", "nz_livestock"
 FQ = f"{CATALOG}.{SCHEMA}"
 RAW_DIR = REPO / "data-raw"
 EXTRACT = "agr_agr_003_2026-09-04.csv"
+GOLD_TABLES = ["gold_national_change", "gold_regional_change", "gold_reconciliation",
+               "gold_island_reconciliation", "gold_coverage", "gold_dairy_windows"]
 
 # The R pipeline's analysis table: the reference every comparison is against,
 # and the source of the window and row counts, so none is typed here.
@@ -254,8 +256,7 @@ def check_against_r_outputs(spark: SparkSession) -> None:
 
     # Lineage: every gold table names the run and the extract it came from.
     pinned = spark.table(f"{FQ}.ingest_manifest").orderBy(F.desc("ingested_at")).first()
-    for name in ["gold_national_change", "gold_regional_change", "gold_reconciliation",
-                 "gold_island_reconciliation", "gold_coverage", "gold_dairy_windows"]:
+    for name in GOLD_TABLES:
         lineage = spark.table(f"{FQ}.{name}").select("_run_id", "_source_sha256").distinct().collect()
         check(len(lineage) == 1 and lineage[0]["_source_sha256"] == pinned["sha256"],
               f"{name} does not carry the run and extract that produced it: {lineage}")
@@ -286,7 +287,7 @@ def check_coverage_denominators(spark: SparkSession) -> None:
 
     try:
         exec(compile(coverage_cell, NOTEBOOKS[2] + ":coverage", "exec"),
-             {"s": s, "F": F, "FQ": FQ, "EXPECTED_REGIONS": N_REGIONS, "save": save,
+             {"s": s, "F": F, "FQ": FQ, "EXPECTED_REGIONS": N_REGIONS, "stage": save,
               "YEARS": list(range(START_YEAR, END_YEAR + 1)), "display": lambda df: None})
         row = spark.table(f"{FQ}.gold_coverage").filter(F.col("year") == year).first()
         check(row.regions_present < N_REGIONS and row.regions_suppressed == 1,
@@ -438,13 +439,17 @@ def check_malformed_rows(gate: Gate) -> None:
     bad = gate.bronze
     for code, value in [("1", "not-a-number"), ("2", "NaN"), ("3", "Infinity"),
                         ("6", "4192693.5"), ("7", "1e3"), ("8", "-5"),
-                        ("9", "9" * 20)]:
+                        ("9", "9" * 20), ("16", str(2**53))]:
         bad = with_value(bad, area(code), value)
     bad = with_value(bad, area("4"), "unknown", "OBS_STATUS")
-    years = {"5": "not-a-year", "11": " " + START, "12": "+" + START, "13": "0" + START}
+    # 14 and 15 parse to a year before the window. Filtering on the parsed
+    # value used to drop them as if they were well-formed pre-window rows.
+    before = str(START_YEAR - 1)
+    years = {"5": "not-a-year", "11": " " + START, "12": "+" + START, "13": "0" + START,
+             "14": "0" + before, "15": "+" + before}
     for code, year in years.items():
         bad = with_value(bad, area(code), year, "YEAR_AGR_AGR_003")
-    expected = {(c, START): "value_is_count" for c in ["1", "2", "3", "6", "7", "9"]}
+    expected = {(c, START): "value_is_count" for c in ["1", "2", "3", "6", "7", "9", "16"]}
     expected.update({("8", START): "head_non_negative", ("4", START): "status_known"})
     expected.update({(c, y): "year_in_range" for c, y in years.items()})
     for ansi in ["true", "false"]:
@@ -454,8 +459,9 @@ def check_malformed_rows(gate: Gate) -> None:
         check(len(rows) == len(expected),
               f"ANSI {ansi}: expected {len(expected)} rows in quarantine, got {len(rows)}")
     gate.spark.conf.set("spark.sql.ansi.enabled", "true")
-    print("malformed values (including a 20-digit count), padded or signed years and "
-          "unknown statuses are quarantined, with ANSI on and off")
+    print("malformed values (including a 20-digit count and 2^53), padded or signed years "
+          "(including ones before the window) and unknown statuses are quarantined, "
+          "with ANSI on and off")
 
 
 def check_single_cells(gate: Gate) -> None:
@@ -483,6 +489,21 @@ def check_single_cells(gate: Gate) -> None:
     check(gate.spark.table(f"{FQ}.quarantine_livestock").count() == len(R_TABLE),
           "blocking failure did not preserve rejected rows in quarantine")
 
+    # The contrast with the padded and signed years above: a well-formed year
+    # before the window is excluded, as R excludes it, not quarantined.
+    canterbury_start = sheep_start() & (F.col("AREA_AGR_AGR_003") == "15")
+    gate.write_bronze(with_value(b, canterbury_start, str(START_YEAR - 1), "YEAR_AGR_AGR_003"))
+    run_notebook(gate.spark, NOTEBOOKS[1], show=False)
+    silver = gate.spark.table(f"{FQ}.silver_livestock_regional")
+    check(silver.count() == len(R_TABLE) - 1 and
+          silver.filter((F.col("year") == START_YEAR) & (F.col("area_code") == "15") &
+                        (F.col("livestock_class") == "Sheep")).count() == 0,
+          "a well-formed year before the window was not excluded")
+    gate.write_bronze(b)
+    run_notebook(gate.spark, NOTEBOOKS[1], show=False)
+    gate.unchanged()
+    print("a well-formed year before the window is excluded, not quarantined")
+
 
 def check_table_contracts(gate: Gate) -> None:
     b = gate.bronze
@@ -498,16 +519,29 @@ def check_table_contracts(gate: Gate) -> None:
 
     # 03's own output contract: a year with no regional sheep rows passes 02
     # (the aggregates are still there) but must not vanish from gold_coverage.
+    # The check comes after four other gold tables are built, and one of them,
+    # the reconciliation, does change on this input, so the failed run must
+    # have written none of them.
     year = START_YEAR + 8
     gate.write_bronze(b.filter(~(sheep() & (F.col("YEAR_AGR_AGR_003") == str(year)) &
                                  ~F.col("AREA_AGR_AGR_003").isin("10", "19", "20"))))
     run_notebook(gate.spark, NOTEBOOKS[1], show=False)
-    expect_failure(gate.spark, NOTEBOOKS[2], f"gold_coverage is missing years: [{year}]")
-    print("a year with no regional rows stops the analysis")
+    expect_failure(gate.spark, NOTEBOOKS[2], f"gold_coverage is missing years: [{year}]",
+                   overrides={"run_id": "failed-analysis"})
+    for name in GOLD_TABLES:
+        written = gate.spark.table(f"{FQ}.{name}").filter(
+            F.col("_run_id") == "failed-analysis").count()
+        check(written == 0, f"the failed analysis run overwrote {name}")
+    print("a year with no regional rows stops the analysis before any gold table is written")
 
 
 def check_failure_paths(spark: SparkSession) -> None:
     print("\n===== injected failures and publication protection")
+    # check_ingest_failures ends by ingesting again, which gives bronze a new
+    # _ingested_at that silver does not have yet. Rebuild silver from it, so
+    # the gate holds the silver its bronze produces, and a scenario that
+    # restores bronze and reruns 02 gets the same table back.
+    run_notebook(spark, NOTEBOOKS[1], show=False)
     # Detach the snapshot from the table before overwriting it in scenarios.
     gate = Gate(spark,
                 spark.table(f"{FQ}.bronze_agr_agr_003").localCheckpoint(eager=True),

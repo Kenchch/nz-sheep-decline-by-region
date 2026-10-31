@@ -37,15 +37,19 @@ kept; the notebooks' defaults apply only when no value was supplied.
 Ingestion reads the extract once, into a checkpoint, before hashing it a second
 time, and stops on a changed column set, a row from another dataflow or an
 unknown suppression flag. The quality gate quarantines years that are not four
-digits in the window (`" 2025"`, `"+2025"` and `"02025"` included), head counts
-that are not non-negative whole numbers that fit in BIGINT, unknown suppression
-flags, duplicate cells and unmapped areas, and any quarantined row stops
-publication. The census-year
+digits in the window (`" 2025"`, `"+2025"` and `"02025"` included, and `"01994"`,
+which parses to a year before it; only a well-formed earlier year is excluded),
+head counts that are not non-negative whole numbers no greater than 2^53 − 1,
+unknown suppression flags, duplicate cells and unmapped areas, and any
+quarantined row stops publication. The census-year
 suppression rule remains informational. Empty input, missing years, and missing
 or suppressed national or island totals also fail **before** silver is
 overwritten, preserving the last successful table. The analysis notebook
 refuses to write a coverage, reconciliation or window table with a year or
-class-year missing.
+class-year missing, and builds and checks all six gold tables before writing
+any of them, so a failed check leaves the previous gold in place. The six
+writes are still separate, so a failure part-way through writing can leave
+gold tables from two runs; `_run_id` shows which.
 
 ## Tables (Unity Catalog: workspace.nz_livestock)
 

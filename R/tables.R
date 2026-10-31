@@ -133,6 +133,10 @@ build_island_reconciliation <- function(livestock) {
     mutate(residual = a20 - (a10 + a19))
   stopifnot("every island reconciliation needs all three aggregates" =
               !anyNA(out$residual))
+  # The NA check cannot see a class-year with all three totals gone: it has no
+  # row to hold an NA.
+  assert_covers(paste(out$year, out$livestock_class), class_year_keys(),
+                "island_reconciliation")
   out
 }
 

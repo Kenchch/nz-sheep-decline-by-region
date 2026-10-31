@@ -32,7 +32,7 @@ Region names follow the Statistical standard for geographic areas 2023 (SSGA23);
 
 ## How the numbers are checked
 
-- **Pinned input.** `R/load.R` refuses the extract unless its bytes match the SHA-256 recorded in `data-raw/SOURCE.md`, and stops on any change of shape: unexpected columns, an unknown flag, a head count that is not a whole number, a duplicate or unmapped cell, a missing year or a missing national or island total. [`tests/test-r-contracts.R`](tests/test-r-contracts.R) feeds it broken copies to show each check fires.
+- **Pinned input.** `R/load.R` refuses the extract unless its bytes match the SHA-256 recorded in `data-raw/SOURCE.md`, and stops on any change of shape: unexpected columns, an unknown flag, a head count that is not a whole number or is above 2^53 − 1, a duplicate or unmapped cell, a missing year or a missing national or island total. [`tests/test-r-contracts.R`](tests/test-r-contracts.R) feeds it broken copies to show each check fires.
 - **Rules that can fail.** Five validation rules run on the analysis table and on a deliberately corrupted copy; each corruption moves exactly one rule. `census_year_reported` fires 9 times on the real data, which is a finding: census years still withhold cells.
 - **Reconciliation, reported not asserted.** The regions are summed against the published national total for every class-year: 10 exact, 12 off by at most 2 head, 50 incomplete because a region is withheld or absent.
 - **Reproduced by CI.** GitHub Actions regenerates every CSV from a clean checkout on every pull request, every push to `main` and weekly, and fails if any differs from the committed copy. The site deployed to GitHub Pages is the one that build rendered.

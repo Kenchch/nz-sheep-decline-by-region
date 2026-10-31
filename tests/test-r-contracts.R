@@ -50,7 +50,9 @@ suppressed_row <- which(raw_fixture$livestock_agr_agr_003 == "6731" &
 stopifnot(length(regional_row) == 1L, length(island_row) == 1L,
           length(national_row) == 1L, !is.na(suppressed_row))
 
-for (year in c("2025.9", "not-a-year", NA_character_)) {
+# "02001" and "+2001" parse to a year before the window; they must be refused
+# as malformed, not excluded as if they were 2001.
+for (year in c("2025.9", "not-a-year", NA_character_, "02001", "+2001")) {
   test(paste("year", year), {
     raw <- raw_fixture
     raw$year_agr_agr_003[regional_row] <- year
@@ -72,6 +74,22 @@ test("a 400-digit count cannot be represented", {
   raw <- raw_fixture
   raw$obs_value[regional_row] <- strrep("9", 400)
   expect_error(load_fixture(raw), "too large to represent")
+})
+
+# Past 2^53 - 1 a double rounds rather than overflows, so the value is refused
+# instead of silently becoming a different count.
+for (value in c("9007199254740992", "9007199254740993")) {
+  test(paste("count", value, "is above 2^53 - 1"), {
+    raw <- raw_fixture
+    raw$obs_value[regional_row] <- value
+    expect_error(load_fixture(raw), "too large to represent exactly")
+  })
+}
+test("2^53 - 1 is kept exactly", {
+  raw <- raw_fixture
+  raw$obs_value[regional_row] <- "9007199254740991"
+  out <- load_fixture(raw)
+  stopifnot(max(out$head, na.rm = TRUE) == 2^53 - 1)
 })
 
 # A malformed token must not masquerade as a legitimate suppressed blank.
