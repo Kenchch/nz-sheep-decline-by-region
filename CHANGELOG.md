@@ -93,6 +93,13 @@ version needs to know.
   removed; the run-graph screenshots have the workspace paths and job IDs
   masked.
 
+### Security
+
+- setuptools in `databricks/build-requirements.txt`, which builds pyspark in
+  CI, is 84.1.0 rather than 84.0.0, for GHSA-xmj3-9gf7-h52w (low severity: a
+  path escape during legacy wheel installation on Windows; the job runs on
+  Linux).
+
 ## [0.3.0] - 2026-09-23
 
 ### Corrections to published findings
