@@ -74,6 +74,45 @@ dairy_window_counts <- function(regions, y0, y1) {
        regions = sort(both$region))
 }
 
+# A sheep fall set against a dairy rise in stock units, for ratio ranges rather
+# than single coefficients: sheep_su and dairy_su are c(lowest, highest) stock
+# units per head. One coefficient is applied to both ends of the window, which
+# assumes the age and breed mix of each class did not change; the result is a
+# range under that assumption, not a bound.
+#
+# breakeven_*: the stock units the average dairy animal gained would have to
+#   count for if the dairy gain were to equal the sheep loss.
+# offset_*: the dairy gain as a percentage of the sheep loss, at the least and
+#   the most favourable pairing of coefficients.
+#
+# Every column is NA unless sheep fell and dairy rose: where both fell there is
+# nothing to offset, and a ratio of two falls would read as a substitution.
+stock_unit_offset <- function(sheep_change, dairy_change, sheep_su, dairy_su) {
+  ok_range <- function(x) {
+    is.numeric(x) && length(x) == 2L && all(is.finite(x)) && x[1] > 0 && x[1] <= x[2]
+  }
+  if (!ok_range(sheep_su) || !ok_range(dairy_su)) {
+    stop("A stock-unit range is c(lowest, highest), both positive and finite.",
+         call. = FALSE)
+  }
+  if (length(sheep_change) != length(dairy_change)) {
+    stop("sheep_change and dairy_change must be the same length.", call. = FALSE)
+  }
+  applies <- !is.na(sheep_change) & !is.na(dairy_change) &
+    sheep_change < 0 & dairy_change > 0
+  lost   <- ifelse(applies, -sheep_change, NA_real_)
+  gained <- ifelse(applies, dairy_change, NA_real_)
+  data.frame(
+    sheep_lost      = lost,
+    dairy_gained    = gained,
+    sheep_per_dairy = lost / gained,
+    breakeven_low   = sheep_su[1] * lost / gained,
+    breakeven_high  = sheep_su[2] * lost / gained,
+    offset_low      = 100 * dairy_su[1] * gained / (sheep_su[2] * lost),
+    offset_high     = 100 * dairy_su[2] * gained / (sheep_su[1] * lost)
+  )
+}
+
 # Number of windows in which a region is among the top three. Splits on the
 # separator rather than substring-matching, so a region whose name is part of
 # another's could never be over-counted.

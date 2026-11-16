@@ -22,6 +22,9 @@ dairy_net,0.59,+0.59 million net,1
 dairy_count_early,4 of 15,**4 of 15** regions over 2002–2014,1
 dairy_count_late,12 of 14,**12 of 14** over 2014–2025,1
 dairy_count_full,7 of 13,7 of 13 over the whole period,1
+su_full_max,44,at most **44 percent** of the sheep fall,1
+su_early_range,31–191,between 31 and 191 percent,1
+su_ratios,0.7/1/2/8.5,"0.7–1.0 per sheep, 2.0–8.5 per head of dairy cattle",1
 imputed,30,30 percent of the sheep estimate imputed,1
 matched_fall,14.4,14.4 million head,1
 matched_share,55.6,top three at 55.6 percent,1

@@ -173,6 +173,46 @@ lost_cattle_class <- substitution |>
   filter(region %in% top5_regions, `Dairy cattle` < 0 | `Beef cattle` < 0) |>
   pull(region) |> sort()
 
+# Stock units ---------------------------------------------------------------
+# Beef + Lamb New Zealand's Economic Service conversion ratios, which Stats NZ
+# says it uses as a guide (both cited under Sources). They are per class of
+# animal and this analysis has only the class totals, so each total takes the
+# lowest and the highest ratio listed for its group.
+SU_SHEEP     <- c(0.7, 1.0)   # hoggets and wethers; ewes
+SU_DAIRY     <- c(2.0, 8.5)   # calves; Friesian cows
+SU_DAIRY_COW <- c(6.5, 8.5)   # Jersey cows; Friesian cows
+su_row <- function(label, sheep, dairy) {
+  cbind(data.frame(label = label, sheep_change = sheep, dairy_change = dairy),
+        stock_unit_offset(sheep, dairy, SU_SHEEP, SU_DAIRY))
+}
+su_regions <- substitution |> filter(region %in% top5_regions) |> arrange(Sheep)
+su_national <- rbind(
+  su_row(sprintf("New Zealand, %d–%d", START_YEAR, DAIRY_PEAK_YEAR),
+         -sheep_early_drop, dairy_rise),
+  su_row(sprintf("New Zealand, %d–%d", DAIRY_PEAK_YEAR, END_YEAR),
+         -sheep_late_drop, -dairy_fall),
+  su_row(sprintf("New Zealand, %d–%d", START_YEAR, END_YEAR), -nat_drop, dairy_gain)
+)
+su_regional <- su_row(sprintf("%s, %d–%d", su_regions$region, START_YEAR, END_YEAR),
+                      su_regions$Sheep, su_regions$`Dairy cattle`)
+su_early <- su_national[1, ]
+su_late  <- su_national[2, ]
+su_full  <- su_national[3, ]
+su_cant  <- su_regional[su_regions$region == "Canterbury", ]
+stopifnot(
+  "the stock-unit prose says the whole-period dairy gain cannot match the sheep loss" =
+    su_full$offset_high < 100,
+  "the stock-unit prose says the range to the dairy peak spans 100 percent" =
+    su_early$offset_low < 100, su_early$offset_high > 100,
+  "the stock-unit prose places the break-even to the dairy peak inside the dairy range and below a milking cow" =
+    su_early$breakeven_low > SU_DAIRY[1], su_early$breakeven_high < SU_DAIRY_COW[1],
+  "the stock-unit prose says sheep and dairy both fell after the dairy peak" =
+    is.na(su_late$offset_low), sheep_late_drop > 0, dairy_fall > 0,
+  "the stock-unit prose names Canterbury, with a break-even below a milking cow" =
+    nrow(su_cant) == 1L, !is.na(su_cant$breakeven_high),
+    su_cant$breakeven_high < SU_DAIRY_COW[1], su_cant$offset_high > 100
+)
+
 # Endpoint sensitivity ----------------------------------------------------
 # The same headline statistic recomputed from every start year, and to every
 # end year, that leaves a window of at least MIN_WINDOW years. The five-year
@@ -331,6 +371,16 @@ key_figures <- rbind(
      sprintf("**%d of %d** over %d–%d", win_late$fell, win_late$n, DAIRY_PEAK_YEAR, END_YEAR)),
   kf("dairy_count_full", paste(win_full$fell, "of", win_full$n),
      sprintf("%d of %d over the whole period", win_full$fell, win_full$n)),
+  kf("su_full_max", fmt(su_full$offset_high, 0),
+     sprintf("at most **%s percent** of the sheep fall", fmt(su_full$offset_high, 0))),
+  kf("su_early_range",
+     paste0(fmt(su_early$offset_low, 0), "–", fmt(su_early$offset_high, 0)),
+     sprintf("between %s and %s percent", fmt(su_early$offset_low, 0),
+             fmt(su_early$offset_high, 0))),
+  kf("su_ratios", paste(c(SU_SHEEP, SU_DAIRY), collapse = "/"),
+     sprintf("%s–%s per sheep, %s–%s per head of dairy cattle",
+             fmt(SU_SHEEP[1], 1), fmt(SU_SHEEP[2], 1),
+             fmt(SU_DAIRY[1], 1), fmt(SU_DAIRY[2], 1))),
   kf("imputed", IMPUTED_PCT_2025, sprintf("%d percent of the sheep estimate imputed", IMPUTED_PCT_2025)),
   kf("matched_fall", fmt(matched$fall / 1e6, 1), sprintf("%s million head", fmt(matched$fall / 1e6, 1))),
   kf("matched_share", fmt(matched$share, 1), sprintf("top three at %s percent", fmt(matched$share, 1))),
@@ -396,7 +446,9 @@ Three points.
   **`r fmt(dairy_gain/1e3, 0)` thousand** head net, while beef cattle *fell* by
   `r fmt(-beef_gain/1e3, 0)` thousand. The dairy net hides a
   `r fmt(dairy_rise/1e6, 2)` million rise to `r DAIRY_PEAK_YEAR` and a
-  `r fmt(dairy_fall/1e6, 2)` million fall since.
+  `r fmt(dairy_fall/1e6, 2)` million fall since. Converted to stock units, the
+  net dairy gain is at most `r fmt(su_full$offset_high, 0)` percent of the sheep
+  fall on the published ratios; see [In stock units](#in-stock-units).
 - Whether dairy fell *alongside* sheep depends on the window: in
   `r win_full$fell` of the `r win_full$n` regions with sheep and dairy published at
   both ends for `r START_YEAR`–`r END_YEAR`, in only `r win_early$fell` of
@@ -461,14 +513,22 @@ before/after contrast by construction. `r dairy_runner_up$year` is within
 `r fmt(100 * (dairy_peak - dairy_runner_up$head) / dairy_peak, 1)` percent of
 it.
 
-Whether the earlier dairy growth *replaced* the sheep in feed terms cannot be
-settled from head counts — see the stock-unit note below.
+Head counts understate the dairy side of that comparison, because a dairy cow
+counts for several sheep. In stock units the dairy rise to
+`r DAIRY_PEAK_YEAR` is between `r fmt(su_early$offset_low, 0)` and
+`r fmt(su_early$offset_high, 0)` percent of the sheep fall over the same years,
+depending on the mix of animals, which this table does not give. Over the whole
+period the net dairy gain is at most `r fmt(su_full$offset_high, 0)` percent of
+the sheep fall on the published ratios. The working is under
+[In stock units](#in-stock-units).
 
 ### What these numbers do not tell you
 
-They are head counts. They say nothing about land area, feed demand, grazing
-pressure, farm profitability, or what the land is used for now. A dairy cow and a
-sheep are not exchangeable units, and this page does not treat them as such.
+Outside the stock-unit section they are head counts. They say nothing about land
+area, grazing pressure, farm profitability, or what the land is used for now. A
+dairy cow and a sheep are not exchangeable units; the stock-unit section converts
+them as a range under stated assumptions, and nowhere else does this page treat
+them as exchangeable.
 
 ## The regional breakdown
 
@@ -552,8 +612,10 @@ In head counts, among the five regions that lost the most sheep, only
 added dairy cattle in numbers that register against their sheep losses:
 `r fmt(dairy_ratio[1], 1)` and `r fmt(dairy_ratio[2], 1)` dairy cattle per 100
 sheep lost, against at most `r fmt(dairy_ratio[3], 1)` in the other three.
-Nationally, dairy grew until `r DAIRY_PEAK_YEAR` and has fallen since. Whether
-dairy replaced sheep in feed or land terms cannot be answered from this table.
+Nationally, dairy grew until `r DAIRY_PEAK_YEAR` and has fallen since. What
+those head counts amount to in feed terms is taken up under
+[In stock units](#in-stock-units); whether dairy replaced sheep in land terms
+cannot be answered from this table.
 
 ```{r}
 #| label: fig-national
@@ -636,17 +698,9 @@ differences also carry sampling error.
 A head of dairy cattle and a sheep do not require the same feed, so a head-count
 comparison is not a feed-equivalent one. This analysis uses total-head codes
 only: total sheep (6731), total dairy cattle (7193) and total beef cattle
-(7077). The comparisons in this section are in head counts. Whether they also
-hold in feed terms — stock units — is not asserted here either way: a
-class-specific stock-unit comparison was not attempted.
-
-Doing one properly needs two things this analysis does not have. It needs the
-class-specific codes rather than the totals, because applying one adult-cow or
-adult-ewe coefficient to a mixed-age total assumes a herd composition the
-extract does not state. And it needs stock-unit coefficients from a citable
-source, matched to those classes. The extract carries numeric codes and no
-labels, so identifying the class-specific codes is itself a verification step,
-not a lookup.
+(7077). The charts and tables in this section are in head counts, except under
+[In stock units](#in-stock-units), which converts the sheep and dairy totals as
+a range.
 
 ```{r}
 #| label: fig-substitution
@@ -725,6 +779,88 @@ dairy cattle per 100 sheep lost, on a base so small — under
 sheep — that the ratio says more about the denominator than about land use.
 `r if (length(lost_cattle_class)) paste(and_list(lost_cattle_class), "lost sheep and at least one cattle class.") else "None of the five lost a cattle class as well as sheep."` A
 negative figure in this table means that class of animal declined as well.
+
+### In stock units
+
+Stock units put different classes of livestock on one scale, with a ewe at 1.0.
+Stats NZ states that when it converts livestock numbers into stock units it uses
+Beef + Lamb New Zealand's Economic Service conversion ratios as a guide. Those
+ratios are per class of animal: `r fmt(SU_SHEEP[1], 1)` for a hogget or wether
+and `r fmt(SU_SHEEP[2], 1)` for a ewe; `r fmt(SU_DAIRY[1], 1)` for a dairy calf,
+`r fmt(SU_DAIRY_COW[1], 1)` for a Jersey cow and `r fmt(SU_DAIRY_COW[2], 1)` for
+a Friesian cow.
+
+This analysis has only the class totals, so it cannot apply those ratios class
+by class. It does two things instead. It applies the lowest and the highest
+ratio in each group to the change in the total, which gives a range. And it
+reports the *break-even* ratio: the stock units the average dairy animal gained
+would have to count for if the dairy gain were to equal the sheep loss.
+
+```{r}
+#| label: tbl-stock-units
+#| tbl-cap: !expr 'sprintf("Sheep lost against dairy cattle gained, in head and in stock units. Ranges use %s to %s stock units per sheep and %s to %s per head of dairy cattle. A dash marks a row in which dairy cattle did not rise.", fmt(SU_SHEEP[1], 1), fmt(SU_SHEEP[2], 1), fmt(SU_DAIRY[1], 1), fmt(SU_DAIRY[2], 1))'
+signed <- function(x) sprintf("%s%s", ifelse(x > 0, "+", ""), fmt(x))
+dash   <- function(ok, text) ifelse(ok, text, "—")
+rbind(su_national, su_regional) |>
+  transmute(
+    `Area and window` = label,
+    `Sheep (head)` = signed(sheep_change),
+    `Dairy cattle (head)` = signed(dairy_change),
+    `Sheep lost per dairy animal gained` =
+      dash(!is.na(sheep_per_dairy), fmt(sheep_per_dairy, 1)),
+    `Break-even stock units per dairy animal` =
+      dash(!is.na(breakeven_low),
+           sprintf("%s to %s", fmt(breakeven_low, 1), fmt(breakeven_high, 1))),
+    `Dairy gain as a share of the sheep loss, in stock units` =
+      dash(!is.na(offset_low),
+           sprintf("%s%% to %s%%", fmt(offset_low, 0), fmt(offset_high, 0)))
+  ) |>
+  kable(align = "lrrrrr")
+```
+
+**Over the whole period, the dairy gain does not account for the sheep fall on
+any ratio in the range.**
+Nationally, `r fmt(su_full$sheep_per_dairy, 1)` sheep were lost for each dairy
+animal gained between `r START_YEAR` and `r END_YEAR`. If every animal gained
+were a Friesian cow and every sheep lost a hogget, the dairy gain would still be
+`r fmt(su_full$offset_high, 0)` percent of the sheep loss.
+
+**To the `r DAIRY_PEAK_YEAR` dairy peak, the answer depends on the herd.**
+`r fmt(su_early$sheep_per_dairy, 1)` sheep were lost for each dairy animal
+gained, so the gain equals the loss if the average animal gained counts for
+between `r fmt(su_early$breakeven_low, 1)` and
+`r fmt(su_early$breakeven_high, 1)` stock units. That is inside the range of
+ratios for dairy cattle and below the ratio for a milking cow of either breed.
+In head counts the dairy rise is
+`r fmt(100 * dairy_rise / sheep_early_drop, 0)` percent of the sheep fall; in
+stock units it is between `r fmt(su_early$offset_low, 0)` and
+`r fmt(su_early$offset_high, 0)` percent. The range spans 100, so this table
+cannot say whether the dairy rise fell short of the sheep fall or exceeded it.
+It can say that the head-count comparison understates the dairy side, by a
+factor of at least `r fmt(SU_DAIRY[1] / SU_SHEEP[2], 0)`.
+
+**Since `r DAIRY_PEAK_YEAR` both have fallen.** Sheep fell by a further
+`r fmt(sheep_late_drop/1e6, 1)` million head and dairy cattle by
+`r fmt(dairy_fall/1e6, 2)` million, so there is no dairy gain to set against the
+later sheep fall in any unit.
+
+**In Canterbury the break-even is lower still.**
+`r fmt(su_cant$sheep_per_dairy, 1)` sheep were lost for each dairy animal
+gained, which puts the break-even between `r fmt(su_cant$breakeven_low, 1)` and
+`r fmt(su_cant$breakeven_high, 1)` stock units, and the dairy gain between
+`r fmt(su_cant$offset_low, 0)` and `r fmt(su_cant$offset_high, 0)` percent of
+the sheep loss.
+
+Four things limit this. One ratio is applied to both ends of each window, which
+assumes that the age and breed mix of the flock and of the herd did not change;
+if it did, the true figure can lie outside the range, so the range is not a
+bound. The ratios are Beef + Lamb New Zealand's survey conversions, which Stats
+NZ uses as a guide; they are not measurements of what these animals ate. The
+extract's class-specific codes would narrow the range, but the extract carries
+numeric codes and no labels, so identifying them is a verification step that has
+not been done. And stock units are not land: nothing here says which hectares
+changed use. Beef cattle, which fell by `r fmt(-beef_gain/1e3, 0)` thousand head
+over the period, are left out of this comparison.
 
 ## Data quality checks
 
@@ -1044,7 +1180,8 @@ other dropped region, is simply withheld, with no reason published.
    sampling error, the GST threshold — *cannot* be computed from an aggregate
    extract; they are typed, and each is attributed under [Sources for the
    methodological statements](#sources-for-the-methodological-statements). The
-   analysis window, the census years, the `r DAIRY_PEAK_YEAR` split and the
+   stock-unit ratios are Beef + Lamb New Zealand's; they are typed and
+   attributed in the same table. The analysis window, the census years, the `r DAIRY_PEAK_YEAR` split and the
    five-year minimum window are design constants, set once in `R/load.R`,
    `R/checks.R` and the setup code of this page.
 
@@ -1191,7 +1328,8 @@ have not used here.
 ### Sources for the methodological statements
 
 Every statement about the collection above was read on the page cited here, not
-carried over from secondary summaries. Pages read 4 September 2026.
+carried over from secondary summaries. Pages read 4 September 2026, except for
+the two stock-unit rows, read 16 November 2026.
 
 | Statement | Source |
 |---|---|
@@ -1206,12 +1344,14 @@ carried over from secondary summaries. Pages read 4 September 2026.
 | `S` for data with high sample errors or imputation levels | same page |
 | Nelson sampling error not estimable (one responding unit per stratum) | same page |
 | Horticulture collection years; forestry production now published by MPI | same page |
+| Stock unit conversion ratios from Beef + Lamb New Zealand "used as a guide" when livestock numbers are converted into stock units | same page |
 | Programme run in partnership with MPI | [Agriculture Production Statistics series, DataInfo+](https://datainfoplus.stats.govt.nz/item/nz.govt.stats/6362a469-f374-412e-ac25-d76fd0962003) |
 | Provisional mid-December plus final mid-May up to 2024; single final mid-April from 2025 | same page |
 | 2002 population differs from earlier collections; no survey in 1997, 1998, 2001 | same page |
 | Regional council annually; territorial authority in censuses | same page |
 | Release date of 16 April 2026 for the year to June 2025; NEFD data and planned revisions for 2016–2021 | [Agricultural production statistics: Year to June 2025](https://www.stats.govt.nz/information-releases/agricultural-production-statistics-year-to-june-2025/) |
 | Mana Ōrite Relationship Agreement signed with the Data Iwi Leaders Group of the National Iwi Chairs Forum on 30 October 2019 | [Mana Ōrite Relationship Agreement](https://www.stats.govt.nz/about-us/what-we-do/mana-orite-relationship-agreement/) |
+| Economic Service conversion ratios: ewes 1.0, hoggets and wethers 0.7, rams 0.8; Jersey cows 6.5, Friesian cows 8.5, other Jersey stock 3.5, other Friesian stock 4.5, dairy bulls 5.0, calves 2.0 | [Benchmarking tool, Definitions tab, Beef + Lamb New Zealand](https://tools.beeflambnz.com/benchmarking-tool) |
 
 Statements that could not be sourced on those pages are not made anywhere in
 this report.
@@ -1225,8 +1365,10 @@ this report.
   `r fourth$region` — should not be read as ranked at all.
 - Withheld cells are retained as `NA` and counted. Two regions are excluded
   from the `r START_YEAR`–`r END_YEAR` change entirely for that reason.
-- The sheep-to-cattle comparisons are **ratios of head counts**. They are not
-  claims about stocking rate, feed demand, land use or emissions.
+- The sheep-to-cattle comparisons are **ratios of head counts**, except under
+  [In stock units](#in-stock-units). The conversion there is a range, from
+  published ratios applied to class totals, and it assumes an unchanged age and
+  breed mix. Neither is a claim about stocking rate, land use or emissions.
 - The frame is Stats NZ's Business Register, which is built on GST registration.
   The compulsory registration level is \$60,000, and Stats NZ describes coverage
   of units below that level as "partial and unquantifiable".
