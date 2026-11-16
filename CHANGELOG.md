@@ -25,6 +25,25 @@ version needs to know.
 - `data-raw/SOURCE.md` no longer gives the 2017 South Island shortfall in head,
   which is an approximation of Nelson's withheld cell.
 
+### Added
+
+- **A stock-unit comparison of the sheep fall and the dairy rise**, under "In
+  stock units". 0.2.0 and 0.3.0 each removed a stock-unit sentence because no
+  calculation had been made and no ratio was cited. Both now exist: the ratios
+  are Beef + Lamb New Zealand's Economic Service conversions, which Stats NZ's
+  June 2025 methodology page says it uses as a guide. The extract has only
+  class totals, so the lowest and highest ratio in each group (0.7–1.0 per
+  sheep, 2.0–8.5 per head of dairy cattle) are applied to the change in the
+  total. Over 2002–2025 the net dairy gain is at most 44 percent of the sheep
+  fall; to the 2014 dairy peak it is between 31 and 191 percent; since 2014
+  both have fallen. One ratio is applied to both ends of a window, which
+  assumes an unchanged age and breed mix, so each figure is a range and not a
+  bound. `stock_unit_offset()` in `R/analysis.R` does the arithmetic and
+  `tests/test-r-analysis.R` checks it.
+- The report no longer says head counts "cannot" speak to feed terms. The
+  short version, "What this means", the limitations and the README say what
+  the stock-unit range does and does not show.
+
 ### Fixed
 
 - Warnings raised in the hidden setup code or in inline expressions never

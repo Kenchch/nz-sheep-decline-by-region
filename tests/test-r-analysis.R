@@ -70,6 +70,32 @@ test("dairy_window_counts counts falls and zero herds", {
             identical(w$regions, c("A", "B", "C", "D")))
 })
 
+test("stock_unit_offset break-even and offset range", {
+  # 100 sheep lost, 20 dairy gained: 5 sheep per dairy animal. With sheep at
+  # 0.5-1 and dairy at 2-8, break-even is 2.5-5 and the offset 40%-320%.
+  s <- stock_unit_offset(-100, 20, sheep_su = c(0.5, 1), dairy_su = c(2, 8))
+  stopifnot(s$sheep_lost == 100, s$dairy_gained == 20, s$sheep_per_dairy == 5,
+            isTRUE(all.equal(s$breakeven_low, 2.5)),
+            isTRUE(all.equal(s$breakeven_high, 5)),
+            isTRUE(all.equal(s$offset_low, 40)),
+            isTRUE(all.equal(s$offset_high, 320)))
+})
+
+test("stock_unit_offset is NA unless sheep fell and dairy rose", {
+  # both fell; sheep rose; dairy flat; a withheld endpoint
+  s <- stock_unit_offset(c(-100, 10, -100, NA), c(-5, 5, 0, 5),
+                         sheep_su = c(0.7, 1), dairy_su = c(2, 8.5))
+  stopifnot(nrow(s) == 4L, all(is.na(as.matrix(s))))
+})
+
+test("stock_unit_offset refuses a reversed or non-positive range", {
+  for (bad in list(c(1, 0.7), c(0, 1), c(1, Inf), 1)) {
+    err <- tryCatch(stock_unit_offset(-1, 1, sheep_su = bad, dairy_su = c(2, 8.5)),
+                    error = conditionMessage)
+    stopifnot(is.character(err), grepl("lowest, highest", err))
+  }
+})
+
 test("count_in_top3 matches whole names only", {
   stopifnot(count_in_top3(c("Otago, Southland, Canterbury",
                             "Central Otago, Southland, Tasman"), "Otago") == 1L)
